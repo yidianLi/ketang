@@ -130,3 +130,21 @@ body.lab{display:flex;flex-direction:column;height:100%}
   .cr-stage{padding:14px 12px 40px}
   .cr-big{font-size:34px}
 }
+
+/* ---------- 喊麦读单词 / 喊麦读词语 ---------- */
+.rap-panel{display:flex;gap:20px;flex-wrap:wrap;align-items:stretch}
+.rap-side{flex:0 0 320px;max-width:100%;display:flex;flex-direction:column;gap:10px}
+.rap-side .cr-row{flex-wrap:wrap;gap:8px}
+.rap-stage{flex:1;min-width:260px;display:flex;flex-direction:column;align-items:center;gap:10px;
+           background:var(--field-2);border-radius:14px;padding:18px 16px}
+.rap-phase{font-size:12px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase}
+.rap-word{font-size:min(92px,15vw);font-weight:800;line-height:1.15;text-align:center;
+          color:var(--ink);min-height:1.2em;word-break:break-all;transition:transform .1s}
+.rap-word.hot{color:var(--accent-2);transform:scale(1.02)}
+.rap-zh{font-size:17px;color:var(--ink-2);text-align:center;min-height:1.6em}
+.rap-bar{width:100%;max-width:430px;height:8px;background:var(--panel);border-radius:99px;overflow:hidden}
+.rap-bar i{display:block;height:100%;width:0;background:var(--accent-2);transition:width .12s linear}
+.rap-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-height:130px;overflow:auto;width:100%}
+.rap-list span{padding:3px 11px;border-radius:99px;font-size:12.5px;background:var(--panel);color:var(--ink-2)}
+.rap-list span.done{background:var(--accent-2);color:#fff}
+.rap-list span.cur{outline:2px solid var(--accent-2);font-weight:700}

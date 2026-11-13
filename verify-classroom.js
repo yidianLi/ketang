@@ -22,7 +22,7 @@ function eq(a, b, name) { ok(JSON.stringify(a) === JSON.stringify(b), name + '�
 /* ---------- 加载数据文件（模拟浏览器全局） ---------- */
 global.window = global;
 const dataDir = path.join(__dirname, 'js', 'tools', 'data');
-['equations.js', 'words.js', 'quizbank.js', 'climate.js', 'cell.js', 'recite.js'].forEach(f => {
+['equations.js', 'words.js', 'quizbank.js', 'climate.js', 'cell.js', 'recite.js', 'rapwords.js'].forEach(f => {
   new Function(fs.readFileSync(path.join(dataDir, f), 'utf8')).call(global);
 });
 
@@ -140,6 +140,21 @@ ok(window.CLIMATES.every(c => c.temp.length === 12 && c.rain.length === 12 && c.
 ok(window.CELL_SETS.animal.items.length === 10 && window.CELL_SETS.plant.items.length === 10, '细胞器各 10 个');
 ok(window.RECITE.length === 12, '背诵题 12 条');
 
+console.log('--- RapCore 喊麦节奏 ---');
+const rws = RapCore.parse('1. apple 苹果\n\nbanana 香蕉\ncherry\n（2）water 水');
+eq(rws, [{ w: 'apple', zh: '苹果' }, { w: 'banana', zh: '香蕉' }, { w: 'cherry', zh: '' }, { w: 'water', zh: '水' }], '词表解析（编号/空行/无释义/括号编号）');
+const rtl = RapCore.timeline(4, 120, 4, 2);
+eq(rtl.totalBeats, 16, '总拍数 = 词数 × 每词拍数');
+eq(rtl.events.map(e => e.beat), [0, 2, 4, 6, 8, 10, 12, 14], '重读节拍均匀分布');
+eq(rtl.events.filter(e => e.rep === 0).length, 4, '每词首遍一次');
+ok(RapCore.wordIndexAt(rtl, 5) === 1, '第 5 拍落在第 2 词');
+ok(RapCore.wordIndexAt(rtl, -1) === -1 && RapCore.wordIndexAt(rtl, 16) === -1, '未开始/越界返回 -1');
+ok(RapCore.phaseName(0) === '热身入场' && RapCore.phaseName(0.3) === '渐入状态' && RapCore.phaseName(0.95) === '最后一击', '阶段文案随进度递进');
+const rbad = RapCore.timeline(3, 0, 0, 9);
+eq([rbad.bpm, rbad.beatsPerWord, rbad.reps], [110, 4, 4], '非法参数安全钳制');
+ok(window.RAP_EN.length >= 20 && window.RAP_EN.every(x => x.w), 'EN 示例词包 ' + window.RAP_EN.length + ' 条');
+ok(window.RAP_CN.length >= 20 && window.RAP_CN.every(x => x.w), 'CN 示例词包 ' + window.RAP_CN.length + ' 条');
+
 console.log('--- 工具模块注册（语法加载检查） ---');
 global.Tools = { _m: {}, _order: [], add(d) { this._m[d.id] = d; this._order.push(d.id); } };
 global.Store = () => ({ get: () => null, set: () => {}, del: () => {} });
@@ -151,17 +166,21 @@ global.performance = { now: () => 0 };
 global.CustomEvent = function () {};
 const toolDir = path.join(__dirname, 'js', 'tools');
 ['rollcall.js', 'quiz-buzzer.js', 'recite-pk.js', 'flashcard-pk.js', 'marquee.js', 'huaxiaoyu.js',
- 'cell.js', 'balance.js', 'genetics.js', 'climate.js', 'words.js', 'quiz.js'].forEach(f => {
+ 'cell.js', 'balance.js', 'genetics.js', 'climate.js', 'words.js', 'quiz.js', 'wordrap.js'].forEach(f => {
   try {
     // 提供最简 DOM 桩，模块只在 add() 时执行、mount 不执行
     global.HTMLElement = function () {};
     new Function(fs.readFileSync(path.join(toolDir, f), 'utf8')).call(global);
-    ok(!!global.Tools._m[f.replace('.js', '')], '模块注册 ' + f);
+    if (f === 'wordrap.js') {
+      ok(!!global.Tools._m['rap-en'] && !!global.Tools._m['rap-cn'], '模块注册 wordrap.js（rap-en + rap-cn 双工具）');
+    } else {
+      ok(!!global.Tools._m[f.replace('.js', '')], '模块注册 ' + f);
+    }
   } catch (e) {
     ok(false, '模块注册 ' + f + '（' + e.message + '）');
   }
 });
-ok(Object.keys(global.Tools._m).length === 12, '12 个工具全部注册');
+ok(Object.keys(global.Tools._m).length === 14, '14 个工具全部注册');
 
 console.log('');
 console.log(`✓ 课堂工具自检全部通过：${pass} 项断言`);

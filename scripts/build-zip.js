@@ -112,7 +112,7 @@ function usageText() {
     '',
     '【包含什么】',
     '- 6 个互动实验室：地形 / 电路 / 力学 / 分子 / 数理公式 / 光学',
-    '- 课堂工具箱 classroom.html：12 件课堂实操工具',
+    '- 课堂工具箱 classroom.html：14 件课堂实操工具（含喊麦读单词 / 喊麦读词语）',
     '- 学科分级目录 subjects.html：五科 147 条互动演示，按年级分段',
     '- 资源库 resource.html（19 个直连可玩资源）· 随堂自测 quiz.html · 知识专题 knowledge.html',
     '- 案例库 ai-cases.html：69 个开源互动案例（依赖已本地化）',

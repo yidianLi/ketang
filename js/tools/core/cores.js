@@ -346,10 +346,61 @@
     }
   };
 
+  /* ================= 喊麦读单词 / 词语 ================= */
+  var RapCore = {
+    /* 词表解析：一行一条，可带释义（空白分隔）；容忍 "1. apple 苹果" 编号前缀与空行 */
+    parse: function (text) {
+      var out = [];
+      String(text || '').split(/\r?\n/).forEach(function (line) {
+        line = line.replace(/^\s*(?:\d+\s*[.、)．]|[（(]\d+\s*[)）])\s*/, '').trim();
+        if (!line) return;
+        var m = line.split(/\s+/);
+        var w = m.shift();
+        out.push({ w: w, zh: m.join(' ') });
+      });
+      return out;
+    },
+    /* 节拍时间轴：每词占 beatsPerWord 拍，每词重读 reps 次（均匀分布）。
+       返回 { bpm, beatsPerWord, reps, events:[{i,rep,beat}], totalBeats, secPerBeat, duration } */
+    timeline: function (n, bpm, beatsPerWord, reps) {
+      n = Math.max(0, n | 0);
+      bpm = bpm > 0 ? bpm : 110;
+      beatsPerWord = beatsPerWord >= 2 ? beatsPerWord : 4;
+      reps = Math.max(1, Math.min(4, reps || 2));
+      var events = [];
+      for (var i = 0; i < n; i++) {
+        for (var r = 0; r < reps; r++) {
+          events.push({ i: i, rep: r, beat: i * beatsPerWord + r * (beatsPerWord / reps) });
+        }
+      }
+      var secPerBeat = 60 / bpm;
+      return {
+        bpm: bpm, beatsPerWord: beatsPerWord, reps: reps, events: events,
+        totalBeats: n * beatsPerWord,
+        secPerBeat: secPerBeat,
+        duration: n * beatsPerWord * secPerBeat
+      };
+    },
+    /* 某一拍落在第几个词；未开始/已越界返回 -1 */
+    wordIndexAt: function (tl, beat) {
+      if (beat < 0) return -1;
+      var idx = Math.floor(beat / tl.beatsPerWord);
+      var n = Math.ceil(tl.totalBeats / tl.beatsPerWord);
+      return idx >= 0 && idx < n ? idx : -1;
+    },
+    /* 强度阶段文案：p 为 0~1 的进度比 */
+    phaseName: function (p) {
+      var NAMES = ['热身入场', '渐入状态', '全速喊麦', '三连炸场', '最后一击'];
+      if (!(p >= 0)) p = 0;
+      return NAMES[Math.min(NAMES.length - 1, Math.floor(p * NAMES.length))];
+    }
+  };
+
   var API = {
     RollCore: RollCore, ScoreCore: ScoreCore, PkCore: PkCore, FlashCore: FlashCore,
     PomoCore: PomoCore, BalanceCore: BalanceCore, GenCore: GenCore,
-    ClimateCore: ClimateCore, WordCore: WordCore, QuizCore: QuizCore
+    ClimateCore: ClimateCore, WordCore: WordCore, QuizCore: QuizCore,
+    RapCore: RapCore
   };
 
   for (var k in API) root[k] = API[k];
