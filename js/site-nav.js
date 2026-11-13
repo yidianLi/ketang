@@ -10,8 +10,9 @@
      <script src="js/site-nav.js"></script>
    无占位时自动插入到 body 首个元素之前；页脚同理用 id="site-foot"。
 
-   顺带：导航里的品牌链接永远指回 index.html，5 个内部入口按当前
-   文件名自动高亮，避免"这一页到底在哪"的迷失。
+   顺带：导航里的品牌链接永远指回 index.html，4 个内部入口按当前
+   文件名自动高亮；知识专题与案例库不在主导航里，分别从随堂自测、
+   学科目录/资源库进入，避免同一批内容出现三个平级入口。
    ============================================================ */
 (function () {
   'use strict';
@@ -20,9 +21,7 @@
     ['index.html', '首页'],
     ['subjects.html', '学科目录'],
     ['resource.html', '资源库'],
-    ['knowledge.html', '知识专题'],
     ['quiz.html', '随堂自测'],
-    ['ai-cases.html', '案例库'],
     ['classroom.html', '课堂工具']
   ];
 
@@ -30,9 +29,7 @@
     ['index.html', '首页'],
     ['subjects.html', '学科目录'],
     ['resource.html', '资源库'],
-    ['knowledge.html', '知识专题'],
     ['quiz.html', '随堂自测'],
-    ['ai-cases.html', '案例库'],
     ['classroom.html', '课堂工具']
   ];
 
@@ -90,7 +87,7 @@
       return '<a href="' + l[0] + '"' + on + aria + '>' + l[1] + '</a>';
     }).join('');
     return '<a class="sb-brand" href="index.html" aria-label="简普实验室 · 返回首页">' +
-             '<span class="sb-logo" aria-hidden="true">帧</span>' +
+             '<span class="sb-logo" aria-hidden="true">简</span>' +
              '<span class="sb-name">简普实验室<em>JIANPU LAB</em></span>' +
            '</a>' +
            '<nav aria-label="站点导航">' + items + '</nav>' +
