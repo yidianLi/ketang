@@ -55,10 +55,10 @@ if (!MiniTeX) { console.error('✗ MiniTeX 未挂载'); process.exit(1); }
 if (!FC) { console.error('✗ FormulaCore 未挂载'); process.exit(1); }
 
 var DB = FC.DB;
-console.log('公式条目数：' + DB.length + '（原站主表 28 + 近代物理扩展 3）');
+console.log('公式条目数：' + DB.length + '（主表 28 + 近代物理扩展 3）');
 ok('条目数为 31', DB.length === 31, '实际 ' + DB.length);
 
-/* 原站主表权威清单：id → 名称，逐条核对 */
+/* 主表权威清单：id → 名称，逐条核对 */
 var ORIGINAL = {
   'average-speed': '平均速率', 'average-velocity': '平均速度',
   'acceleration-definition': '加速度定义', 'uniform-average': '匀变速运动平均速度',
@@ -247,7 +247,7 @@ console.log('\n--- 抽样数值核对 ---');
   near('光子对应波长 nm', R[1], 299792458 / 5e14 * 1e9, 0.5);
 })();
 
-/* ---------- 分类覆盖 + 与原站清单逐条对齐 ---------- */
+/* ---------- 分类覆盖 + 与权威清单逐条对齐 ---------- */
 console.log('\n--- 分类分布 ---');
 FC.CATS.forEach(function (c) {
   console.log('  ' + c + '：' + (catCount[c] || 0) + ' 条');
@@ -255,14 +255,14 @@ FC.CATS.forEach(function (c) {
 ok('分类都有条目', FC.CATS.every(function (c) { return (catCount[c] || 0) > 0; }),
   JSON.stringify(catCount));
 
-console.log('\n--- 与原站主表 30 条逐条对齐 ---');
+console.log('\n--- 与主表 30 条逐条对齐 ---');
 Object.keys(ORIGINAL).forEach(function (id) {
   var e = byId(id);
-  ok('原站条目存在: ' + id, !!e);
-  if (e) ok('原站条目名称匹配: ' + id, e.name === ORIGINAL[id] || e.name.indexOf(ORIGINAL[id]) === 0,
+  ok('条目存在: ' + id, !!e);
+  if (e) ok('条目名称匹配: ' + id, e.name === ORIGINAL[id] || e.name.indexOf(ORIGINAL[id]) === 0,
     'got=' + e.name + ' want=' + ORIGINAL[id]);
 });
-  /* 反向：库内条目必须是「原站主表 30 条」或「近代物理扩展 3 条」之一 */
+  /* 反向：库内条目必须是「主表 30 条」或「近代物理扩展 3 条」之一 */
   var EXTRA = { 'photon-energy': 1, 'photoelectric-cutoff': 1, 'mass-defect': 1 };
   DB.forEach(function (e) {
     ok('库内条目来源可追溯: ' + e.id, !!(ORIGINAL[e.id] || EXTRA[e.id]), '既非主表也非扩展分组');

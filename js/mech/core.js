@@ -1,10 +1,10 @@
 /* ============================================================
    力学实验室 · 物理内核
    ------------------------------------------------------------
-   还原自原站 MechanicsLabView（反混淆后 23302 行）的 si-translation-v1 模型。
-   关键实现点与原站逐条对齐：
+   简普力学实验室 si-translation-v1 运动学模型。
+   关键实现点：
 
-   1. 斜面受力（原站内部函数 S(entity, surface, Fext, vAlong)）：
+   1. 斜面受力 S(entity, surface, Fext, vAlong)：
         n  = 单位法向，t = 单位切向
         N  = max(0, −Fext·n)                       支持力，压不住就离面
         F∥ = Fext·t                                 沿面主动分量
@@ -27,8 +27,8 @@
 (function (root) {
   'use strict';
 
-  var DT = 1 / 240;            // 原站固定步长
-  var STATIC_EPS = 1e-6;       // 原站 yr = 0.000001
+  var DT = 1 / 240;            // 固定物理步长
+  var STATIC_EPS = 1e-6;       // 静止判定阈值
   var V_EPS = 1e-8;            // 判定“静止”的速度阈值
 
   /* ---------- 小工具 ---------- */
@@ -49,7 +49,7 @@
   function normal(theta) { return { x: -Math.sin(theta), y: Math.cos(theta) }; }
 
   /* ============================================================
-     1. 斜面受力（原站 S 函数逐行还原）
+     1. 斜面受力 S 函数
      ============================================================ */
   function surfaceForces(body, surface, Fext, vAlong) {
     var th = rad(surface.angle || 0);
@@ -70,7 +70,7 @@
     };
   }
 
-  /* 外接圆半径：木块用对角线一半（与原站一致的保守处理，保证任何倾角都不穿面） */
+  /* 外接圆半径：木块用对角线一半（保守处理，保证任何倾角都不穿面） */
   function bodyRadius(e) {
     if (e.type === 'ball') return e.radius || 0.2;
     return Math.hypot(e.width || 0.6, e.height || 0.4) / 2;
@@ -105,7 +105,7 @@
 
   /* 判断球/块落在哪个支撑面上；返回 {surface, s, n, t}
      吸附式判定：|垂距 − r| < SNAP 即视为贴面，并给出 snap 修正量。
-     原站用 0.00001 的紧容差配合“不动点修正”，这里放宽到 SNAP 以吸收
+     紧容差 0.00001 配合“不动点修正”，这里放宽到 SNAP 以吸收
      半步法累积误差，效果等价但更稳。 */
   var SNAP = 0.06;
   function findContact(body, surfaces) {

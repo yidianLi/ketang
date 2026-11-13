@@ -23,8 +23,7 @@
     ['knowledge.html', '知识专题'],
     ['quiz.html', '随堂自测'],
     ['ai-cases.html', '案例库'],
-    ['classroom.html', '课堂工具'],
-    ['system-design.html', '设计说明']
+    ['classroom.html', '课堂工具']
   ];
 
   var FOOT_LINKS = [
@@ -34,9 +33,7 @@
     ['knowledge.html', '知识专题'],
     ['quiz.html', '随堂自测'],
     ['ai-cases.html', '案例库'],
-    ['classroom.html', '课堂工具'],
-    ['borrowable-cases.html', '调研清单'],
-    ['system-design.html', '设计说明']
+    ['classroom.html', '课堂工具']
   ];
 
   function here() {
@@ -92,9 +89,9 @@
       var aria = l[0] === cur ? ' aria-current="page"' : '';
       return '<a href="' + l[0] + '"' + on + aria + '>' + l[1] + '</a>';
     }).join('');
-    return '<a class="sb-brand" href="index.html" aria-label="帧理 SVG 实验室 · 返回首页">' +
+    return '<a class="sb-brand" href="index.html" aria-label="简普实验室 · 返回首页">' +
              '<span class="sb-logo" aria-hidden="true">帧</span>' +
-             '<span class="sb-name">帧理 SVG 实验室<em>SVG SCIENCE LAB</em></span>' +
+             '<span class="sb-name">简普实验室<em>JIANPU LAB</em></span>' +
            '</a>' +
            '<nav aria-label="站点导航">' + items + '</nav>' +
            '<div class="sb-tools"></div>';
@@ -107,7 +104,7 @@
     return '<div class="sf-in">' +
              '<div class="sf-links">' + links + '</div>' +
              '<div class="sf-meta">' +
-               '<b>帧理 SVG 实验室</b> v1.2 · 零第三方依赖 · 无需联网<br>' +
+               '<b>简普实验室</b> v1.2 · 零第三方依赖 · 无需联网<br>' +
                '双击 index.html 即可离线运行 · 内核自检 1849 条断言' +
              '</div>' +
            '</div>';

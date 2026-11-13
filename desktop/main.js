@@ -17,7 +17,7 @@ function createWindow() {
     height: 900,
     minWidth: 900,
     autoHideMenuBar: true,
-    title: '帧理 SVG · 复现版',
+    title: '简普实验室',
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false

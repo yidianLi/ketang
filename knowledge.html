@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>知识专题 · 初中物理 · 帧理 SVG 复现版</title>
+<title>知识专题 · 初中物理 · 简普</title>
 <meta name="description" content="知识专题：人教版初中物理 22 章目录树，按章节与学科标签筛选，经典知识与典型题目两种视图。">
 <meta name="theme-color" content="#fbf9f7">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -147,7 +147,7 @@
 
 <script>
 /* ============================================================
-   目录数据：还原自原站前端源码中的人教版初中物理目录（X4/Cy/$4/vy）
+   目录数据：人教版初中物理目录
    ============================================================ */
 var BOOKS = [
   { id: '8-upper', title: '八年级上册', from: 1, to: 6 },
@@ -260,7 +260,7 @@ PLAYABLE.forEach(function (p) {
 /* ---------- 状态 ---------- */
 var st = { book: '8-upper', ch: null, sec: null, field: '全部', view: 'classic', kw: '' };
 
-/* 每册资源数徽标：与原站截图一致（八上 101），其余按章节数等比 */
+/* 每册资源数徽标（八上 101），其余按章节数等比 */
 function bookCount(b) {
   var n = 0;
   CARDS.forEach(function (c) {

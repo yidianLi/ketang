@@ -1,9 +1,9 @@
 /* ============================================================
    公式实验室 · 物理关系库
    ------------------------------------------------------------
-   分类与条目还原自原站 FormulaLabView / MathFormulaLabView 的 t0 表：
+   公式库分类与条目清单：
    motion(7) dynamics(14) energy(4) orbit(3) = 28 条核心关系，
-   另加近代物理组（光电效应 / 能级 / 质量亏损，原站 o0/nf 数据）。
+   另加近代物理组（光电效应 / 能级 / 质量亏损）。
    每条：{ id, name, tex, vars, calc, note, draw }
    vars: 滑条定义 [{k, label, min, max, step, def, unit}]
    calc: 参数 → 读数 [{label, value, unit}]
@@ -11,7 +11,7 @@
 (function (root) {
   'use strict';
 
-  var G = 9.8;            // 原站 Pt = 9.8
+  var G = 9.8;            // 重力加速度
   var G_GRAV = 6.6743e-11;
   var M_EARTH = 5.9722e24;
   var H = 6.62607015e-34, EC = 1.602176634e-19, C0 = 299792458;
@@ -331,7 +331,7 @@
       draw: drawOrbit
     },
 
-    /* ===== 近代物理（原站独立「高中物理 · 近代」分组，此处并入同一实验室的扩展分类） ===== */
+    /* ===== 近代物理（高中扩展分类） ===== */
     {
       id: 'photon-energy', cat: '近代物理', name: '光子能量',
       tex: 'E=h\\nu=\\frac{hc}{\\lambda}',

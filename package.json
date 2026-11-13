@@ -1,8 +1,8 @@
 {
-  "name": "svgzhenli-clone",
-  "version": "1.4.2",
+  "name": "jianpu",
+  "version": "1.5.0",
   "private": true,
-  "description": "帧理 SVG 复现版：零依赖纯前端教学可视化工具集（6 实验室 + 5 个学科分级目录 + 资源库 + 知识专题 + 案例库）",
+  "description": "简普：零依赖纯前端教学可视化工具集（6 实验室 + 5 个学科分级目录 + 资源库 + 知识专题 + 案例库）",
   "scripts": {
     "test": "node scripts/test-all.js",
     "serve": "node scripts/serve.js",

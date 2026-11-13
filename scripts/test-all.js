@@ -85,7 +85,7 @@ SUITES.forEach((suite, i) => {
   }
 });
 
-console.log('\n=== svgzhenli-clone 回归自检 ===');
+console.log('\n=== 简普 回归自检 ===');
 console.log('序号   套件             说明       结果   通过/失败   耗时      摘要');
 console.log('-'.repeat(96));
 rows.forEach(r => {

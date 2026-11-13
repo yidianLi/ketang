@@ -2,7 +2,7 @@
   "name": "zhenli-desktop",
   "version": "1.1.0",
   "private": true,
-  "description": "帧理 SVG 复现版 · Electron 桌面壳（可选）",
+  "description": "简普 · Electron 桌面壳（可选）",
   "main": "main.js",
   "scripts": {
     "start": "electron ."

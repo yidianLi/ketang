@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>资源库 · 帧理 SVG 复现版</title>
+<title>资源库 · 简普</title>
 <meta name="description" content="资源库：按物理 / 化学 / 生物 / 数学 / 地理 / 工具 六类浏览全部资源，可交互项带免费试玩标签。">
 <meta name="theme-color" content="#fbf9f7">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -127,7 +127,7 @@
 </div>
 
 <script>
-/* ---------- 数据：6 个可玩的实验室置顶，其余为复刻版不包含的占位资源 ---------- */
+/* ---------- 数据：6 个可玩的实验室置顶，其余为即将上线的占位资源 ---------- */
 var CATS = ['物理', '化学', '生物', '数学', '地理', '工具'];
 
 var TOOLS = [
@@ -195,7 +195,7 @@ function renderBorrowed() {
 }
 
 /* ---------- 渲染 ---------- */
-var active = '工具';   /* 默认落在「工具」页，与原站截图一致 */
+var active = '工具';   /* 默认落在「工具」页 */
 var kw = '';
 
 function renderCats() {
@@ -225,7 +225,7 @@ function render() {
     var a = document.createElement(x.play ? 'a' : 'div');
     a.className = 'tool' + (x.play ? '' : ' locked');
     if (x.play) a.href = x.play;
-    else a.onclick = function () { alert('复刻版未实现该工具：' + x.t + '\n\n同学科内容已映射到可交互实验室与案例库（带绿色「免费试玩」标签的卡片）。'); };
+    else a.onclick = function () { alert('该工具即将上线：' + x.t + '\n\n同学科内容已映射到可交互实验室与案例库（带绿色「免费试玩」标签的卡片）。'); };
     a.innerHTML =
       '<div class="thumb" style="background:' + x.bg + '">' + x.ic +
       (x.play ? '<span class="ftag">免费试玩</span>' : '') + '</div>' +
@@ -234,7 +234,7 @@ function render() {
   });
 }
 
-document.getElementById('total').textContent = 1548;   /* 原站当前全科总量徽标 */
+document.getElementById('total').textContent = 1548;   /* 全科资源总量徽标 */
 document.getElementById('go').onclick = function () { kw = document.getElementById('q').value.trim(); render(); };
 document.getElementById('q').addEventListener('keydown', function (e) {
   if (e.key === 'Enter') { kw = this.value.trim(); render(); }

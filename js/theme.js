@@ -12,7 +12,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'svgzhenli.theme';
+  var KEY = 'jianpu.theme';
   var MODES = ['auto', 'light', 'dark'];
   var LABEL = { auto: '自动', light: '浅色', dark: '深色' };
   var ICON = { auto: '\u25D0', light: '\u2600', dark: '\u263E' };

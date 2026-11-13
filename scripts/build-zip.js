@@ -59,9 +59,8 @@ function u32(v) { return [v & 0xFF, (v >>> 8) & 0xFF, (v >>> 16) & 0xFF, (v >>> 
 
 /* ---------- 收集文件（allowlist） ---------- */
 const INCLUDE_ROOT = ['index.html', 'classroom.html', 'resource.html', 'knowledge.html',
-  'subjects.html', 'ai-cases.html', 'terrain.html', 'circuit.html', 'mechanics.html', 'molecule.html',
-  'formula.html', 'optics.html', 'system-design.html', 'borrowable-cases.html',
-  'github-similar-report.html', '404.html', 'favicon.svg'];
+  'subjects.html', 'quiz.html', 'ai-cases.html', 'terrain.html', 'circuit.html', 'mechanics.html', 'molecule.html',
+  'formula.html', 'optics.html', '404.html', 'favicon.svg'];
 const SKIP_DIR = /(^|[\\/])(\.git|node_modules|dist|desktop|scripts|\.workbuddy)([\\/]|$)/i;
 const KEEP_AI = /(LICENSE|asset-cache|vendor|webfonts)/i;
 const SKIP_FILE = /(^|[\\/])(SHM\.png|zcat-urls\.json)$/i;
@@ -103,7 +102,7 @@ function collectFiles() {
 /* ---------- 生成附带的说明文件 ---------- */
 function usageText() {
   return [
-    '帧理 SVG 复现版 · 离线包 v' + VERSION,
+    '简普 · 离线包 v' + VERSION,
     '================================================',
     '',
     '【怎么用】',
@@ -116,7 +115,6 @@ function usageText() {
     '- 课堂工具箱 classroom.html：12 件课堂实操工具',
     '- 资源库 resource.html（1548 资源）· 知识专题 knowledge.html',
     '- 案例库 ai-cases.html：66 个开源交互案例（依赖已本地化）',
-    '- 系统设计说明书 system-design.html',
     '',
     '【三条命令（可选，需要 Node.js >= 18）】',
     '- npm test        回归自检（7 套 / 1800+ 断言）',
