@@ -201,7 +201,9 @@ var PLAYABLE = [
   { ch: 18, t: '电功率 · 焦耳定律',     d: 'P=UI、Q=I²Rt 参数联动', ic: '💡', bg: 'linear-gradient(135deg,#e6e1d1,#dad2b3)', href: 'formula.html' }
 ];
 
-/* ---------- 生成资源卡：每节 1-2 张知识卡 + 部分题目卡 ---------- */
+/* ---------- 生成资源卡：每节 1 张知识卡 + 每章第 1 节 1 张题目卡 ----------
+   注：曾给奇数节额外生成「典例与易错点辨析」卡，但弹层内容与精讲卡
+   完全相同，属于打开没用的重复卡，已删除。 */
 var CARDS = [];
 var KOBJ = { 力学: '🧱', 电学: '⚡', 光学: '🔍', 热学: '🔥', 声学: '🔔' };
 /* emoji → 本地 SVG 图标（bioicons CC0 + tabler MIT，见 THIRD_PARTY_NOTICES） */
@@ -236,13 +238,6 @@ CHAPTERS.forEach(function (ch) {
       t: sec + '（考点知识图精讲版）', d: '点击查看详情',
       ic: KOBJ[ch.f], bg: KBG[ch.f]
     });
-    if (si % 2 === 0) {
-      CARDS.push({
-        ch: ch.n, f: ch.f, sec: sec, kind: 'classic',
-        t: sec + ' · 典例与易错点辨析', d: '点击查看详情',
-        ic: KOBJ[ch.f], bg: KBG[ch.f]
-      });
-    }
     if (si === 0) {
       CARDS.push({
         ch: ch.n, f: ch.f, sec: sec, kind: 'exercise',
