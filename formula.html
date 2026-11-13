@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>公式实验室 · 帧理 SVG 复现版</title>
+<meta name="description" content="数理公式实验室：自研迷你 TeX 引擎排版公式，31 条物理关系参数联动，改滑条即时联动读数与示意图。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<script src="js/canvas-theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+<script>window.addEventListener('error', function (e) {
+  var h = document.getElementById('hint');
+  if (h) { h.textContent = '脚本错误：' + e.message + ' @' + (e.lineno || '?'); h.className = 'hint bad'; }
+});</script>
+  <script src="js/shell.js"></script>
+</head>
+<body class="lab">
+<a class="skip" href="#main">跳到主要内容</a>
+
+<header class="topbar" role="banner" data-lab="公式实验室" data-en="Formula Lab" data-glyph="式" data-tone="formula">
+  <div class="tools">
+    <span class="hint" style="margin-right:6px">31 条核心关系 · 迷你 TeX 排版</span>
+  </div>
+</header>
+
+<main id="main" class="app">
+  <aside class="panel" aria-label="参数与控制面板">
+    <section class="block">
+      <h3>分类</h3>
+      <div class="cat-row" id="cats"></div>
+    </section>
+    <section class="block">
+      <h3>公式</h3>
+      <ul class="comp-list" id="fList" style="max-height:300px"></ul>
+    </section>
+    <section class="block" id="varsBlock">
+      <h3>变量</h3>
+      <div id="varsBox"></div>
+    </section>
+    <section class="block">
+      <h3>说明</h3>
+      <p class="tip" id="note"></p>
+    </section>
+  </aside>
+
+  <section class="stage">
+    <div class="stage-head">
+      <div id="formulaBox" style="display:flex;align-items:center"></div>
+      <span class="spacer"></span>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="stage" aria-label="公式排版与示意图画布"></canvas>
+    </div>
+    <div class="reads-bar" id="readsBox"></div>
+  </section>
+</main>
+
+<script src="js/formula/tex.js"></script>
+<script src="js/formula/data.js"></script>
+<script src="js/formula/app.js"></script>
+</body>
+</html>

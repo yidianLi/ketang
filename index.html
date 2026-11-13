@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>帧理 SVG 实验室 · 零依赖教学可视化</title>
+<meta name="description" content="地形 / 电路 / 力学 / 分子 / 公式 / 光学 六间可交互实验室，配资源库、知识专题、69 道互动题与 12 件课堂工具。纯前端实现，零第三方依赖，双击即可离线上课。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<div id="site-nav"></div>
+<script src="js/site-nav.js"></script>
+
+<div class="home" id="main" role="main">
+
+  <section class="hero">
+    <span class="hero-badge">按原站反混淆代码还原的复现版 · 零依赖 · 离线可用</span>
+    <h1>把抽象的知识<br>变成能动手的实验</h1>
+    <p class="hero-sub">
+      六间可交互实验室、初中物理全章节目录、69 道可动手的互动题，外加 12 件课堂工具。
+      全部纯前端实现，不登录、不联网，双击 index.html 就能上课。
+    </p>
+    <div class="hero-cta">
+      <a class="cta cta-primary" href="resource.html">浏览资源库</a>
+      <a class="cta cta-ghost" href="classroom.html">打开课堂工具</a>
+    </div>
+    <ul class="hero-stats">
+      <li><b>6</b><span>可交互实验室</span></li>
+      <li><b>1548</b><span>条学科资源</span></li>
+      <li><b>69</b><span>互动题目</span></li>
+      <li><b>1849</b><span>条自检断言</span></li>
+    </ul>
+  </section>
+
+  <!-- ============ 资源与知识 ============ -->
+  <section class="group">
+    <h2 class="group-title">资源与知识</h2>
+    <div class="grid">
+      <a class="card" href="subjects.html">
+        <div class="k">Subjects</div>
+        <h2>学科分级目录</h2>
+        <p>数学 / 物理 / 化学 / 生物 / 地理五科同一套结构：先选科目，再选年级
+           （初一～初三、高一～高三，跨学段的收进专题），左边列题、右边直接内嵌演示。</p>
+        <span class="st done">5 个学科 · 91 道题</span>
+      </a>
+
+      <a class="card" href="resource.html">
+        <div class="k">Library</div>
+        <h2>资源库</h2>
+        <p>按学科浏览全部工具：物理 / 化学 / 生物 / 数学 / 地理 / 工具。
+           可交互的实验室与课堂工具都带「免费试玩」标签，点开即用。</p>
+        <span class="st done">1548 个资源</span>
+      </a>
+
+      <a class="card" href="knowledge.html">
+        <div class="k">Knowledge</div>
+        <h2>知识专题</h2>
+        <p>人教版初中物理 22 章目录树（数据还原自原站前端源码），按章 / 节筛选，
+           力学 / 电学 / 光学 / 热学 / 声学标签，经典知识与典型题目两种视图。</p>
+        <span class="st done">169 个资源</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ 互动实验室 ============ -->
+  <section class="group">
+    <h2 class="group-title">互动实验室</h2>
+    <div class="grid">
+      <a class="card" href="terrain.html">
+        <div class="k">Geography</div>
+        <h2>地形实验室</h2>
+        <p>参数化地形建模：10 类地形元件的解析高程场，soft-max 合成，marching squares 等高线，
+           241 点剖面采样，同一份数据同时出彩色讲解图、试卷黑白图与 3D 立体图。</p>
+        <span class="st done">已完成</span>
+      </a>
+
+      <a class="card" href="circuit.html">
+        <div class="k">Physics</div>
+        <h2>电路实验室</h2>
+        <p>改进节点法（MNA）电路求解器：电导矩阵装配、高斯消元、二极管 / LED 分段线性化 +
+           牛顿迭代 + 有效集，实时算各支路电流与节点电压，并在实物接线图上标出读数。</p>
+        <span class="st done">已完成</span>
+      </a>
+
+      <a class="card" href="mechanics.html">
+        <div class="k">Physics</div>
+        <h2>力学实验室</h2>
+        <p>受力分析、斜面与滑轮组，矢量箭头实时标注。固定步长 1/240 s 半步法积分，
+           静摩擦 / 滑动按 μs、μk 判据切换，可实时拖动改变倾角与摩擦系数。</p>
+        <span class="st done">已完成</span>
+      </a>
+
+      <a class="card" href="molecule.html">
+        <div class="k">Chemistry</div>
+        <h2>分子实验室</h2>
+        <p>球棍模型与空间填充两种模式，13 种分子 + 5 种晶体。键角按真实几何反解
+           （水 104.5°、甲烷 109.47°、氨 107°），支持拖拽旋转与点选查看键角。</p>
+        <span class="st done">已完成</span>
+      </a>
+
+      <a class="card" href="formula.html">
+        <div class="k">Math</div>
+        <h2>数理公式实验室</h2>
+        <p>自研迷你 TeX 引擎（递归下降 → AST → 排版树 → Canvas），支持分式、根式、上下标、
+           向量、希腊字母与 aligned 多行对齐；内置 31 条物理关系，改滑条即时联动公式、读数与示意图。</p>
+        <span class="st done">已完成</span>
+      </a>
+
+      <a class="card" href="optics.html">
+        <div class="k">Physics</div>
+        <h2>光学实验室</h2>
+        <p>薄透镜成像：两条特殊光线求像，实时显示像距、放大率与像的性质（实像 / 虚像 / 平行光）。
+           可拖动蜡烛改物距、记录实验数据，并支持物距扫描动画演示成像规律。</p>
+        <span class="st done">已完成</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ 课堂工具 ============ -->
+  <section class="group">
+    <h2 class="group-title">课堂工具</h2>
+    <div class="grid">
+      <a class="card" href="classroom.html">
+        <div class="k">Classroom</div>
+        <h2>课堂工具箱</h2>
+        <p>12 件课堂实操工具：随机点名、分组抢答、背诵 PK、闪记 PK、宣言滚动屏、番茄钟、
+           细胞解剖、方程式配平、遗传概率、气候判读、单词速记、随堂小测。</p>
+        <span class="st done">12 件全实现</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ 开源案例 ============ -->
+  <section class="group">
+    <h2 class="group-title">开源案例</h2>
+    <div class="grid">
+      <a class="card" href="ai-cases.html">
+        <div class="k">Collection</div>
+        <h2>案例库</h2>
+        <p>69 道能直接动手做的题：每张卡片就是题干 + 真实首屏截图，点开即可拖参数验证。
+           5 个开源来源＋抛物线三专题本站原创，依赖已本地化，离线可开。数学 42 道已按年级收进
+           <a href="subjects.html" style="color:#e8879b;font-weight:700">「学科分级目录」</a>，
+           物理、化学、生物、地理同表。</p>
+        <span class="st done">69 题已收入</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="docs">
+    <b>工程文档：</b>
+    <a href="system-design.html">系统设计说明书</a> ·
+    <a href="borrowable-cases.html">参考案例清单</a> ·
+    回归自检 <code>npm test</code> ·
+    本地服务 <code>npm run serve</code>
+  </div>
+</div>
+</body>
+</html>

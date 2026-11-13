@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>资源库 · 帧理 SVG 复现版</title>
+<meta name="description" content="资源库：按物理 / 化学 / 生物 / 数学 / 地理 / 工具 六类浏览全部资源，可交互项带免费试玩标签。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+<style>
+  .lib { display: flex; min-height: 100vh; background: var(--paper-2); }
+  .side { width: 88px; background: var(--panel); color: var(--muted); border-right: 1px solid var(--line); display: flex; flex-direction: column;
+          align-items: stretch; padding: 14px 0; gap: 2px; position: sticky; top: 0; height: 100vh; }
+  .side .brand { color: var(--ink); font-weight: 700; font-size: 14px; text-align: center; padding: 10px 0 16px;
+                 display: flex; flex-direction: column; gap: 4px; align-items: center; }
+  .side .brand .logo { width: 34px; height: 34px; border-radius: 12px; background: var(--accent); color: #fff;
+                       display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .side a, .side .sitem { display: flex; flex-direction: column; align-items: center; gap: 3px;
+                          color: var(--side-muted); text-decoration: none; font-size: 12px; padding: 10px 4px; margin: 0 8px;
+                          border-radius: 10px; cursor: pointer; }
+  .side a:hover, .side .sitem:hover { background: var(--hover-2); color: var(--accent); }
+  .side .ic { font-size: 17px; }
+  .side .badge { position: absolute; }
+  .main { flex: 1; padding: 22px 34px 60px; max-width: 1160px; }
+  .seg { display: inline-flex; background: var(--line-3); border-radius: 999px; padding: 3px; margin-bottom: 22px; }
+  .seg a { padding: 6px 18px; border-radius: 999px; font-size: 13px; color: var(--ink-2); text-decoration: none; }
+  .seg a.on { background: var(--accent); color: #fff; }
+  .cats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 18px; }
+  .cat { background: var(--panel); border-radius: 16px; text-align: center; padding: 26px 0; font-size: 17px;
+         letter-spacing: 6px; color: var(--ink); text-decoration: none; box-shadow: var(--shadow-sm);
+         border: 2px solid transparent; transition: transform .12s, border-color .12s; position: relative; overflow: hidden; }
+  .cat:hover { transform: translateY(-2px); border-color: var(--line-2); }
+  .cat.active { background: var(--hover-2); color: var(--accent); font-weight: 600; border-color: var(--accent); box-shadow: var(--shadow-sm); }
+  .cat.active::after { content: 'TOOLS'; position: absolute; right: -6px; bottom: -10px; font-size: 34px;
+                       font-weight: 800; color: rgba(232,135,155,.14); letter-spacing: 2px; }
+  .total { text-align: center; color: var(--muted); font-size: 13px; margin: 4px 0 12px; }
+  .total b { color: var(--accent); }
+  .searchrow { display: flex; justify-content: center; margin-bottom: 8px; }
+  .search { display: flex; width: 560px; max-width: 100%; background: var(--panel); border-radius: 12px;
+            box-shadow: var(--shadow-sm); overflow: hidden; }
+  .search select { border: none; background: var(--paper-3); padding: 0 12px; color: var(--ink-2); font-size: 13px; outline: none; }
+  .search input { flex: 1; border: none; outline: none; padding: 11px 14px; font-size: 13px; background: transparent; }
+  .search button { border: none; background: var(--accent); color: #fff; padding: 0 26px; font-size: 14px; cursor: pointer; }
+  .subhint { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 16px; }
+  .filterrow { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 13px; color: var(--ink-2); }
+  .filterrow .pill { background: var(--panel); border-radius: 999px; padding: 5px 16px; box-shadow: var(--shadow-sm); }
+  .filterrow .pill.dark { background: var(--accent); color: #fff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+  .tool { background: var(--panel); border-radius: 14px; overflow: hidden; text-decoration: none; color: inherit;
+          box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .12s; position: relative;
+          display: block; }
+  .tool:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .tool .thumb { height: 122px; display: flex; align-items: center; justify-content: center;
+                 font-size: 40px; position: relative; }
+  .tool .thumb .ftag { position: absolute; top: 9px; left: 9px; background: rgba(255,255,255,.92); color: #2f7a54; font-size: 10.5px;
+                       padding: 2px 9px; border-radius: 999px; font-weight: 600; box-shadow: 0 1px 3px rgba(90,60,70,.12); }
+  .tool .cap { padding: 10px 12px 12px; }
+  .tool .cap .t { font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap;
+                  overflow: hidden; text-overflow: ellipsis; }
+  .tool .cap .d { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .tool.locked .thumb::after { content: ''; position: absolute; inset: 0; background: var(--overlay); }
+  .empty { text-align: center; color: var(--muted); padding: 60px 0; font-size: 14px; }
+  /* AI 生成参考案例分区（AIEdTools, MIT，需联网） */
+  .borrowed-sec { margin-top: 38px; border-top: 1px dashed var(--line-2); padding-top: 18px; }
+  .borrowed-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .bh-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+  .bh-note { font-size: 12px; color: var(--muted); }
+  .tool .thumb .atag { position: absolute; top: 9px; left: 9px; background: rgba(255,255,255,.92); color: #9a6520;
+                       font-size: 11px; padding: 2px 8px; border-radius: 6px; }
+  html[data-theme="dark"] .tool .thumb { filter: brightness(.72) saturate(.85); }
+  html[data-theme="dark"] .tool .thumb .ftag { background: rgba(255,255,255,.82); }
+
+  @media (max-width: 900px){
+    .main { padding: 18px 16px 48px; min-width: 0; }
+    .lib { min-width: 0; }
+    .search { width: auto; max-width: 100%; }
+    .search input { min-width: 0; }
+    .cats { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .cat { padding: 18px 0; font-size: 15px; letter-spacing: 3px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+  }
+  @media (max-width: 560px){
+    .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tool .thumb { height: 96px; font-size: 32px; }
+    .tool .cap .t { font-size: 13px; }
+    .search button { padding: 0 16px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<div id="site-nav"></div>
+<script src="js/site-nav.js"></script>
+<div class="lib">
+  <main id="main" class="main">
+    <div class="seg"><a class="on" href="resource.html">初中版</a><a href="resource.html">高中版</a></div>
+
+    <nav class="cats" id="cats"></nav>
+
+    <div class="total">当前全科总资源量 <b id="total">0</b> 个</div>
+
+    <div class="searchrow">
+      <div class="search">
+        <select><option>资源库搜索</option></select>
+        <input id="q" placeholder="输入工具名称或关键词…">
+        <button id="go">搜索</button>
+      </div>
+    </div>
+    <div class="subhint">可搜索：普查资源、拖拽和话题标签…</div>
+
+    <div class="filterrow">已选用 <span class="pill dark">全部</span></div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none">没有匹配的资源，换个关键词试试</div>
+
+    <section class="borrowed-sec">
+      <div class="borrowed-head">
+        <span class="bh-title">🤖 AI 生成参考案例</span>
+        <span class="bh-note">5 个 GitHub 来源 + 3 道本站原创 · AIEdTools(MIT) / physics-sim / PhysiXLab(MIT) / electro-lab / mathlearn(MIT) · 依赖已本地化，离线可跑 · <a href="ai-cases.html" style="color:#e8879b;font-weight:700">查看全部 69 道题 →</a></span>
+      </div>
+      <div class="grid" id="bgrid"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+/* ---------- 数据：6 个可玩的实验室置顶，其余为复刻版不包含的占位资源 ---------- */
+var CATS = ['物理', '化学', '生物', '数学', '地理', '工具'];
+
+var TOOLS = [
+  /* 学科分级目录：五科各一个入口，先选年级再挑题 */
+  { t: '学科目录 · 数学', d: '初一～高三 · 42 题（18 章节 + 24 拓展）', c: '数学', ic: '🔢', bg: 'linear-gradient(135deg,#d5e2f5,#b4c9e8)', play: 'ai-cases/mathlearn/index.html' },
+  { t: '学科目录 · 物理', d: '初二～高三 · 31 个仿真演示', c: '物理', ic: '🧲', bg: 'linear-gradient(135deg,#d5e6f0,#b4cde0)', play: 'ai-cases/physicslearn/index.html' },
+  { t: '学科目录 · 化学', d: '初三～高二 · 11 个分子与晶体', c: '化学', ic: '⚗️', bg: 'linear-gradient(135deg,#e5d2e7,#d5b4da)', play: 'ai-cases/chemistrylearn/index.html' },
+  { t: '学科目录 · 生物', d: '初一～初二 · 细胞与遗传', c: '生物', ic: '🔬', bg: 'linear-gradient(135deg,#d7e8d5,#b9dab4)', play: 'ai-cases/biologylearn/index.html' },
+  { t: '学科目录 · 地理', d: '初一 · 等高线与气候判读', c: '地理', ic: '🗺️', bg: 'linear-gradient(135deg,#e0e8d5,#c9dab4)', play: 'ai-cases/geographylearn/index.html' },
+
+  /* 免费试玩：已实现 */
+  { t: '地形实验室', d: '等高线 · 剖面 · 3D 立体图', c: '地理', ic: '🏔️', bg: 'linear-gradient(135deg,#dee8d5,#c1dab4)', play: 'terrain.html' },
+  { t: '电路实验室', d: 'MNA 求解器 · 实时电流读数', c: '物理', ic: '🔌', bg: 'linear-gradient(135deg,#d5dfe8,#b4c7da)', play: 'circuit.html' },
+  { t: '力学实验室', d: '受力分析 · 斜面 · 摩擦判据', c: '物理', ic: '🧱', bg: 'linear-gradient(135deg,#e8ded5,#dac7b4)', play: 'mechanics.html' },
+  { t: '分子实验室', d: '球棍/空间填充 · 键角演示', c: '化学', ic: '⚗️', bg: 'linear-gradient(135deg,#e5d2e7,#d5b4da)', play: 'molecule.html' },
+  { t: '公式排版', d: '迷你 TeX · Canvas 渲染', c: '数学', ic: '📐', bg: 'linear-gradient(135deg,#d5e7e8,#b4d6da)', play: 'formula.html' },
+  { t: '数理公式实验室', d: '31 条物理关系 · 参数联动', c: '物理', ic: '🧮', bg: 'linear-gradient(135deg,#e8d5d9,#dab4bd)', play: 'formula.html' },
+  { t: '光学实验室', d: '薄透镜成像 · 光线求像', c: '物理', ic: '🪞', bg: 'linear-gradient(135deg,#deede8,#b7dab4)', play: 'optics.html' },
+
+  /* 课堂工具箱：12 件工具全部已实现（classroom.html 单页 + 深链） */
+  { t: '课堂随机点名', d: '一轮不重复 · 名单可编辑', c: '工具', ic: '🎲', bg: 'linear-gradient(135deg,#d1d8e6,#b4beda)', play: 'classroom.html#rollcall' },
+  { t: '分组挑战·知识抢答', d: '键盘抢答 · 计分计时', c: '工具', ic: '🏆', bg: 'linear-gradient(135deg,#e6ded1,#daccb4)', play: 'classroom.html#quiz-buzzer' },
+  { t: '背诵小组 PK', d: '轮流背诵 · 裁判判分', c: '工具', ic: '📋', bg: 'linear-gradient(135deg,#d8e6d1,#c3dab4)', play: 'classroom.html#recite-pk' },
+  { t: '闪记 PK', d: '双人同屏抢答', c: '工具', ic: '⚡', bg: 'linear-gradient(135deg,#ded1e6,#ccb4da)', play: 'classroom.html#flashcard-pk' },
+  { t: '宣言滚动屏', d: '班级宣言投屏滚动', c: '工具', ic: '🌌', bg: 'linear-gradient(135deg,#d1d8e6,#b3c0db)', play: 'classroom.html#marquee' },
+  { t: '课程生活华小鱼', d: '番茄钟 · 任务打卡', c: '生物', ic: '🐟', bg: 'linear-gradient(135deg,#d1e6de,#b4ceda)', play: 'classroom.html#huaxiaoyu' },
+  { t: '二次函数图像实验室', d: '系数与图像动态联动', c: '数学', ic: '📈', bg: 'linear-gradient(135deg,#e6d1d8,#dab4c5)' , play: 'ai-cases/抛物线与焦点.html' },
+  { t: '光的折射演示', d: '入射角与折射角实时标注', c: '物理', ic: '🔦', bg: 'linear-gradient(135deg,#e6e5d1,#dad7b4)' , play: 'ai-cases/探究凸透镜成像.html' },
+  { t: '元素周期表速查', d: '点击元素看性质', c: '化学', ic: '🧪', bg: 'linear-gradient(135deg,#d1dee6,#b4cbda)' , play: 'molecule.html' },
+  { t: '细胞结构解剖图', d: '动植物细胞热区讲解', c: '生物', ic: '🔬', bg: 'linear-gradient(135deg,#dee6d1,#cedab4)', play: 'classroom.html#cell' },
+  { t: '等高线地形判读', d: '山脊山谷实时演练', c: '地理', ic: '🗺️', bg: 'linear-gradient(135deg,#e6ded1,#dacbb4)' , play: 'terrain.html' },
+  { t: '函数图像绘制器', d: '任意表达式即时作图', c: '数学', ic: '📉', bg: 'linear-gradient(135deg,#d8d1e6,#c5b4da)' , play: 'ai-cases/高斯函数.html' },
+  { t: '天体运动模拟', d: '开普勒轨道可视化', c: '物理', ic: '🪐', bg: 'linear-gradient(135deg,#d1d7e6,#b4bdda)' , play: 'ai-cases/圆锥曲线.html' },
+  { t: '化学方程式配平', d: '自动配平与检查', c: '化学', ic: '⚖️', bg: 'linear-gradient(135deg,#e6d1d1,#dab4b4)', play: 'classroom.html#balance' },
+  { t: '遗传概率演练', d: '庞纳特方格自动推演', c: '生物', ic: '🧬', bg: 'linear-gradient(135deg,#d1e6d8,#b4ceda)', play: 'classroom.html#genetics' },
+  { t: '气候类型判读', d: '气温降水图判读训练', c: '地理', ic: '🌦️', bg: 'linear-gradient(135deg,#d1dfe6,#b4cada)', play: 'classroom.html#climate' },
+  { t: '几何画板', d: '尺规作图与变换', c: '数学', ic: '📏', bg: 'linear-gradient(135deg,#e6dcd1,#dacdb4)' , play: 'ai-cases/证明几何题.html' },
+  { t: '单词速记卡', d: '艾宾浩斯复习节奏', c: '工具', ic: '🃏', bg: 'linear-gradient(135deg,#e6d8d1,#dac3b4)', play: 'classroom.html#words' },
+  { t: '随堂小测', d: '50 题题库 · 错题导出', c: '工具', ic: '✏️', bg: 'linear-gradient(135deg,#d1e6e6,#b4dada)', play: 'classroom.html#quiz' }
+];
+
+/* ---------- AI 生成参考案例（借自 AIEdTools，MIT） ---------- */
+var BORROWED = [
+  { t: '伽利略的理想实验', d: '惯性定律 · 多轨迹对比（力学）', ic: '🧪', bg: 'linear-gradient(135deg,#d5dfe8,#b4c7da)', play: 'ai-cases/伽利略的理想实验.html' },
+  { t: '平衡木与压敏电阻', d: '力矩平衡 · 动态分析（力学）', ic: '⚖️', bg: 'linear-gradient(135deg,#e8ded5,#dac7b4)', play: 'ai-cases/物理互动课堂-平衡木与压敏电阻动态分析.html' },
+  { t: '探究凸透镜成像', d: '透镜成像规律（光学）', ic: '🔍', bg: 'linear-gradient(135deg,#d5e7e8,#b4d6da)', play: 'ai-cases/探究凸透镜成像.html' },
+  { t: '四面体体积探究', d: '3D 几何 · Three.js（几何）', ic: '🔺', bg: 'linear-gradient(135deg,#e5d2e7,#d5b4da)', play: 'ai-cases/四面体数学题.html' },
+  { t: '圆柱的奥秘', d: '3D 几何 · Three.js（几何）', ic: '🛢️', bg: 'linear-gradient(135deg,#e6ded1,#daccb4)', play: 'ai-cases/趣味数学探索圆柱的奥秘.html' },
+  { t: '圆锥体积推导', d: '旋转体 · SVG 动画（几何）', ic: '🍦', bg: 'linear-gradient(135deg,#e8d5d9,#dab4bd)', play: 'ai-cases/圆锥体积推导与闯关联系.html' }
+];
+
+function renderBorrowed() {
+  var grid = document.getElementById('bgrid');
+  grid.innerHTML = '';
+  BORROWED.forEach(function (x) {
+    var a = document.createElement('a');
+    a.className = 'tool';
+    a.href = x.play;
+    a.innerHTML =
+      '<div class="thumb" style="background:' + x.bg + '">' + x.ic +
+      '<span class="atag">AI案例</span></div>' +
+      '<div class="cap"><div class="t">' + x.t + '</div><div class="d">' + x.d + '</div></div>';
+    grid.appendChild(a);
+  });
+}
+
+/* ---------- 渲染 ---------- */
+var active = '工具';   /* 默认落在「工具」页，与原站截图一致 */
+var kw = '';
+
+function renderCats() {
+  var el = document.getElementById('cats');
+  el.innerHTML = '';
+  CATS.forEach(function (c) {
+    var a = document.createElement('a');
+    a.className = 'cat' + (c === active ? ' active' : '');
+    a.textContent = c;
+    a.href = 'javascript:';
+    a.onclick = function () { active = c; render(); };
+    el.appendChild(a);
+  });
+}
+
+function render() {
+  renderCats();
+  var grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  var list = TOOLS.filter(function (x) {
+    return (!kw || x.t.indexOf(kw) >= 0 || x.d.indexOf(kw) >= 0) && (!kw || true);
+  });
+  /* 搜索时跨全部分类；未搜索时按当前分类 */
+  if (!kw) list = list.filter(function (x) { return x.c === active; });
+  document.getElementById('empty').style.display = list.length ? 'none' : '';
+  list.forEach(function (x) {
+    var a = document.createElement(x.play ? 'a' : 'div');
+    a.className = 'tool' + (x.play ? '' : ' locked');
+    if (x.play) a.href = x.play;
+    else a.onclick = function () { alert('复刻版未实现该工具：' + x.t + '\n\n同学科内容已映射到可交互实验室与案例库（带绿色「免费试玩」标签的卡片）。'); };
+    a.innerHTML =
+      '<div class="thumb" style="background:' + x.bg + '">' + x.ic +
+      (x.play ? '<span class="ftag">免费试玩</span>' : '') + '</div>' +
+      '<div class="cap"><div class="t">' + x.t + '</div><div class="d">' + x.d + '</div></div>';
+    grid.appendChild(a);
+  });
+}
+
+document.getElementById('total').textContent = 1548;   /* 原站当前全科总量徽标 */
+document.getElementById('go').onclick = function () { kw = document.getElementById('q').value.trim(); render(); };
+document.getElementById('q').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') { kw = this.value.trim(); render(); }
+});
+/* 支持 ?q=关键词 直达搜索（跨全部分类） */
+(function () {
+  var m = /[?&]q=([^&]*)/.exec(location.search);
+  if (m) {
+    kw = decodeURIComponent(m[1]);
+    document.getElementById('q').value = kw;
+  }
+})();
+render();
+renderBorrowed();
+</script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>分子 3D 实验室 · 真理想</title>
+<script src="vendor/3Dmol-min.js"></script>
+<script src="data.js"></script>
+<style>
+:root{ --blue:#5C8CEB; --blue-deep:#3E63C8; --blue-50:#EDF3FD; --blue-100:#DCE7FA;
+  --green-text:#157F44; --green-100:#D9F5E5; --orange-text:#B26A1B; --orange-100:#FBEAD3;
+  --ink:#33302B; --ink-2:#6C6165; --muted:#9A8F93; --bg:#F6F4F0; --panel:#FFFDF9; --line:#E7E1D6; }
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;margin:0;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:30px 20px 70px}
+.crumb{font-size:12.5px;color:var(--muted);letter-spacing:.04em;margin-bottom:8px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--ink-2);font-size:14px;margin:0 0 22px;max-width:760px}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:16px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+/* 左栏 */
+.side{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;max-height:640px;overflow-y:auto}
+.cat{font-size:11.5px;color:var(--muted);letter-spacing:.08em;margin:14px 0 7px}
+.cat:first-child{margin-top:0}
+.mbtn{display:block;width:100%;text-align:left;border:1px solid transparent;background:none;border-radius:9px;
+  padding:8px 12px;font-size:13.5px;cursor:pointer;color:var(--ink-2);transition:all .15s}
+.mbtn:hover{background:var(--blue-50)}
+.mbtn.on{background:var(--blue-deep);color:#fff;font-weight:600}
+.mbtn .f{float:right;font-size:11px;opacity:.65;font-family:ui-monospace,monospace}
+.search{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:13px;outline:none;background:#fff;color:var(--ink)}
+.search:focus{border-color:var(--blue)}
+/* 右栏 */
+.viewer{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.glc{width:100%;height:480px;position:relative;background:radial-gradient(ellipse at 50% 40%,#FDFCFA,#F1EDE6)}
+.glc canvas{width:100%!important;height:100%!important}
+.hud{position:absolute;top:12px;left:14px;font-size:12px;color:var(--muted);background:rgba(255,253,249,.9);
+  border-radius:8px;padding:6px 12px;pointer-events:none}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line);background:#FBF8F3}
+.tb{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--ink-2)}
+.tb.on{background:var(--blue-deep);border-color:var(--blue-deep);color:#fff;font-weight:600}
+.spinlab{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}
+.info{padding:16px 18px;border-top:1px solid var(--line)}
+.info h2{margin:0 0 6px;font-size:17px}
+.info .formula{font-size:13px;color:var(--blue-deep);font-weight:600;letter-spacing:.02em}
+.info .desc{font-size:13.5px;color:var(--ink-2);margin-top:7px;line-height:1.75}
+.tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:11px;background:var(--blue-50);color:var(--blue-deep);border-radius:6px;padding:2px 9px}
+.src{margin-top:22px;font-size:11px;color:var(--muted);line-height:1.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumb">学科学习 / 化学 · 分子 3D 实验室</div>
+  <h1>分子 3D 实验室</h1>
+  <p class="sub">29 个结构全部内嵌，<b>断网也能转</b>。球棍、空间填充、线框三种样式随手切——「甲烷是正四面体」这句话，转一圈比背十遍都牢。</p>
+
+  <div class="layout">
+    <div class="side">
+      <input class="search" id="q" placeholder="搜索分子名 / 化学式…">
+      <div id="list"></div>
+    </div>
+    <div class="viewer">
+      <div class="glc" id="glc"><div class="hud" id="hud">拖动旋转 · 滚轮缩放 · 右键平移</div></div>
+      <div class="toolbar">
+        <button class="tb on" data-style="stick">球棍</button>
+        <button class="tb" data-style="sphere">空间填充</button>
+        <button class="tb" data-style="line">线框</button>
+        <label class="spinlab"><input type="checkbox" id="spin" checked> 自动旋转</label>
+      </div>
+      <div class="info">
+        <h2 id="mname">—</h2>
+        <div class="formula" id="mformula"></div>
+        <div class="desc" id="mdesc"></div>
+        <div class="tags" id="mtags"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="src">
+    引擎：3Dmol.js（BSD-3 开源，本地内嵌）· 小分子 3D 构象由 RDKit ETKDG + MMFF94 力场优化生成 ·
+    DNA / 血红素 / 足球烯结构取自 3Dmol.js 测试数据（MIT）
+  </div>
+</div>
+<script src="../js/site-nav.js"></script>
+<script>
+var LIST = (window.MOL3D_LIST || []).filter(function (m) { return m.sdf || m.data; });
+var st = { cur: null, style: 'stick', spin: true, gl: null };
+
+/* ---------- 列表 ---------- */
+var CATS = [];
+LIST.forEach(function (m) { if (CATS.indexOf(m.cat) < 0) CATS.push(m.cat); });
+function renderList(kw) {
+  var el = document.getElementById('list');
+  el.innerHTML = '';
+  CATS.forEach(function (cat) {
+    var ms = LIST.filter(function (m) {
+      return m.cat === cat && (!kw || (m.name + m.f).toLowerCase().indexOf(kw.toLowerCase()) >= 0);
+    });
+    if (!ms.length) return;
+    var h = document.createElement('div');
+    h.className = 'cat'; h.textContent = cat + '（' + ms.length + '）';
+    el.appendChild(h);
+    ms.forEach(function (m) {
+      var b = document.createElement('button');
+      b.className = 'mbtn' + (st.cur === m ? ' on' : '');
+      b.innerHTML = m.name.replace(/ .*/, '') + '<span class="f">' + m.f + '</span>';
+      b.title = m.name;
+      b.onclick = function () { pick(m); };
+      el.appendChild(b);
+    });
+  });
+  if (!el.children.length) el.innerHTML = '<div class="cat">没有匹配的分子</div>';
+}
+document.getElementById('q').addEventListener('input', function () { renderList(this.value.trim()); });
+
+/* ---------- 渲染 3D ---------- */
+function pick(m) {
+  st.cur = m;
+  renderList(document.getElementById('q').value.trim());
+  document.getElementById('mname').textContent = m.name;
+  document.getElementById('mformula').textContent = m.f;
+  document.getElementById('mdesc').textContent = m.d;
+  var tags = document.getElementById('mtags');
+  tags.innerHTML = '';
+  [m.cat, '分子量 ' + molW(m)].forEach(function (t) {
+    var s = document.createElement('span'); s.className = 'tag'; s.textContent = t; tags.appendChild(s);
+  });
+  draw(m);
+}
+function draw(m) {
+  var box = document.getElementById('glc');
+  box.querySelectorAll('canvas').forEach(function (c) { c.remove(); });
+  var cfg = { backgroundColor: 'white', antialias: true };
+  try { st.gl = (window["3Dmol"] || window.$3Dmol).createViewer(box, cfg); } catch (e) { console.error(e); return; }
+  if (m.sdf) st.gl.addModel(m.sdf, 'sdf');
+  else st.gl.addModel(m.data, m.fmt);
+  applyStyle();
+  if (st.spin) st.gl.spin('y');
+  st.gl.zoomTo();
+  st.gl.render();
+}
+function applyStyle() {
+  if (!st.gl) return;
+  var style = {};
+  if (st.style === 'stick') style.stick = { radius: 0.18 };
+  else if (st.style === 'sphere') style.sphere = { scale: 1.0 };
+  else style.line = { linewidth: 2 };
+  st.gl.setStyle({}, style);
+  st.gl.zoomTo();
+  st.gl.render();
+}
+function molW(m) {
+  /* 按元素原子数累加分子量：解析 SDF/PDB 的原子行 */
+  var MASS = { H: 1.008, C: 12.011, N: 14.007, O: 15.999, S: 32.06, Cl: 35.45, P: 30.974, Fe: 55.845 };
+  if (!m.sdf && !m.data) return '—';
+  var lines = (m.sdf || m.data).split('\n');
+  var cnt = {}, w = 0;
+  if (m.sdf) {
+    var na = parseInt(lines[3].slice(0, 3), 10);
+    for (var i = 4; i < 4 + na; i++) {
+      var el = lines[i].slice(31, 34).trim();
+      cnt[el] = (cnt[el] || 0) + 1;
+    }
+  } else {
+    lines.forEach(function (l) {
+      if (l.slice(0, 6) === 'ATOM  ' || l.slice(0, 6) === 'HETATM') {
+        var el2 = l.slice(76, 78).trim();
+        if (el2) cnt[el2] = (cnt[el2] || 0) + 1;
+      }
+    });
+  }
+  Object.keys(cnt).forEach(function (el) { w += (MASS[el] || 0) * cnt[el]; });
+  return w ? w.toFixed(1) + ' g/mol' : '大分子结构';
+}
+/* ---------- 工具栏 ---------- */
+document.querySelectorAll('.tb').forEach(function (b) {
+  b.onclick = function () {
+    st.style = b.dataset.style;
+    document.querySelectorAll('.tb').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    applyStyle();
+  };
+});
+document.getElementById('spin').onchange = function () {
+  st.spin = this.checked;
+  if (st.gl) { if (st.spin) st.gl.spin('y'); else st.gl.spin(); }
+};
+
+/* ---------- 启动 ---------- */
+renderList('');
+(function () {
+  var m = LIST.filter(function (x) { return x.id === 'ch4'; })[0] || LIST[0];
+  if (m) pick(m);
+})();
+/* 窗口尺寸变化时重排画布 */
+window.addEventListener('resize', function () {
+  if (st.gl) { st.gl.resize(); st.gl.zoomTo(); st.gl.render(); }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>分子实验室 · 帧理 SVG 复现版</title>
+<meta name="description" content="分子实验室：球棍与空间填充两种模型，13 种分子 + 5 种晶体，键角按真实几何反解。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<script src="js/canvas-theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+<script>window.addEventListener('error', function (e) {
+  var h = document.getElementById('hint');
+  if (h) { h.textContent = '脚本错误：' + e.message + ' @' + (e.lineno || '?'); h.className = 'hint bad'; }
+});</script>
+  <script src="js/shell.js"></script>
+</head>
+<body class="lab">
+<a class="skip" href="#main">跳到主要内容</a>
+
+<header class="topbar" role="banner" data-lab="分子实验室" data-en="Molecule Lab" data-glyph="分" data-tone="molecule">
+  <div class="tools">
+    <div class="seg" id="tabSeg">
+      <button data-tab="molecule" class="on">分子</button>
+      <button data-tab="crystal">晶体</button>
+    </div>
+    <div class="seg" id="modeSeg">
+      <button data-mode="ball" class="on">球棍</button>
+      <button data-mode="fill">空间填充</button>
+    </div>
+    <button id="resetView" class="btn">复位视角</button>
+  </div>
+</header>
+
+<main id="main" class="app">
+  <aside class="panel" aria-label="参数与控制面板">
+    <section class="block" id="molBlock">
+      <h3>分子 <span class="count" id="molCount"></span></h3>
+      <ul class="comp-list" id="molList" style="max-height:340px"></ul>
+    </section>
+
+    <section class="block" id="cryBlock" hidden>
+      <h3>晶体晶胞</h3>
+      <ul class="comp-list" id="cryList" style="max-height:340px"></ul>
+    </section>
+
+    <section class="block" id="info"></section>
+
+    <section class="block">
+      <h3>说明</h3>
+      <p class="tip">
+        球棍半径按共价半径 (r<sub>pm</sub>/76)<sup>0.35</sup>×32 归一；空间填充用范德华半径。<br>
+        三维投影为正交投影 + 深度排序；拖动只改变视角，不改变分子构型。<br>
+        键角为模型坐标的理论值，仅示意，不代表测量。
+      </p>
+    </section>
+  </aside>
+
+  <section class="stage">
+    <div class="stage-head">
+      <span class="status" id="note">—</span>
+      <span class="spacer"></span>
+      <span class="hint" id="hint">拖动旋转 · 滚轮缩放 · 点击原子看键角</span>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="stage" aria-label="分子结构三维画布"></canvas>
+    </div>
+  </section>
+</main>
+
+<script src="js/mol/core.js"></script>
+<script src="js/mol/app.js"></script>
+</body>
+</html>

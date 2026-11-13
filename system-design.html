@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>系统设计说明书 · 帧理 SVG 复现版</title>
+<meta name="description" content="系统设计说明书：需求边界、五层架构、内核契约、关键技术取舍与 P0-P2 交付记录。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<style>
+  :root{
+    --ink:#3b3335; --ink-2:#6c6165; --muted:#9a8f93; --line:#f1e7e6;
+    --paper:#fbf9f7; --panel:#ffffff; --accent:#e8879b; --accent-2:#ef9a8e;
+    --ok:#2f7a54; --ok-bg:#e8f6ee; --warn:#9a6520; --warn-bg:#fdf0e2;
+    --risk:#e05a5a; --risk-bg:#fce9ea;
+    --th-bg:#fdf4f6; --todo-bg:#f3eefb; --todo-fg:#6a4fa8;
+    --note-bg:#fdf1e9; --code-bg:#faeff1;
+  }
+  html[data-theme="dark"]{
+    --ink:#f6eef0; --ink-2:#cfc0c5; --muted:#a3929a; --line:#3a2f34;
+    --paper:#1a1618; --panel:#241e21; --accent:#f09aac; --accent-2:#f2b49b;
+    --ok:#8fd3a7; --ok-bg:#1e3026; --warn:#e5be86; --warn-bg:#33281a;
+    --risk:#ee7c7c; --risk-bg:#3b2224;
+    --th-bg:#2f262b; --todo-bg:#2a2233; --todo-fg:#c3aee8;
+    --note-bg:#33281a; --code-bg:#2b2226;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:13px/1.75 "Microsoft YaHei","PingFang SC",system-ui,sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 72px}
+  header.doc{border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:26px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.4px}
+  .meta{color:var(--muted);font-size:12px}
+  .meta b{color:var(--ink-2)}
+  h2{font-size:18px;margin:38px 0 14px;padding-left:11px;border-left:4px solid var(--accent-2)}
+  h3{font-size:14px;margin:22px 0 9px;color:var(--ink-2)}
+  p{margin:0 0 10px}
+  .lead{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:0 0 8px}
+  .lead ul{margin:6px 0 0;padding-left:20px}
+  .lead li{margin:5px 0}
+  table{width:100%;border-collapse:collapse;margin:10px 0 6px;font-size:12.5px;background:var(--panel)}
+  th,td{text-align:left;padding:9px 11px;border:1px solid var(--line);vertical-align:top}
+  th{background:var(--th-bg);color:var(--ink-2);font-weight:600;font-size:12px}
+  code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:11.5px;font-family:Consolas,Monaco,monospace}
+  pre{background:#2f2621;color:#e9dfd4;border-radius:10px;padding:14px 16px;overflow:auto;font-size:11.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  .pill{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+  .p-ok{background:var(--ok-bg);color:var(--ok)}
+  .p-warn{background:var(--warn-bg);color:var(--warn)}
+  .p-risk{background:var(--risk-bg);color:var(--risk)}
+  .p-todo{background:var(--todo-bg);color:var(--todo-fg)}
+  .layers{display:grid;gap:8px;margin:14px 0 6px}
+  .layer{display:grid;grid-template-columns:132px 1fr;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+  .layer .nm{background:var(--th-bg);padding:12px 14px;font-weight:600;font-size:12.5px;color:var(--ink-2);display:flex;align-items:center}
+  .layer .ds{padding:12px 14px;font-size:12.5px}
+  .layer .ds b{color:var(--ink)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){.two{grid-template-columns:1fr}.layer{grid-template-columns:1fr}.layer .nm{border-bottom:1px solid var(--line)}}
+  .note{border-left:3px solid var(--accent-2);background:var(--note-bg);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink-2);margin:12px 0}
+  .risk{border-left:3px solid var(--risk);background:var(--risk-bg);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12.5px;margin:12px 0}
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc">
+  <h1>系统设计说明书</h1>
+  <div class="meta">
+    项目：<b>帧理 SVG 复现版（svgzhenli-clone）</b> ·
+    版本：<b>v1.4.1</b> · 日期：<b>2026-11-13</b> ·
+    状态：<b>P0 / P1 / P2 / 前端正式化 均已落地</b> · 约束：零第三方依赖 / 无构建 / <code>file://</code> 直开
+  </div>
+</header>
+
+<div class="lead">
+  <b>结论先行</b>
+  <ul>
+    <li><b>工程底子是健康的</b>：6 个实验室内核 + 6 套自检共 <b>1364</b> 项断言全部通过，内核与渲染分离清晰。</li>
+    <li><b>真正的短板不在功能，而在工程化</b>：无统一测试入口、6 页骨架重复、无响应式、无无障碍、无设计文档。</li>
+    <li><b>本轮（P0）已修 6 项</b>：残留清理、统一自检、链接体检、响应式、无障碍、首页信息架构。</li>
+    <li><b>下一阶段（P1）重点</b>：共享 shell 消除 6 页重复、三套色板归一、资源库/知识专题接真实数据。</li>
+    <li><b>明确不做</b>：引入框架/构建链、账号与支付、复刻原站后端——这些会破坏"离线直开"这一硬约束。</li>
+  </ul>
+</div>
+
+<h2>1. 现状审计（基于代码实测）</h2>
+<table>
+  <thead><tr><th style="width:150px">维度</th><th>实测结果</th><th style="width:120px">评价</th></tr></thead>
+  <tbody>
+    <tr><td>顶层页面</td><td>12 个：首页、资源库、知识专题、6 实验室、案例库、2 份调研报告</td><td><span class="pill p-ok">完整</span></td></tr>
+    <tr><td>内核与视图</td><td>6 套 <code>js/&lt;lab&gt;/core.js</code> + <code>app.js</code>，共 <b>6750</b> 行</td><td><span class="pill p-ok">分层清晰</span></td></tr>
+    <tr><td>回归自检</td><td>6 套：地形≈43、电路≈11、力学 33、分子 608、公式 633、光学 36，合计 <b>1364</b></td><td><span class="pill p-ok">覆盖充分</span></td></tr>
+    <tr><td>依赖</td><td>主体 0 第三方依赖；<code>ai-cases/</code> 66 例依赖已 vendor 本地化（KaTeX/MathJax/插图均已离线）</td><td><span class="pill p-ok">达标</span></td></tr>
+    <tr><td>样式体系</td><td>1 份 <code>css/app.css</code>（211 行）+ 3 个页面各自内联色板</td><td><span class="pill p-warn">不统一</span></td></tr>
+    <tr><td>页面骨架</td><td>6 个实验室页各自重复 topbar / panel / stage 结构</td><td><span class="pill p-warn">有重复</span></td></tr>
+    <tr><td>响应式</td><td>P0 前：<b>0</b> 条 media query，286px 固定侧栏在手机上溢出</td><td><span class="pill p-warn">已补</span></td></tr>
+    <tr><td>无障碍</td><td>P0 前：<b>0</b> 处 aria / 语义角色</td><td><span class="pill p-warn">已补</span></td></tr>
+    <tr><td>工程化</td><td>P0 前：无 package.json、无统一测试命令、无文档、存在重复目录 <code>borrowed/</code></td><td><span class="pill p-warn">已补</span></td></tr>
+  </tbody>
+</table>
+
+<h2>2. 需求分析</h2>
+
+<h3>2.1 目标与非目标</h3>
+<div class="two">
+  <div class="note" style="border-color:var(--ok);background:var(--ok-bg)">
+    <b>目标（本期范围）</b>
+    <ul style="margin:6px 0 0;padding-left:18px">
+      <li>离线可用的教学可视化工具集，双击即开</li>
+      <li>六学科实验室具备可验证的数值正确性</li>
+      <li>资源/知识/案例三条内容线可检索浏览</li>
+      <li>可维护：一条命令跑全部自检、断链可体检</li>
+      <li>可用：桌面与手机都能正常操作</li>
+    </ul>
+  </div>
+  <div class="note" style="border-color:var(--risk);background:var(--risk-bg)">
+    <b>非目标（明确不做）</b>
+    <ul style="margin:6px 0 0;padding-left:18px">
+      <li>账号体系、支付、会员与资源下载</li>
+      <li>复刻原站服务端与真实资源库后台</li>
+      <li>引入 React/Vue/Vite 等构建链</li>
+      <li>多人在线协作、云端同步</li>
+      <li>课件导出为 PPTX/PDF（P2 再评估）</li>
+    </ul>
+  </div>
+</div>
+
+<h3>2.2 角色与用户故事</h3>
+<table>
+  <thead><tr><th style="width:90px">角色</th><th>用户故事</th><th style="width:180px">验收标准</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>学生</b></td>
+      <td>作为学生，我想在手机上打开某个实验室，拖动滑条并看清公式与图形同步变化，以便理解抽象概念。</td>
+      <td>390×844 视口下无横向滚动，控件可点，画布高度 ≥46vh</td>
+    </tr>
+    <tr>
+      <td><b>教师</b></td>
+      <td>作为教师，我想按教材章节快速找到对应演示并投屏，以便课堂讲解。</td>
+      <td>知识专题可按章/节筛选；实验室页面无多余登录墙</td>
+    </tr>
+    <tr>
+      <td><b>维护者</b></td>
+      <td>作为维护者，我改完内核后想一条命令知道有没有改坏，并能查出断链。</td>
+      <td><code>npm test</code> 返回 0/1；<code>npm run check</code> 列出所有断链</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>2.3 功能需求（FR）</h3>
+<table>
+  <thead><tr><th style="width:58px">ID</th><th>需求</th><th style="width:88px">优先级</th><th style="width:96px">状态</th></tr></thead>
+  <tbody>
+    <tr><td>FR-1</td><td>首页统一入口，按「资源 / 实验室 / 案例」分组，任一页 1 次点击回首页</td><td>P0</td><td><span class="pill p-ok">已实现</span></td></tr>
+    <tr><td>FR-2</td><td>六个实验室（地形/电路/力学/分子/公式/光学）可交互且数值正确</td><td>P0</td><td><span class="pill p-ok">已实现</span></td></tr>
+    <tr><td>FR-3</td><td>资源库按学科筛选、知识专题按教材目录树筛选、案例库按学科筛选</td><td>P0</td><td><span class="pill p-ok">已实现</span></td></tr>
+    <tr><td>FR-4</td><td>全部页面在 390px 宽度下可正常操作</td><td>P0</td><td><span class="pill p-ok">本轮补齐</span></td></tr>
+    <tr><td>FR-5</td><td>键盘可跳转主内容、画布有可读名称、焦点可见</td><td>P0</td><td><span class="pill p-ok">本轮补齐</span></td></tr>
+    <tr><td>FR-6</td><td>一条命令跑全部自检并汇总断言数</td><td>P0</td><td><span class="pill p-ok">本轮补齐</span></td></tr>
+    <tr><td>FR-7</td><td>一条命令体检全站内部链接是否存在</td><td>P0</td><td><span class="pill p-ok">本轮补齐</span></td></tr>
+    <tr><td>FR-8</td><td>共享顶栏组件，消除 6 页重复结构</td><td>P1</td><td><span class="pill p-todo">待排期</span></td></tr>
+    <tr><td>FR-9</td><td>URL 深链（如 <code>mechanics.html#preset=incline</code>）可复现场景</td><td>P1</td><td><span class="pill p-todo">待排期</span></td></tr>
+    <tr><td>FR-10</td><td>资源库/知识专题接入真实数据源，替换占位卡片</td><td>P1</td><td><span class="pill p-todo">待排期</span></td></tr>
+  </tbody>
+</table>
+
+<h3>2.4 非功能需求（NFR）</h3>
+<table>
+  <thead><tr><th style="width:58px">ID</th><th>约束</th><th>当前达成方式</th></tr></thead>
+  <tbody>
+    <tr><td>NFR-1</td><td><b>零第三方依赖、无构建、<code>file://</code> 可跑</b>（硬约束）</td><td>原生 JS IIFE + Canvas/SVG；脚本仅用 Node 内置模块</td></tr>
+    <tr><td>NFR-2</td><td>首屏本地渲染 &lt; 100 ms</td><td>单页 CSS + 无网络请求；内核按需 <code>&lt;script&gt;</code> 引入</td></tr>
+    <tr><td>NFR-3</td><td>单实验室内核 &lt; 60 KB（未压缩）</td><td>最大 <code>formula/data.js</code> 约 803 行，其余 &lt; 730 行</td></tr>
+    <tr><td>NFR-4</td><td>数值结论有断言覆盖</td><td>6 套自检 / 1364 断言，失败时进程退出码非 0</td></tr>
+    <tr><td>NFR-5</td><td>视觉一致：纸张底 + 陶土色学术风</td><td><code>css/app.css</code> 统一令牌（P1 归一内联色板）</td></tr>
+    <tr><td>NFR-6</td><td>可访问性基线：语义角色 + 跳转链接 + 焦点可见</td><td>10 页已加 <code>role</code>/<code>aria-label</code>/<code>.skip</code>/<code>:focus-visible</code></td></tr>
+  </tbody>
+</table>
+
+<h2>3. 架构设计</h2>
+
+<h3>3.1 分层结构</h3>
+<p>核心原则：<b>内核纯逻辑、视图只做绑定、页面只做装配</b>。内核不碰 DOM，才能在 Node 里直接断言。</p>
+<div class="layers">
+  <div class="layer"><div class="nm">① 页面层</div><div class="ds"><b>*.html</b>：只做结构装配（topbar / panel / stage），引入 CSS 与对应 app.js。共 12 页。</div></div>
+  <div class="layer"><div class="nm">② 视图层</div><div class="ds"><b>js/&lt;lab&gt;/app.js</b>：DOM 事件绑定、Canvas 绘制、读数刷新、动画循环。<b>唯一允许操作 DOM 的层</b>。</div></div>
+  <div class="layer"><div class="nm">③ 内核层</div><div class="ds"><b>js/&lt;lab&gt;/core.js</b>：纯函数与状态机（求解器 / 积分器 / 布局引擎 / 投影器），暴露 <code>window.&lt;Name&gt;Core</code>，无 DOM 依赖。</div></div>
+  <div class="layer"><div class="nm">④ 数据层</div><div class="ds"><b>js/formula/data.js</b>、知识目录 <code>BOOKS/CHAPTERS</code>、资源 <code>TOOLS</code>、案例 <code>CASES</code>：数据与逻辑分离，便于增删条目。</div></div>
+  <div class="layer"><div class="nm">⑤ 质量层</div><div class="ds"><b>verify-*.js</b>（Node 直跑内核）+ <b>scripts/test-all.js</b>（聚合）+ <b>scripts/check-pages.js</b>（断链体检）。</div></div>
+</div>
+
+<h3>3.2 模块边界与接口契约</h3>
+<table>
+  <thead><tr><th style="width:120px">内核</th><th>导出的关键函数</th><th style="width:150px">自检</th></tr></thead>
+  <tbody>
+    <tr><td><code>TerrainCore</code></td><td>高程场合成、等高线、剖面采样、3D 投影</td><td>verify-terrain（≈43）</td></tr>
+    <tr><td><code>CircuitCore</code></td><td>节点装配、高斯消元、非线性迭代、支路电流</td><td>verify-circuit（≈11）</td></tr>
+    <tr><td><code>MechCore</code></td><td><code>analyze(doc)</code>、<code>createRun(doc)</code>、<code>inclineOrigin</code>、<code>findContact</code></td><td>verify-mech（33）</td></tr>
+    <tr><td><code>MolCore</code></td><td>分子/晶体数据、<code>makeProjector</code>、<code>crystalBonds</code></td><td>verify-mol（608）</td></tr>
+    <tr><td><code>MiniTeX / FormulaCore</code></td><td><code>parse→layout→draw</code>、31 条关系 <code>calc/reads</code></td><td>verify-formula（633）</td></tr>
+    <tr><td><code>Optics</code></td><td><code>calc(f,u)</code>、<code>intersect()</code>、<code>nature()</code>、<code>objX/vFromX</code></td><td>verify-optics（36）</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <b>契约约定</b>：内核一律 IIFE 挂 <code>window.Xxx</code>，并在 Node 下兼容 <code>module.exports</code>；
+  自检通过共享 <code>window</code> 桩按序 <code>require</code> 两个模块即可运行。<b>不改这条约定，自检就不会失效。</b>
+</div>
+
+<h3>3.3 数据流</h3>
+<pre><code>用户输入(滑条/拖拽)
+      │
+      ▼
+app.js 采集参数 ──► core.js 纯计算 ──► 返回结构化结果(数值/数组/几何)
+      ▲                                        │
+      │                                        ▼
+      └────── 读数/状态文字 ◄──── app.js 绘制 Canvas / 更新 DOM
+      
+自检路径：verify-*.js ──► require(core.js) ──► 断言纯计算结果（无需浏览器）</code></pre>
+
+<h3>3.4 目录结构</h3>
+<pre><code>svgzhenli-clone/
+├─ index.html            首页（按 资源/实验室/案例 分组）
+├─ resource.html         资源库（学科筛选 / 免费试玩）
+├─ knowledge.html        知识专题（22 章目录树）
+├─ terrain|circuit|mechanics|molecule|formula|optics.html   六实验室
+├─ ai-cases.html         案例库（69 题 · 题干 + 首屏图 · 5 来源 + 3 原创）
+├─ system-design.html    ← 本文件
+├─ css/app.css           全局样式（令牌 + 响应式 + 无障碍）
+├─ js/&lt;lab&gt;/{core,app}.js  内核与视图
+├─ ai-cases/             66 个开源案例 + vendor/ 本地依赖
+├─ verify-*.js           6 套内核自检
+└─ scripts/
+   ├─ test-all.js        统一自检入口（npm test）
+   ├─ check-pages.js     断链体检（npm run check）
+   └─ serve.js           零依赖静态服务（npm run serve）</code></pre>
+
+<h2>4. 关键取舍</h2>
+
+<h3>4.1 多页（MPA） vs 单页应用（SPA） vs 引入构建</h3>
+<table>
+  <thead><tr><th style="width:130px">方案</th><th>优点</th><th>代价</th><th style="width:70px">结论</th></tr></thead>
+  <tbody>
+    <tr><td><b>MPA（现状）</b></td><td>零构建、<code>file://</code> 直开、单页互不影响、调试直观</td><td>页面骨架重复、导航需手写</td><td><span class="pill p-ok">采用</span></td></tr>
+    <tr><td>SPA + 路由</td><td>共享 shell，切换无刷新</td><td>需 hash 路由模拟，file:// 下易踩坑；首屏 JS 变重</td><td><span class="pill p-todo">不采用</span></td></tr>
+    <tr><td>Vite/框架构建</td><td>工程化完善、生态好</td><td>破坏"零依赖 + 双击即开"，需要 node 环境与产物目录</td><td><span class="pill p-risk">否决</span></td></tr>
+  </tbody>
+</table>
+<p><b>理由</b>：硬约束是"离线直开"。任何需要构建或服务器的方案都会牺牲这一条，收益（消除重复）可用更轻的共享脚本解决。</p>
+
+<h3>4.2 消除 6 页重复骨架的三条路</h3>
+<table>
+  <thead><tr><th style="width:150px">方案</th><th>做法</th><th>风险</th><th style="width:70px">建议</th></tr></thead>
+  <tbody>
+    <tr><td>静态复制（现状）</td><td>每页手写 topbar</td><td>改一处要改 6 处，易漂移</td><td><span class="pill p-warn">暂用</span></td></tr>
+    <tr><td><b>shell.js 注入</b></td><td>每页只留 <code>&lt;header data-lab="mech"&gt;</code>，脚本渲染统一顶栏</td><td>JS 未跑时顶栏空白（需 <code>&lt;noscript&gt;</code> 兜底）</td><td><span class="pill p-ok">P1 推荐</span></td></tr>
+    <tr><td>Web Component</td><td><code>&lt;lab-topbar&gt;</code> 自定义元素</td><td>file:// 下模块加载与旧浏览器兼容成本更高</td><td><span class="pill p-todo">备选</span></td></tr>
+  </tbody>
+</table>
+
+<h3>4.3 移动端适配的三条路</h3>
+<table>
+  <thead><tr><th style="width:150px">方案</th><th>做法</th><th>代价</th><th style="width:70px">结论</th></tr></thead>
+  <tbody>
+    <tr><td><b>CSS media query</b></td><td>≤900px 侧栏改为上置、画布降高</td><td>无 JS 改动，风险最低</td><td><span class="pill p-ok">本轮采用</span></td></tr>
+    <tr><td>抽屉式面板</td><td>侧栏收起为抽屉，按钮唤出</td><td>需改 6 页结构 + 状态管理</td><td><span class="pill p-todo">P1</span></td></tr>
+    <tr><td>独立移动布局</td><td>另做一套移动端页面</td><td>维护双份，成本翻倍</td><td><span class="pill p-risk">否决</span></td></tr>
+  </tbody>
+</table>
+
+<h2>5. 路线图</h2>
+
+<h3>5.1 P0 — 本轮已落地</h3>
+<table>
+  <thead><tr><th style="width:64px">编号</th><th>内容</th><th>验收</th><th style="width:88px">状态</th></tr></thead>
+  <tbody>
+    <tr><td>P0-1</td><td>清理重复目录 <code>borrowed/</code> 与遗留日志，历史报告链接改指 <code>ai-cases/</code></td><td>无 <code>borrowed/</code>；报告链接可达</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P0-2</td><td>统一自检入口 <code>scripts/test-all.js</code> + <code>package.json</code></td><td><code>npm test</code> 输出 6/6 与断言汇总，失败退出 1</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P0-3</td><td>断链体检 <code>scripts/check-pages.js</code></td><td>扫描全部顶层页面 href/src，报告缺失文件与失效锚点</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P0-4</td><td>响应式：新增 2 组 media query（≤900px / ≤560px）</td><td>≤560px 断点生效、无横向溢出（headless 最小窗宽 500px 实测 scrollWidth 485 ≤ 500）</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P0-5</td><td>无障碍：跳转链接、<code>role</code>、<code>aria-label</code>、<code>:focus-visible</code> 覆盖 10 页</td><td>Tab 可跳到主内容；画布均有可读名称</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P0-6</td><td>首页重构：合并重复公式卡、按三组归类、补工程文档入口</td><td>9 张卡片无重复链接；含设计文档入口</td><td><span class="pill p-ok">完成</span></td></tr>
+  </tbody>
+</table>
+
+<h3>5.2 P1 — 建议下一阶段（需确认后动手）</h3>
+<table>
+  <thead><tr><th style="width:64px">编号</th><th>内容</th><th>收益</th><th style="width:90px">预估</th></tr></thead>
+  <tbody>
+    <tr><td>P1-1</td><td>抽出 <code>js/shell.js</code>，6 页顶栏由数据属性渲染（另含移动抽屉与深链助手）</td><td>已验证：6 页品牌注入、幂等</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P1-2</td><td>色板归并为 <code>css/tokens.css</code> 单一令牌源，4 页内联色值替换 var()</td><td>已验证：resource/optics 100% 归一，截图无回归</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P1-3</td><td>URL 深链：全部 6 实验室支持（读参数恢复 + 写 hash 分享；terrain/circuit 原有 <code>?preset=</code> 保留）</td><td>已验证：optics/formula/mol/mech/terrain 状态断言通过</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P1-4</td><td>≤900px 参数面板变为抽屉（shell 注入 ☰ 参数按钮 + 遮罩 + Esc 关闭）</td><td>500px 视口截图确认按钮出现、无溢出</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P1-5</td><td>占位卡治理：7 张学科卡映射到真实实验室/案例；知识专题死 alert 改为详情弹层；其余 12 张工具卡由 P2-3 课堂工具箱全部兑现</td><td>资源库 26 张可点卡全部可达</td><td><span class="pill p-ok">完成</span></td></tr>
+  </tbody>
+</table>
+
+<h3>5.3 P2 — 已全部落地（v1.1 功能 / v1.2 视觉与站点框架）</h3>
+<table>
+  <thead><tr><th style="width:64px">编号</th><th>内容</th><th>验收</th><th style="width:88px">状态</th></tr></thead>
+  <tbody>
+    <tr><td>P2-1</td><td>明/暗主题：<code>tokens.css</code> 扩至 40+ 语义令牌 + 暗色覆盖块；<code>js/theme.js</code> 首屏引导（零 FOUC、localStorage 兜底、?theme= 覆盖、auto 跟随系统）；12 页接入；<code>js/canvas-theme.js</code> 让 6 实验室画布结构性配色跟随主题（core.js 零改动）</td><td>6 实验室 + 4 库页明暗截图 0 JS 错误；明色像素级零回归</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-2</td><td>案例库扩容：mathlearn 拆为 18 张 <code>#gX-Y</code> 深链卡（49 → 66）；KaTeX（60 字体）与 MathJax（23 字体）vendor 本地化；18 张页头插图缓存到 <code>asset-cache/</code></td><td><code>npm run check</code> 0 断链；深链 headless 断言 module 激活</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-3</td><td>课堂工具箱 <code>classroom.html</code>：12 件工具全实现（点名/抢答/背诵PK/闪记PK/宣言屏/番茄钟/细胞解剖/方程式配平/遗传概率/气候判读/单词速记/随堂小测），纯逻辑层 <code>js/tools/core/cores.js</code> 可测</td><td><code>verify-classroom.js</code> 485 断言；12 工具 headless 冒烟 0 错误</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-4</td><td>离线分发：<code>scripts/build-zip.js</code> 零依赖手写 ZIP（CRC32/deflate/UTF-8 文件名/固定时间戳），<code>--verify</code> 自解压 + CRC + 断链 + headless 冒烟；<code>desktop/</code> 可选 Electron 壳（不进 ZIP）</td><td><code>npm run zip</code> 全链路通过（v1.1.0 包 12.0MB / 299 文件）</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-5</td><td>视觉改版「奶油莫兰迪」：主色柔玫粉 <code>#e8879b</code>、近白奶底 <code>#fbf9f7</code>、圆角阶梯 <code>--r-sm/md/lg/pill</code>；25+66 张缩略图按学科色相统一转马卡龙浅色（HSL 提亮降饱和）；侧栏与深色面改浅；面向一线年轻女教师，去除陶土纸黄与褐墨的「教辅感」</td><td>全站明/暗截图目检一致；<code>npm test</code> 7 套 1849 断言仍全绿（内核零改动）</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-6</td><td>站点框架正式化：<code>js/site-nav.js</code> 统一导航 + 页脚（自包含样式，任何页面同款）；首页 Hero（徽标 / 主张 / 双 CTA / 四组数据）；每页 <code>description</code> + <code>theme-color</code> + <code>favicon.svg</code>；<code>404.html</code>；打印样式与 <code>prefers-reduced-motion</code></td><td><code>npm run check</code> 15 页 74 引用 0 断链；500px 移动端无横向溢出</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-7</td><td>案例库改成「题目卡」：66 条各写一句题干替换原来的「×× · 演示」，卡片改为「真实首屏缩略图 + 题干 + 编号/来源/技术栈」，加题干搜索与分类计数；<code>scripts/shoot-cases.js</code> 用 CDP 批量实拍 65 张首屏图（1000×625 / q76 / 合计 2.5MB），截图前自动点「应用数值 → 开始」并滚动到画布主体</td><td>65 张图与 66 条一一对应校验通过（1 张崩页用编号占位）；<code>npm run check</code> 0 断链；明/暗/390px 三视图目检正常</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-8</td><td>补三道抛物线原创交互题（对标 GeoGebra「卡片即题目」形态）：<code>parabola-properties.html</code> a/b/c 驱动六个读数（顶点式、Δ、交点、增减性）；<code>parabola-shift.html</code> 母函数与像函数同屏 + 顶点追踪点 + 「先横后竖」分步动画，讲透左加右减；<code>parabola-moving-point.html</code> 竖直线段法求 △PBC 面积最值 + PQ(t) 迷你曲线 + 直角三角形存在性数值扫描（三个角的点积过零插值）</td><td>案例库 66→69（68 张缩略图，分类计数 25/18/5/19/2 合计 69）；数值逐点复核 t=0.5/1/1.5/2/2.5 的 P、Q、PQ、面积全部正确；直角解扫出 t≈1.00 与 t≈1.62 与手算一致；<code>npm test</code> 1849 断言全过；离线包 376 文件 CRC 全过</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-9</td><td>数学内容统一到 <code>ai-cases/mathlearn/index.html</code>：左侧把案例库里 24 个数学页面按章节挂进「初一/初二/初三」目录（竖虚线表示同属该节），新增「专题」Tab 放指数/对数/微积分/圆锥曲线/四面体/圆锥体积等衔接高中的 7 条；点拓展条目在右侧 iframe 内嵌显示，配「返回课程 / 新窗口打开」；标题改为「中学数学」，支持 <code>#ext-&lt;key&gt;</code> 深链。崩溃页 <code>抛物线与焦点.html</code> 标 <code>newwin</code> 不内嵌，避免拖垮宿主</td><td>24 条全部实测可加载（含 3 个带空格/<code>+</code>/<code>^</code> 的文件名，逐段 encodeURIComponent）；深链 g1-1/g2-5/g3-6/ext-exp/ext-solid/ext-pmove 六项路由与高亮同步正确；数学题 18 模块 + 24 拓展 = 案例库 42 道数学题全覆盖；<code>npm run check</code> 0 断链</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-10</td><td>接入铜匠实验室（tongjiang-lab）54 门高中 3D 互动课：<code>ai-cases/tongjiang/courses/</code> 每门课单文件 HTML（three.js 内联，离线可用、iframe 可嵌）；<code>scripts/gen-tongjiang.js</code> 按 catalog.json 的教材字段自动映射年级（化学 25 / 地理 14 / 物理 10 / 生物 5），条目描述=引导问题+分步路径，来源标「铜匠实验室」；生物补高一/高二档、地理补高一/高二/高三档；CC BY-NC 4.0 署名与原始许可见 <code>ai-cases/tongjiang/LICENSE</code></td><td>四科 91→145 题；check:hubs 对账通过、54 条路径全存在；生物高一内嵌有丝分裂 3D 课、地理高二内嵌河流地貌沙盘实测正常；npm test 7/7</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-10</td><td>学科分级目录：新增 <code>subjects.html</code> 总览 + 五科目录页。共用外壳 <code>ai-cases/hub/</code>（<code>hub.css</code> 设计令牌与数学页同源、<code>hub.js</code> 渲染学科药丸 / 年级 tab / 左列条目 / 右内嵌演示 / 上一题下一题 / 键盘左右键，<code>subjects.js</code> 统一题数与顺序，<code>data/*.js</code> 一科一个数据文件）。数学页补「高中」档（高一 5 条、高二 4 条，按段标题分组），原「专题」改为二次函数压轴四件；物理 31 题按初二～高三 + 专题归位，化学 11、生物 2、地理 5</td><td><code>npm run check:hubs</code>：五科 91 题与清单对账一致、49 条演示路径全部存在；<code>npm run scan:embeds</code> 900px 下 49 个内嵌页 0 横向溢出；<code>npm test</code> 7 套 1849 断言仍全绿；<code>npm run check</code> 16 页 89 引用 0 断链</td><td><span class="pill p-ok">完成</span></td></tr>
+    <tr><td>P2-11</td><td>修复 <code>反比例函数动点探究.html</code> 推导框错位：<code>#result-text</code> 原本写死 <code>h-[180px]</code> + <code>justify-center</code>，文字比框高时上下同时溢出，压住卡片标题与下一张卡；改为 <code>min-h-[180px]</code>，让内容自己撑高</td><td>1440 / 900 两档复拍：框内 5 行推导完整显示，无重叠</td><td><span class="pill p-ok">完成</span></td></tr>
+  </tbody>
+</table>
+<p class="meta">仍然需要联网的点（诚实清单）：①「证明几何题」页头插图由在线服务动态生成；② 案例页内的作者主页外链（不影响功能）。</p>
+
+<h2>6. 风险与限制</h2>
+<div class="risk">
+  <b>R1 · file:// 的 fetch 限制</b>：任何"运行时读取本地文件"的案例（如 Logico 的组件注册表）在 <code>file://</code> 下会被 CORS 拒绝，必须走 <code>npm run serve</code>。当前案例库已把这类排除或标注。
+</div>
+<div class="risk">
+  <b>R2 · 无构建 = 无打包优化</b>：页面数量增加时，重复骨架会线性放大维护成本。这是 P1-1 的直接动因。
+</div>
+<div class="risk">
+  <b>R3 · 自检口径不完全统一</b>：地形与电路只输出"全部通过"，断言数按 ✓ 计数估算（表中以 ≈ 标注），精确计数需改这两个脚本的输出格式。
+</div>
+<div class="risk">
+  <b>R4 · 第三方案例的许可差异</b>：<code>ai-cases/</code> 中 physics-sim 为"保留所有权利"，仅作本地学习参考，不得再分发；MIT 来源可自由使用。
+</div>
+<div class="risk">
+  <b>R5 · 数值模型边界</b>：力学仅平动模型，不处理转动与物体间碰撞；分子为刚性球棍模型。教学演示够用，工程仿真不够用。
+</div>
+
+<h2>7. 验证与复现</h2>
+<pre><code># 1) 全部内核自检（6 套 / 1364 断言）
+npm test
+
+# 2) 全站内部链接体检
+npm run check
+
+# 3) 需要 http 时启动本地服务（默认 5178）
+npm run serve
+
+# 4) 直接打开（零依赖，无需以上任何命令）
+#    Windows: 双击 index.html</code></pre>
+<p class="meta">预期输出：<code>npm test</code> 打印 7 行 PASS 与"汇总：7 套 / 7 通过 / 0 失败 · 断言 1849 通过 / 0 失败"，退出码 0；<code>npm run check</code> 打印"✓ 未发现断链"；<code>npm run zip</code> 打印"打包完成 + CRC 全部通过"。</p>
+
+<h2>附录 · 调研报告（本工程外的过程产物）</h2>
+<div class="note">
+  <a href="borrowable-cases.html"><b>AIEdTools 参考案例 · 可借鉴清单</b></a> — 案例接入前的对比调研（评分 / 许可 / 依赖）。
+  <a href="github-similar-report.html"><b>GitHub 同类项目检索报告</b></a> — 18 个开源教学可视化项目横评（此页为固定深色报告版式）。
+</div>
+
+<footer>
+  帧理 SVG 复现版 · 系统设计说明书 v1.2 · 2026-10-22 ·
+  本文件为零依赖静态页，可离线查看
+</footer>
+</div>
+</body>
+</html>

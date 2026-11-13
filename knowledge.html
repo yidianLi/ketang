@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>知识专题 · 初中物理 · 帧理 SVG 复现版</title>
+<meta name="description" content="知识专题：人教版初中物理 22 章目录树，按章节与学科标签筛选，经典知识与典型题目两种视图。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+<style>
+  .kb { display: flex; min-height: 100vh; background: var(--paper-2); }
+  .ktop { position: sticky; top: 0; z-index: 10; background: var(--paper-2); padding: 18px 30px 10px;
+            border-bottom: 1px solid var(--line-3); }
+  .ktop .crumb { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+  .searchrow { display: flex; justify-content: center; margin-bottom: 8px; }
+  .search { display: flex; width: 620px; max-width: 100%; background: var(--panel); border-radius: 12px;
+            box-shadow: var(--shadow-sm); overflow: hidden; }
+  .search select { border: none; background: var(--paper-3); padding: 0 12px; color: var(--ink-2); font-size: 13px; outline: none; }
+  .search input { flex: 1; border: none; outline: none; padding: 11px 14px; font-size: 13px; }
+  .search button { border: none; background: var(--accent); color: #fff; padding: 0 28px; font-size: 14px; cursor: pointer; }
+  .subhint { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+  .tagrow { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tag { background: var(--panel); border-radius: 999px; padding: 6px 18px; font-size: 13px; color: var(--ink-2);
+         cursor: pointer; box-shadow: var(--shadow-sm); border: 1.5px solid transparent; }
+  .tag:hover { border-color: var(--line-2); }
+  .tag.on { background: var(--accent); color: #fff; }
+  .viewrow { display: flex; justify-content: center; gap: 8px; margin-bottom: 6px; }
+  .viewrow .tag { padding: 5px 16px; }
+  .body { display: flex; gap: 18px; padding: 14px 30px 60px; align-items: flex-start; }
+  .tree { width: 230px; flex-shrink: 0; background: var(--panel); border-radius: 14px; padding: 14px 12px;
+          box-shadow: var(--shadow-sm); position: sticky; top: 170px; max-height: calc(100vh - 200px);
+          overflow: auto; }
+  .tree .head { display: flex; justify-content: space-between; align-items: baseline; padding: 0 4px 10px; }
+  .tree .head b { font-size: 15px; color: var(--ink); }
+  .tree .head span { font-size: 11px; color: var(--danger); background: var(--danger-bg); padding: 1px 8px; border-radius: 8px; }
+  .tree .stage { font-size: 12px; color: var(--muted); padding: 4px 6px; }
+  .tree .stage b { color: var(--ink-2); }
+  .booksel { width: 100%; border: 1px solid var(--line-3); border-radius: 9px; padding: 8px 10px; font-size: 13px;
+             color: var(--ink); background: var(--field-3); outline: none; margin: 4px 0 10px; }
+  .booktabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .booktab { flex: 1; text-align: center; font-size: 12px; padding: 7px 2px; border-radius: 9px; cursor: pointer;
+             color: var(--ink-2); background: var(--paper-3); }
+  .booktab { white-space: nowrap; }
+  .booktab.on { background: var(--accent); color: #fff; }
+  .booktab .n { display: block; font-size: 10px; opacity: .75; }
+  .ch { margin-bottom: 2px; }
+  .ch .crow { display: flex; justify-content: space-between; align-items: center; padding: 8px 8px;
+              border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--ink); }
+  .ch .crow:hover { background: var(--hover); }
+  .ch.open .crow { background: var(--accent); color: #fff; }
+  .ch .crow .cn { display: flex; align-items: center; gap: 5px; }
+  .ch .crow .arrow { font-size: 10px; transition: transform .15s; }
+  .ch.open .crow .arrow { transform: rotate(90deg); }
+  .ch .cnt { font-size: 11px; opacity: .6; }
+  .ch .secs { display: none; padding: 2px 0 6px 14px; }
+  .ch.open .secs { display: block; }
+  .sec { font-size: 12px; color: var(--muted); padding: 5px 8px; border-radius: 7px; cursor: pointer;
+         display: flex; justify-content: space-between; }
+  .sec:hover { background: var(--paper-3); color: var(--ink); }
+  .sec.on { background: var(--hover-2); color: var(--ink); font-weight: 600; }
+  .sec .n { font-size: 11px; color: var(--muted); }
+  .content { flex: 1; min-width: 0; }
+  .content .bar { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .content .bar .t { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .content .bar .n { font-size: 13px; color: var(--muted); }
+  .content .bar .n b { color: var(--danger); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(225px, 1fr)); gap: 15px; }
+  .card { background: var(--panel); border-radius: 13px; overflow: hidden; box-shadow: var(--shadow-sm);
+          cursor: pointer; transition: transform .12s, box-shadow .12s; }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .card .thumb { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 38px;
+                 position: relative; }
+  .card .thumb .ftag { position: absolute; top: 9px; left: 9px; background: rgba(255,255,255,.92); color: #2f7a54; font-weight: 600; font-size: 10.5px;
+                       padding: 2px 8px; border-radius: 6px; }
+  .card .cap { padding: 9px 12px 11px; }
+  .card .meta { display: flex; gap: 5px; margin-bottom: 5px; flex-wrap: wrap; }
+  .card .meta span { font-size: 11px; padding: 1px 7px; border-radius: 5px; }
+  .card .meta .f1 { background: var(--danger-bg); color: var(--danger); }
+  .card .meta .f2 { background: var(--info-bg); color: var(--info-fg); }
+  .card .t { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.35;
+             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card .d { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+  .empty { text-align: center; color: var(--muted); padding: 70px 0; font-size: 14px; }
+  html[data-theme="dark"] .card .thumb { filter: brightness(.72) saturate(.85); }
+  html[data-theme="dark"] .card .thumb .ftag { background: rgba(255,255,255,.82); }
+
+  @media (max-width: 900px){
+    .body { flex-direction: column; padding: 12px 14px 48px; gap: 14px; }
+    .tree { width: 100%; position: static; }
+    .content { width: 100%; }
+    .ktop { padding: 14px 14px 8px; }
+    .search { width: 100%; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  }
+  @media (max-width: 560px){
+    .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card .cap .t { font-size: 13px; }
+    .search button { padding: 0 16px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<div id="site-nav"></div>
+<script src="js/site-nav.js"></script>
+<script src="assets/knowledge/physics-topics.js"></script>
+<script src="assets/knowledge/physics-questions.js"></script>
+<div class="kb">
+  <div style="flex:1; min-width:0">
+    <div class="ktop">
+      <div class="crumb">你勾选的知识专题页面 / 点击章可筛选</div>
+      <div class="searchrow">
+        <div class="search">
+          <select><option>普通搜索</option><option>AI 语义搜索</option></select>
+          <input id="q" placeholder="输入关键词，如：考点知识图、数据分析、受力分析…">
+          <button id="go">搜索</button>
+        </div>
+      </div>
+      <div class="subhint">当前为「普通搜索」，可在全局切换为 AI 搜索。</div>
+      <div class="tagrow" id="fieldTags"></div>
+      <div class="viewrow">
+        <span class="tag on" data-view="classic">经典知识</span>
+        <span class="tag" data-view="exercise">典型题目</span>
+      </div>
+    </div>
+
+    <div class="body">
+      <aside class="tree" role="navigation" aria-label="教材目录树">
+        <div class="head"><b>资源目录</b><span>收起 ▾</span></div>
+        <div class="stage">初中 · <b>物理</b> <span id="stageCnt" style="float:right;color:#e8879b"></span></div>
+        <select class="booksel"><option>人教版目录</option></select>
+        <div class="booktabs" id="bookTabs"></div>
+        <div id="treeCh"></div>
+      </aside>
+
+      <main id="main" class="content">
+        <div class="bar"><span class="t" id="rangeTitle">全部资源</span><span class="n"><b id="cnt">0</b> 个资源</span></div>
+        <div class="grid" id="grid"></div>
+        <div class="empty" id="empty" style="display:none">该范围暂无匹配资源</div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   目录数据：还原自原站前端源码中的人教版初中物理目录（X4/Cy/$4/vy）
+   ============================================================ */
+var BOOKS = [
+  { id: '8-upper', title: '八年级上册', from: 1, to: 6 },
+  { id: '8-lower', title: '八年级下册', from: 7, to: 12 },
+  { id: '9-full',  title: '九年级全一册', from: 13, to: 22 }
+];
+var CHAPTERS = [
+  { n: 1,  t: '机械运动',        f: '力学', secs: ['长度和时间的测量', '运动的描述', '运动的快慢', '速度的测量'] },
+  { n: 2,  t: '声现象',          f: '声学', secs: ['声音的产生与传播', '声音的特性', '声的利用', '噪声的危害和控制', '跨学科实践：制作隔音房间模型'] },
+  { n: 3,  t: '物态变化',        f: '热学', secs: ['温度', '熔化和凝固', '汽化和液化', '升华和凝华', '跨学科实践：探索厨房中的物态变化问题'] },
+  { n: 4,  t: '光现象',          f: '光学', secs: ['光的直线传播', '光的反射', '平面镜成像', '光的折射', '光的色散'] },
+  { n: 5,  t: '透镜及其应用',    f: '光学', secs: ['透镜', '生活中的透镜', '凸透镜成像的规律', '眼睛和眼镜', '跨学科实践：制作望远镜'] },
+  { n: 6,  t: '质量与密度',      f: '力学', secs: ['质量', '密度', '测量液体和固体的密度', '密度的应用'] },
+  { n: 7,  t: '力',              f: '力学', secs: ['力', '弹力', '重力'] },
+  { n: 8,  t: '运动和力',        f: '力学', secs: ['牛顿第一定律', '二力平衡', '摩擦力'] },
+  { n: 9,  t: '压强',            f: '力学', secs: ['压强', '液体的压强', '大气压强', '流体压强与流速的关系'] },
+  { n: 10, t: '浮力',            f: '力学', secs: ['浮力', '阿基米德原理', '物体的浮沉条件及应用'] },
+  { n: 11, t: '功和机械能',      f: '力学', secs: ['功', '功率', '动能和势能', '机械能及其转化'] },
+  { n: 12, t: '简单机械',        f: '力学', secs: ['杠杆', '滑轮', '机械效率'] },
+  { n: 13, t: '内能',            f: '热学', secs: ['分子热运动', '内能', '比热容'] },
+  { n: 14, t: '内能的利用',      f: '热学', secs: ['热机', '热机的效率', '能量的转化和守恒'] },
+  { n: 15, t: '电流和电路',      f: '电学', secs: ['两种电荷', '电流和电路', '串联和并联', '电流的测量', '跨学科实践：连接简单电路'] },
+  { n: 16, t: '电压 电阻',       f: '电学', secs: ['电压', '电阻', '变阻器'] },
+  { n: 17, t: '欧姆定律',        f: '电学', secs: ['电流与电压和电阻的关系', '欧姆定律', '电阻的测量'] },
+  { n: 18, t: '电功率',          f: '电学', secs: ['电能 电功', '电功率', '测量小灯泡的电功率', '焦耳定律'] },
+  { n: 19, t: '生活用电',        f: '电学', secs: ['家庭电路', '家庭电路中电流过大的原因', '安全用电'] },
+  { n: 20, t: '电与磁',          f: '电学', secs: ['磁现象 磁场', '电生磁', '电磁铁 电磁继电器', '电动机', '磁生电'] },
+  { n: 21, t: '电磁波及其应用',  f: '电学', secs: ['电磁波的海洋', '广播、电视和移动通信', '卫星通信和光纤通信'] },
+  { n: 22, t: '能源与可持续发展', f: '热学', secs: ['能源利用的现状和面临的挑战', '新能源的发展', '跨学科实践：为节约能源设计方案'] }
+];
+
+/* ---------- 可交互实验室：挂到对应章节，免费试玩 ---------- */
+var PLAYABLE = [
+  { ch: 1,  t: '数理公式实验室 · 运动学', d: '速度/平均速度/加速度 31 条关系参数联动', ic: '🧮', bg: 'linear-gradient(135deg,#e8d5d9,#dab4bd)', href: 'formula.html' },
+  { ch: 3,  t: '物态变化 · 温度读数',   d: '温度计示数与晶体熔化图像', ic: '🌡️', bg: 'linear-gradient(135deg,#d5e7e8,#b4d6da)', href: 'formula.html' },
+  { ch: 4,  t: '光现象 · 反射定律演示', d: '入射角等于反射角实时标注', ic: '🪞', bg: 'linear-gradient(135deg,#e6e5d1,#dad7b4)', href: 'formula.html' },
+  { ch: 7,  t: '力学实验室 · 力与重力', d: '弹力/重力方向与作用点', ic: '🧱', bg: 'linear-gradient(135deg,#e8ded5,#dac7b4)', href: 'mechanics.html' },
+  { ch: 8,  t: '力学实验室 · 摩擦与惯性', d: '静/滑动摩擦判据 · 牛顿第一定律', ic: '🛞', bg: 'linear-gradient(135deg,#e6dcd1,#dac7b4)', href: 'mechanics.html' },
+  { ch: 9,  t: '压强 · 固液气压演示',   d: 'p=F/S 与液体压强公式', ic: '🫗', bg: 'linear-gradient(135deg,#d1dce6,#b4c7da)', href: 'formula.html' },
+  { ch: 10, t: '浮力 · 阿基米德原理',   d: 'F浮=ρgV排 参数联动', ic: '🛟', bg: 'linear-gradient(135deg,#d1dde6,#b4cbda)', href: 'formula.html' },
+  { ch: 11, t: '功和机械能实验室',      d: 'W=Fs、P=Fv、动能势能转化', ic: '🎢', bg: 'linear-gradient(135deg,#d7d2e7,#bcb4da)', href: 'formula.html' },
+  { ch: 12, t: '简单机械 · 杠杆滑轮',   d: '杠杆平衡/滑轮组/机械效率', ic: '⚙️', bg: 'linear-gradient(135deg,#e6dad1,#dac4b4)', href: 'formula.html' },
+  { ch: 13, t: '分子实验室 · 分子热运动', d: '13 种分子 3D 模型与键角', ic: '⚗️', bg: 'linear-gradient(135deg,#e5d2e7,#d5b4da)', href: 'molecule.html' },
+  { ch: 15, t: '电路实验室 · 电流和电路', d: 'MNA 求解器 实时电流读数', ic: '🔌', bg: 'linear-gradient(135deg,#d5dfe8,#b4c7da)', href: 'circuit.html' },
+  { ch: 17, t: '欧姆定律 · 电路沙盒',   d: 'I=U/R 滑动变阻器联动', ic: '🔆', bg: 'linear-gradient(135deg,#d5dae8,#b4bfda)', href: 'circuit.html' },
+  { ch: 18, t: '电功率 · 焦耳定律',     d: 'P=UI、Q=I²Rt 参数联动', ic: '💡', bg: 'linear-gradient(135deg,#e6e1d1,#dad2b3)', href: 'formula.html' },
+  { ch: 20, t: '电与磁 · 电动机原理',   d: '磁场对电流的作用', ic: '🧲', bg: 'linear-gradient(135deg,#d1d9e6,#b4c2da)', href: 'formula.html' }
+];
+
+/* ---------- 生成资源卡：每节 1-2 张知识卡 + 部分题目卡 ---------- */
+var CARDS = [];
+var KOBJ = { 力学: '🧱', 电学: '⚡', 光学: '🔍', 热学: '🔥', 声学: '🔔' };
+/* emoji → 本地 SVG 图标（bioicons CC0 + tabler MIT，见 THIRD_PARTY_NOTICES） */
+var EM_ICON = {
+  '力学': 'assets/icons/tb-scale.svg', '电学': 'assets/icons/tb-bolt.svg', '光学': 'assets/icons/tb-eye.svg',
+  '热学': 'assets/icons/tb-flame.svg', '声学': 'assets/icons/tb-wave-sine.svg',
+  '🧱': 'assets/icons/tb-scale.svg', '⚡': 'assets/icons/tb-bolt.svg', '🔍': 'assets/icons/tb-eye.svg',
+  '🔥': 'assets/icons/tb-flame.svg', '🔔': 'assets/icons/tb-wave-sine.svg', '✏️': 'assets/icons/tb-pencil.svg',
+  '🧮': 'assets/icons/bio-calculator.svg', '🌡️': 'assets/icons/bio-thermometer.svg', '🌡': 'assets/icons/bio-thermometer.svg',
+  '🪞': 'assets/icons/tb-aperture.svg', '🛞': 'assets/icons/tb-arrows-up-left.svg', '🫗': 'assets/icons/bio-round-bottomed-flask-1-250ml.svg',
+  '🛟': 'assets/icons/bio-Beaker_water.svg', '🎢': 'assets/icons/tb-tool.svg',
+  '⚙️': 'assets/icons/tb-adjustments.svg', '⚙': 'assets/icons/tb-adjustments.svg',
+  '⚗️': 'assets/icons/bio-erlenmeyer_filled.svg', '⚗': 'assets/icons/bio-erlenmeyer_filled.svg',
+  '🔌': 'assets/icons/tb-plug.svg', '🔆': 'assets/icons/tb-bulb.svg', '💡': 'assets/icons/tb-bulb.svg',
+  '🧲': 'assets/icons/tb-magnet.svg'
+};
+function iconImg(ic, size) {
+  var p = EM_ICON[ic];
+  if (!p) return ic;
+  size = size || 40;
+  return '<img src="' + p + '" style="width:' + size + 'px;height:' + size + 'px;object-fit:contain" alt="" loading="lazy">';
+}
+var KBG = {
+  力学: 'linear-gradient(135deg,#e6dfd1,#daccb4)', 电学: 'linear-gradient(135deg,#d1d7e6,#b4bdda)',
+  光学: 'linear-gradient(135deg,#e6dfd1,#daceb4)', 热学: 'linear-gradient(135deg,#e6d4d1,#dabab4)',
+  声学: 'linear-gradient(135deg,#d1e6df,#b4dacc)'
+};
+CHAPTERS.forEach(function (ch) {
+  ch.secs.forEach(function (sec, si) {
+    CARDS.push({
+      ch: ch.n, f: ch.f, sec: sec, kind: 'classic',
+      t: sec + '（考点知识图精讲版）', d: '点击查看详情',
+      ic: KOBJ[ch.f], bg: KBG[ch.f]
+    });
+    if (si % 2 === 0) {
+      CARDS.push({
+        ch: ch.n, f: ch.f, sec: sec, kind: 'classic',
+        t: sec + ' · 典例与易错点辨析', d: '点击查看详情',
+        ic: KOBJ[ch.f], bg: KBG[ch.f]
+      });
+    }
+    if (si === 0) {
+      CARDS.push({
+        ch: ch.n, f: ch.f, sec: sec, kind: 'exercise',
+        t: '【典型题目】' + sec + ' 随堂精练 20 题', d: '点击查看详情',
+        ic: '✏️', bg: 'linear-gradient(135deg,#e6dcd1,#dac8b4)'
+      });
+    }
+  });
+});
+/* 可玩卡插入头部 */
+PLAYABLE.forEach(function (p) {
+  var ch = CHAPTERS.filter(function (c) { return c.n === p.ch; })[0];
+  CARDS.unshift({
+    ch: p.ch, f: ch.f, sec: ch.secs[0], kind: 'classic', play: p.href,
+    t: p.t, d: p.d, ic: p.ic, bg: p.bg
+  });
+});
+
+/* ---------- 状态 ---------- */
+var st = { book: '8-upper', ch: null, sec: null, field: '全部', view: 'classic', kw: '' };
+
+/* 每册资源数徽标：与原站截图一致（八上 101），其余按章节数等比 */
+function bookCount(b) {
+  var n = 0;
+  CARDS.forEach(function (c) {
+    if (c.ch >= b.from && c.ch <= b.to) n++;
+  });
+  return n;
+}
+function chCount(n) {
+  var k = 0;
+  CARDS.forEach(function (c) { if (c.ch === n) k++; });
+  return k;
+}
+
+/* ---------- 渲染 ---------- */
+var FIELDS = ['全部', '力学', '电学', '光学', '热学', '声学'];
+
+function renderFieldTags() {
+  var el = document.getElementById('fieldTags');
+  el.innerHTML = '<span style="font-size:13px;color:#9a8f93;align-self:center">已选用 ✦</span>';
+  FIELDS.forEach(function (f) {
+    var s = document.createElement('span');
+    s.className = 'tag' + (st.field === f ? ' on' : '');
+    s.textContent = f;
+    s.onclick = function () { st.field = f; render(); };
+    el.appendChild(s);
+  });
+}
+
+function renderBookTabs() {
+  var el = document.getElementById('bookTabs');
+  el.innerHTML = '';
+  BOOKS.forEach(function (b) {
+    var d = document.createElement('div');
+    d.className = 'booktab' + (st.book === b.id ? ' on' : '');
+    d.innerHTML = b.title + '<span class="n">' + bookCount(b) + '</span>';
+    d.onclick = function () { st.book = b.id; st.ch = null; st.sec = null; render(); };
+    el.appendChild(d);
+  });
+}
+
+function renderTree() {
+  var b = BOOKS.filter(function (x) { return x.id === st.book; })[0];
+  var el = document.getElementById('treeCh');
+  el.innerHTML = '';
+  /* 全部 */
+  var all = document.createElement('div');
+  all.className = 'ch open';
+  all.innerHTML = '<div class="crow' + (st.ch === null ? ' ' : '') + '" style="' +
+    (st.ch === null ? 'background:var(--accent);color:#fff' : '') + '"><span class="cn">全部</span>' +
+    '<span class="cnt" style="' + (st.ch === null ? 'opacity:.8' : '') + '">' + bookCount(b) + '</span></div>';
+  all.querySelector('.crow').onclick = function () { st.ch = null; st.sec = null; render(); };
+  el.appendChild(all);
+  /* 各章 */
+  CHAPTERS.filter(function (c) { return c.n >= b.from && c.n <= b.to; }).forEach(function (c) {
+    var d = document.createElement('div');
+    d.className = 'ch' + (st.ch === c.n ? ' open' : '');
+    var crow = document.createElement('div');
+    crow.className = 'crow';
+    crow.innerHTML = '<span class="cn"><span class="arrow">▶</span>' + c.t + '</span><span class="cnt">' + chCount(c.n) + '</span>';
+    crow.onclick = function () {
+      if (st.ch === c.n) { st.ch = null; st.sec = null; }
+      else { st.ch = c.n; st.sec = null; }
+      render();
+    };
+    d.appendChild(crow);
+    var secs = document.createElement('div');
+    secs.className = 'secs';
+    c.secs.forEach(function (s) {
+      var sd = document.createElement('div');
+      sd.className = 'sec' + (st.sec === s ? ' on' : '');
+      sd.innerHTML = '<span>' + s + '</span><span class="n">' + (2 + (s.length % 3)) + '</span>';
+      sd.onclick = function (e) {
+        e.stopPropagation();
+        if (st.sec === s) st.sec = null; else st.sec = s;
+        if (!st.ch) st.ch = c.n;
+        render();
+      };
+      secs.appendChild(sd);
+    });
+    d.appendChild(secs);
+    el.appendChild(d);
+  });
+  document.getElementById('stageCnt').textContent = CARDS.length + ' 个资源';
+}
+
+function renderGrid() {
+  var grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  var list = CARDS.filter(function (c) {
+    var b = BOOKS.filter(function (x) { return x.id === st.book; })[0];
+    if (c.ch < b.from || c.ch > b.to) return false;
+    if (st.ch !== null && c.ch !== st.ch) return false;
+    if (st.sec && c.sec !== st.sec) return false;
+    if (st.field !== '全部' && c.f !== st.field) return false;
+    if (st.kw && c.t.indexOf(st.kw) < 0 && c.sec.indexOf(st.kw) < 0) return false;
+    if (!st.kw && st.view === 'exercise' && c.kind !== 'exercise') return false;
+    return true;
+  });
+  document.getElementById('cnt').textContent = list.length;
+  document.getElementById('empty').style.display = list.length ? 'none' : '';
+  /* 范围标题 */
+  var t = '全部资源';
+  if (st.sec) t = st.sec;
+  else if (st.ch !== null) t = CHAPTERS.filter(function (c) { return c.n === st.ch; })[0].t;
+  document.getElementById('rangeTitle').textContent = t;
+
+  list.forEach(function (c) {
+    var d = document.createElement('div');
+    d.className = 'card';
+    if (c.play) d.onclick = function () { location.href = c.play; };
+    else d.onclick = function () { showCardInfo(c); };
+    d.innerHTML =
+      '<div class="thumb" style="background:' + c.bg + '">' + iconImg(c.ic, 46) +
+      (c.play ? '<span class="ftag">免费试玩</span>' : '') + '</div>' +
+      '<div class="cap"><div class="meta">' +
+      '<span class="f1">' + c.f + '</span><span class="f2">' + (c.kind === 'exercise' ? '典型题目' : '经典知识') + '</span>' +
+      '</div><div class="t">' + c.t + '</div><div class="d">' + c.d + '</div></div>';
+    grid.appendChild(d);
+  });
+}
+
+function render() {
+  renderFieldTags();
+  renderBookTabs();
+  renderTree();
+  renderGrid();
+}
+
+document.querySelectorAll('.viewrow .tag').forEach(function (el) {
+  el.onclick = function () {
+    document.querySelectorAll('.viewrow .tag').forEach(function (x) { x.classList.remove('on'); });
+    el.classList.add('on');
+    st.view = el.dataset.view;
+    render();
+  };
+});
+document.getElementById('go').onclick = function () { st.kw = document.getElementById('q').value.trim(); render(); };
+document.getElementById('q').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') { st.kw = this.value.trim(); render(); }
+});
+(function () {
+  var m = /[?&]q=([^&]*)/.exec(location.search);
+  if (m) { st.kw = decodeURIComponent(m[1]); document.getElementById('q').value = st.kw; }
+})();
+/* ---------- 详情弹层：知识点正文（源: cn-math-taxonomy, CC BY-NC 4.0）+ 题目 + 推荐实验室 ---------- */
+var LAB_LINK = { '力学': 'mechanics.html', '电学': 'circuit.html', '光学': 'optics.html', '热学': 'formula.html', '声学': 'formula.html' };
+var LAB_NAME = { '力学': '力学实验室', '电学': '电路实验室', '光学': '光学实验室', '热学': '公式实验室', '声学': '公式实验室' };
+/* 章节 n → 教材册前缀（源数据用 八上/八下/九全） */
+function bookPrefix(n) { return n <= 6 ? '八上' : (n <= 12 ? '八下' : '九全'); }
+var CN_NUM = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
+function cnChapterNum(str) {
+  var m = /第([一二三四五六七八九十]+)章/.exec(str || '');
+  if (!m) return 0;
+  var s = m[1];
+  if (s === '十') return 10;
+  if (/^十/.test(s)) return 10 + (CN_NUM[s[1]] || 0);
+  if (/十$/.test(s)) return (CN_NUM[s[0]] || 0) * 10;
+  if (s.indexOf('十') > 0) return (CN_NUM[s[0]] || 0) * 10 + (CN_NUM[s[2]] || 0);
+  return CN_NUM[s] || 0;
+}
+/* 找到卡片所属章的知识点与题目 */
+function chTopics(n) {
+  if (!window.KB_TOPICS) return [];
+  var pre = bookPrefix(n);
+  return window.KB_TOPICS.filter(function (t) {
+    return t.ch.indexOf(pre) === 0 && cnChapterNum(t.ch) === n;
+  });
+}
+function chQuestions(n) {
+  var ts = chTopics(n);
+  if (!ts.length || !window.KB_QUESTIONS) return [];
+  var ids = {};
+  ts.forEach(function (t) { ids[t.id] = 1; });
+  return window.KB_QUESTIONS.filter(function (q) { return ids[q.tid]; });
+}
+function showCardInfo(c) {
+  var ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(63,48,41,.45);z-index:99;display:flex;align-items:center;justify-content:center;padding:20px';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:var(--panel,#ffffff);border-radius:16px;max-width:620px;width:100%;max-height:84vh;overflow-y:auto;padding:26px 26px 22px;box-shadow:0 12px 40px rgba(40,25,15,.28);position:relative';
+  var ch = CHAPTERS.filter(function (x) { return x.n === c.ch; })[0];
+  var lab = LAB_LINK[c.f];
+  var topics = chTopics(c.ch);
+  var qs = chQuestions(c.ch);
+  var isEx = c.kind === 'exercise';
+  var html = '';
+
+  /* 匹配到知识点：优先显示当前节，其次整章 */
+  if (topics.length) {
+    var secTopics = c.sec ? topics.filter(function (t) { return t.n === c.sec; }) : [];
+    var show = secTopics.length ? secTopics : topics;
+    html += '<div style="font-size:11px;letter-spacing:1px;color:var(--muted,#9a8f93);margin-bottom:6px">' +
+      (ch ? ch.t + ' · 第 ' + c.ch + ' 章' : '') + (c.sec ? ' · ' + c.sec : '') +
+      ' · ' + show.length + ' 个知识点</div>';
+    html += '<h3 style="margin:0 0 12px;font-size:17px;color:var(--ink,#3b3335)">' + iconImg(c.ic, 24) + ' ' +
+      (secTopics.length ? c.sec : (ch ? ch.t : c.t)) +
+      (isEx ? ' · 随堂精练' : '') + '</h3>';
+    if (!isEx) {
+      show.forEach(function (t) {
+        html += '<div style="border:1px solid #F0EAE2;border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#FDFBF7">' +
+          '<div style="font-size:14.5px;font-weight:600;color:var(--ink,#3b3335)">' + t.n +
+          '<span style="font-size:11px;font-weight:500;color:var(--muted,#9a8f93);margin-left:8px">' + t.ch + '</span></div>' +
+          '<p style="margin:7px 0 0;font-size:13px;line-height:1.75;color:var(--ink-2,#6c6165)">' + t.d + '</p>' +
+          (t.mc && t.mc.length ? '<div style="margin-top:8px;font-size:12.5px;line-height:1.7;color:var(--muted,#9a8f93)"><b style="color:var(--green-text,#157F44)">掌握标准</b>：' +
+            t.mc.map(function (m) { return '<span style="display:inline-block;background:#F2F7F2;border-radius:6px;padding:2px 8px;margin:3px 4px 0 0">' + m + '</span>'; }).join('') + '</div>' : '') +
+          (t.dq ? '<div style="margin-top:9px;font-size:12.5px;color:var(--blue-deep,#3E63C8);cursor:pointer" class="dq" data-a="' + String(t.dq.a).replace(/"/g, '&quot;') + '">诊断题 · ' + t.dq.q + ' <span style="color:var(--muted,#9a8f93);font-size:11px">(点击看答案)</span></div>' : '') +
+          '</div>';
+      });
+    } else {
+      var pool = qs.filter(function (q) { return q.ty === 'choice'; }).slice(0, 8);
+      html += '<div style="font-size:12px;color:var(--muted,#9a8f93);margin-bottom:10px">共 ' + qs.length + ' 道题，展示前 ' + pool.length + ' 道选择题 · <a href="quiz.html?subject=physics&grade=' + c.ch + '" style="color:var(--blue-deep,#3E63C8)">去随堂自测 →</a></div>';
+      pool.forEach(function (q, i) {
+        html += '<div style="border:1px solid #F0EAE2;border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#FDFBF7">' +
+          '<div style="font-size:13.5px;font-weight:600;color:var(--ink,#3b3335)">' + (i + 1) + '. ' + q.p + '</div>' +
+          ((q.ch || []).map(function (o) { return '<div style="font-size:12.5px;color:var(--ink-2,#6c6165);margin-top:3px">' + o.key + '. ' + o.text + '</div>'; }).join('')) +
+          '<div style="margin-top:8px;font-size:12.5px;color:var(--green-text,#157F44);cursor:pointer" class="ans" data-a="答案 ' + q.a + ' · ' + String(q.ex || '').replace(/"/g, '&quot;') + '">点击看答案与解析</div>' +
+          '</div>';
+      });
+    }
+  } else {
+    /* 未匹配到数据时的回落 */
+    html += '<div style="font-size:11px;letter-spacing:1px;color:var(--muted,#9a8f93);margin-bottom:6px">' +
+      (ch ? ch.t + ' · 第 ' + c.ch + ' 章' : '知识专题') + (c.sec ? ' · ' + c.sec : '') + '</div>' +
+      '<h3 style="margin:0 0 8px;font-size:17px;color:var(--ink,#3b3335)">' + iconImg(c.ic, 24) + ' ' + c.t + '</h3>' +
+      '<p style="margin:0 0 6px;font-size:13px;line-height:1.7;color:var(--ink-2,#6c6165)">' +
+      (c.d === '点击查看详情'
+        ? '本节「' + (c.sec || '') + '」的' + (isEx ? '典型题目讲解' : '考点知识精讲') + '。'
+        : c.d) + '</p>' +
+      '<p style="margin:0 0 16px;font-size:12px;color:var(--muted,#9a8f93)">学科：' + c.f + ' · 类型：' + (isEx ? '典型题目' : '经典知识') + '</p>';
+  }
+  if (lab) html += '<a href="' + lab + '" style="display:inline-block;background:var(--danger,#e8879b);color:#fff;text-decoration:none;border-radius:9px;padding:9px 18px;font-size:13px">去' + (LAB_NAME[c.f] || '实验室') + '动手做 →</a> ' +
+    '<a href="quiz.html?subject=physics" style="display:inline-block;background:var(--blue-50,#EDF3FD);color:var(--blue-deep,#3E63C8);text-decoration:none;border-radius:9px;padding:9px 18px;font-size:13px;margin-left:6px">随堂自测 →</a>';
+  html += '<div style="margin-top:14px;font-size:10.5px;color:var(--faint,#b3aca2)">知识点与题库来源：cn-math-taxonomy（CC BY-NC 4.0），对齐人教版 2022 年版课标</div>';
+  html += '<button style="position:absolute;top:10px;right:12px;border:0;background:none;font-size:20px;color:var(--muted,#9a8f93);cursor:pointer" aria-label="关闭">×</button>';
+  box.innerHTML = html;
+  ov.appendChild(box);
+  document.body.appendChild(ov);
+  /* 诊断题 / 答案翻转 */
+  box.addEventListener('click', function (e) {
+    var t = e.target.closest('.dq, .ans');
+    if (!t) return;
+    if (t.dataset.open) { t.textContent = t.dataset.orig; delete t.dataset.open; }
+    else { t.dataset.orig = t.innerHTML; t.textContent = t.dataset.a; t.dataset.open = '1'; }
+  });
+  function close() { if (ov.parentNode) ov.parentNode.removeChild(ov); }
+  ov.onclick = function (e) { if (e.target === ov) close(); };
+  box.querySelector('button').onclick = close;
+  document.addEventListener('keydown', function esc(e) {
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+  });
+}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# 运行时产物
+node_modules/
+dist/
+.workbuddy/
+shots/
+*.zip
+
+# 系统文件
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+
+# 备份目录
+*.bak-*

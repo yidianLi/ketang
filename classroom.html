@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课堂工具 · 帧理 SVG 复现版</title>
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="description" content="课堂工具箱：随机点名、分组抢答、背诵 PK、闪记 PK、宣言滚动屏、番茄钟、细胞解剖、方程式配平、遗传概率、气候判读、单词速记、随堂小测。">
+<script src="js/theme.js"></script>
+<script src="js/canvas-theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/classroom.css">
+<script src="js/shell.js"></script>
+</head>
+<body class="lab">
+<header class="topbar" role="banner" data-lab="课堂工具" data-en="Classroom" data-glyph="课" data-tone="terrain">
+  <div class="tools">
+    <button id="fs" class="btn" title="全屏（投屏）">全屏</button>
+    <a class="btn ghost" href="index.html">返回首页</a>
+  </div>
+</header>
+<nav class="cr-tabs" id="tabs" role="tablist" aria-label="课堂工具选择"></nav>
+<main id="stage" class="cr-stage" role="tabpanel" aria-live="polite"></main>
+
+<!-- 纯逻辑层（Node 可测） -->
+<script src="js/tools/core/cores.js"></script>
+<!-- 数据 -->
+<script src="js/tools/data/equations.js"></script>
+<script src="js/tools/data/words.js"></script>
+<script src="js/tools/data/quizbank.js"></script>
+<script src="js/tools/data/climate.js"></script>
+<script src="js/tools/data/cell.js"></script>
+<script src="js/tools/data/recite.js"></script>
+<!-- 共享层 -->
+<script src="js/tools/store.js"></script>
+<script src="js/tools/ui.js"></script>
+<script src="js/tools/sfx.js"></script>
+<script src="js/tools/index.js"></script>
+<!-- 12 个工具 -->
+<script src="js/tools/rollcall.js"></script>
+<script src="js/tools/quiz-buzzer.js"></script>
+<script src="js/tools/recite-pk.js"></script>
+<script src="js/tools/flashcard-pk.js"></script>
+<script src="js/tools/marquee.js"></script>
+<script src="js/tools/huaxiaoyu.js"></script>
+<script src="js/tools/cell.js"></script>
+<script src="js/tools/balance.js"></script>
+<script src="js/tools/genetics.js"></script>
+<script src="js/tools/climate.js"></script>
+<script src="js/tools/words.js"></script>
+<script src="js/tools/quiz.js"></script>
+
+<script>
+/* 全屏按钮：全页投屏 */
+document.getElementById('fs').onclick = function () {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+};
+</script>
+</body>
+</html>

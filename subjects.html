@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学科分级目录 · 帧理 SVG 实验室</title>
+<meta name="description" content="数学、物理、化学、生物、地理五个学科，统一按年级分段：初一～初三、高一～高三、专题。91 道可动手的互动题，每道都是一句能想、能拖、能验证的题。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  /* 页面局部：学科卡片与年级药丸 */
+  .subj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+  .subj-card {
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--panel); border: 1px solid var(--line-3); border-radius: 16px;
+    padding: 20px 20px 18px; text-decoration: none; color: inherit;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .subj-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--line-2); }
+  .subj-card .top { display: flex; align-items: baseline; gap: 10px; }
+  .subj-card .name { font-size: 19px; font-weight: 700; letter-spacing: -.2px; }
+  .subj-card .en { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); }
+  .subj-card .n { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .subj-card .n b { color: var(--accent); font-size: 17px; }
+  .subj-card .desc { font-size: 13px; line-height: 1.75; color: var(--ink-2); }
+  .grades { display: flex; gap: 6px; flex-wrap: wrap; }
+  .grades span {
+    font-size: 11.5px; padding: 3px 10px; border-radius: 999px;
+    background: var(--tint); border: 1px solid var(--line-3); color: var(--ink-2);
+  }
+  .grades span.hot { background: var(--info-bg); border-color: transparent; color: var(--info-fg); }
+  .subj-card .go { margin-top: 2px; font-size: 12.5px; font-weight: 700; color: var(--accent); }
+  .hint { font-size: 12.5px; color: var(--muted); line-height: 1.9; margin-top: 26px; }
+  .hint b { color: var(--ink-2); }
+  @media (max-width: 560px) { .subj-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<div id="site-nav"></div>
+<script src="js/site-nav.js"></script>
+
+<div class="home" id="main" role="main">
+  <section class="hero">
+    <span class="hero-badge">五个学科 · 同一套年级分段 · 91 道互动题</span>
+    <h1>先选科目，<br>再按年级挑题</h1>
+    <p class="hero-sub">
+      数学、物理、化学、生物、地理五科都做成了同一套结构：顶部切科目，第二排切年级，
+      左边列出这一年的题，右边直接内嵌演示。初中三档、高中三档，超出课本的收进「专题」。
+    </p>
+    <ul class="hero-stats">
+      <li><b>5</b><span>个学科</span></li>
+      <li><b>91</b><span>道互动题</span></li>
+      <li><b>6</b><span>个年级档位</span></li>
+      <li><b>100%</b><span>离线可开</span></li>
+    </ul>
+  </section>
+
+  <section class="group">
+    <h2 class="group-title">按学科进入</h2>
+    <div class="subj-grid">
+
+      <a class="subj-card" href="ai-cases/mathlearn/index.html">
+        <div class="top"><span class="name">数学</span><span class="en">Math</span><span class="n"><b>42</b> 题</span></div>
+        <div class="grades"><span class="hot">初一</span><span class="hot">初二</span><span class="hot">初三</span><span class="hot">高中</span><span>专题</span></div>
+        <p class="desc">18 个互动章节（数轴、天平、拼图、幂的堆叠…）打底，24 道拓展题挂在对应章节下；高中段按高一 / 高二分段，专题收二次函数压轴四件。</p>
+        <span class="go">进入数学目录 →</span>
+      </a>
+
+      <a class="subj-card" href="ai-cases/physicslearn/index.html">
+        <div class="top"><span class="name">物理</span><span class="en">Physics</span><span class="n"><b>31</b> 题</span></div>
+        <div class="grades"><span class="hot">初二</span><span class="hot">初三</span><span class="hot">高一</span><span class="hot">高二</span><span class="hot">高三</span><span>专题</span></div>
+        <p class="desc">光现象与透镜、电路与电学、力的合成与动量、振动与波、电磁与近代物理，31 个仿真按年级归位，含 physics-sim / PhysiXLab / electro-lab 三个开源来源。</p>
+        <span class="go">进入物理目录 →</span>
+      </a>
+
+      <a class="subj-card" href="ai-cases/chemistrylearn/index.html">
+        <div class="top"><span class="name">化学</span><span class="en">Chemistry</span><span class="n"><b>11</b> 题</span></div>
+        <div class="grades"><span class="hot">初三</span><span class="hot">高一</span><span class="hot">高二</span><span>专题</span></div>
+        <p class="desc">从水、二氧化碳、甲烷的分子形状，到氨的三角锥、乙烯的平面结构，再到氯化钠、金刚石、干冰三种晶体，键角按真实几何反解。</p>
+        <span class="go">进入化学目录 →</span>
+      </a>
+
+      <a class="subj-card" href="ai-cases/biologylearn/index.html">
+        <div class="top"><span class="name">生物</span><span class="en">Biology</span><span class="n"><b>2</b> 题</span></div>
+        <div class="grades"><span class="hot">初一</span><span class="hot">初二</span></div>
+        <p class="desc">动植物细胞解剖（结构可点）与遗传概率（庞纳特方格可换亲本）。这一科互动内容还少，先把年级位置摆正，新增的会直接落进对应档位。</p>
+        <span class="go">进入生物目录 →</span>
+      </a>
+
+      <a class="subj-card" href="ai-cases/geographylearn/index.html">
+        <div class="top"><span class="name">地理</span><span class="en">Geography</span><span class="n"><b>5</b> 题</span></div>
+        <div class="grades"><span class="hot">初一</span></div>
+        <p class="desc">同一份参数化地形换三个角度看：彩色讲解图认山脊山谷、试卷黑白图练判读、三维视图建立立体感，再加一道气候类型判读。</p>
+        <span class="go">进入地理目录 →</span>
+      </a>
+
+    </div>
+    <p class="hint">
+      <b>为什么这样分：</b>年级是学生找题时的第一直觉，比「拓扑 / 电磁」这类知识块更好用；
+      同一道题在不同学段讲法不同，所以每道题只归一个年级，跨学段的收进「专题」，不重复计入。
+    </p>
+  </section>
+
+  <div class="docs">
+    <b>其他入口：</b>
+    <a href="ai-cases.html">案例库（按题看）</a> ·
+    <a href="resource.html">资源库</a> ·
+    <a href="knowledge.html">知识专题</a> ·
+    <a href="system-design.html">系统设计说明书</a>
+  </div>
+</div>
+</body>
+</html>

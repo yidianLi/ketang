@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>可补齐资源扫描 · 2026-11 · 真理想</title>
+<style>
+:root{
+  --blue:#5C8CEB; --blue-deep:#3E63C8; --blue-50:#EDF3FD; --blue-100:#DCE7FA; --blue-200:#B7CCF4;
+  --orange:#E99C4F; --orange-text:#B26A1B; --orange-100:#FBEAD3; --orange-200:#F2D5B0;
+  --green:#2ECC71; --green-text:#157F44; --green-100:#D9F5E5; --green-200:#B8E7CB;
+  --red:#E74C3C; --red-text:#C0392B; --red-100:#FBE4E1; --red-200:#F3C7C1;
+  --ink:#33302B; --muted:#6E695F; --faint:#9A9488; --bg:#F6F4F0; --card:#FFFDF9; --line:#E7E1D6;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;
+  line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1100px;margin:0 auto;padding:40px 24px 72px}
+.crumb{font-size:12.5px;color:var(--faint);letter-spacing:.04em;margin-bottom:10px}
+h1{font-size:29px;margin:0 0 10px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:14.5px;max-width:760px;margin:0 0 26px}
+.sub b{color:var(--ink)}
+
+/* 缺口条 */
+.gap{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 34px}
+.gap .g{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.gap .n{font-size:24px;font-weight:700;letter-spacing:-.02em;color:var(--orange-text)}
+.gap .n small{font-size:13px;font-weight:500;color:var(--muted);margin-left:3px}
+.gap .l{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+h2{font-size:15px;margin:34px 0 6px;display:flex;align-items:center;gap:9px}
+h2 .tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.02em}
+.t-a{background:var(--green-100);color:var(--green-text)}
+.t-b{background:var(--blue-50);color:var(--blue-deep)}
+.t-c{background:var(--red-100);color:var(--red-text)}
+h2 .hint{font-size:12.5px;color:var(--faint);font-weight:400;margin-left:auto}
+
+/* 卡片 */
+.list{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  display:grid;grid-template-columns:1fr 190px;gap:18px}
+.card.best{border-color:var(--green-200);background:linear-gradient(180deg,#F7FCF9,var(--card));
+  box-shadow:0 2px 10px rgba(46,204,113,.07)}
+.card h3{margin:0 0 3px;font-size:15.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h3 code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--blue-deep);
+  background:var(--blue-50);padding:1px 6px;border-radius:5px;font-weight:500}
+.badge{font-size:10.5px;font-weight:700;padding:1.5px 7px;border-radius:20px;letter-spacing:.03em}
+.b-mit{background:var(--green-100);color:var(--green-text)}
+.b-nc{background:var(--orange-100);color:var(--orange-text)}
+.b-no{background:var(--red-100);color:var(--red-text)}
+.desc{font-size:13.5px;color:var(--muted);margin:5px 0 9px}
+.desc b{color:var(--ink);font-weight:600}
+.kv{display:flex;flex-wrap:wrap;gap:6px}
+.kv span{font-size:11.5px;color:var(--muted);background:#F2EFE8;border-radius:6px;padding:2px 8px}
+.kv span.hi{background:var(--blue-50);color:var(--blue-deep)}
+.side{border-left:1px dashed var(--line);padding-left:16px;font-size:12.5px;color:var(--muted);
+  display:flex;flex-direction:column;justify-content:center;gap:6px}
+.side .r{display:flex;justify-content:space-between}
+.side .r b{color:var(--ink);font-weight:600}
+.cost{font-weight:700}
+.c-s{color:var(--green-text)}.c-m{color:var(--orange-text)}.c-l{color:var(--blue-deep)}
+
+/* 路线 */
+.road{margin-top:38px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+.road h3{margin:0 0 14px;font-size:15px}
+.step{display:flex;gap:14px;padding:11px 0;border-top:1px solid #F0ECE3}
+.step:first-of-type{border-top:0}
+.step .no{width:24px;height:24px;border-radius:50%;background:var(--blue-50);color:var(--blue-deep);
+  font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 24px;margin-top:2px}
+.step .tx{font-size:13.5px}
+.step .tx b{display:block;margin-bottom:1px}
+.step .tx i{font-style:normal;color:var(--muted)}
+
+.note{margin-top:26px;font-size:12px;color:var(--faint);border-top:1px solid var(--line);padding-top:14px}
+@media(max-width:820px){
+  .gap{grid-template-columns:repeat(2,1fr)}
+  .card{grid-template-columns:1fr;gap:10px}
+  .side{border-left:0;border-top:1px dashed var(--line);padding-left:0;padding-top:10px;flex-direction:row;flex-wrap:wrap;gap:10px}
+  .side .r{gap:6px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumb">资源调研 / 2026-11-13 / GitHub 全站扫描</div>
+  <h1>还有哪些资源能补齐我们</h1>
+  <p class="sub">扫了一遍 GitHub 上与本项目同形态的资源（中文、理科、可视化、可离线）。结论：<b>还有得挖，但真正能合法接入的只有两类</b>——一类是内容型数据集（知识点 + 题库），一类是宽松许可的引擎与素材。2026 年 9–10 月冒出来的一批 AI 单文件 3D 课件虽然很诱人，但大多没写 LICENSE，<b>只能借鉴思路，不能直接搬</b>。</p>
+
+  <div class="gap">
+    <div class="g"><div class="n">2<small>条</small></div><div class="l">生物策展条目（另 5 门 3D 课）</div></div>
+    <div class="g"><div class="n">5<small>条</small></div><div class="l">地理策展条目（另 14 门 3D 课）</div></div>
+    <div class="g"><div class="n">157<small>张</small></div><div class="l">知识卡仍是空壳</div></div>
+    <div class="g"><div class="n">0<small>道</small></div><div class="l">站内题库 / 自测</div></div>
+  </div>
+
+  <h2><span class="tag t-a">A · 直接可采</span>内容型：拿来就能填坑<span class="hint">许可允许非商业使用，需署名</span></h2>
+  <div class="list">
+
+    <div class="card best">
+      <div>
+        <h3>中小学知识图谱 + 题库 <code>xiaoyang111222/cn-math-taxonomy</code><span class="badge b-nc">CC BY-NC 4.0</span><span class="badge" style="background:var(--green-100);color:var(--green-text)">首选</span></h3>
+        <div class="desc">3496 个知识点，每个都带 <b>一句话定义、掌握标准、诊断题、课标编号</b>；配套 <b>14043 道题</b>，每题有答案、解析、难度。对齐 2022/2017 课标与人教版教材，附先修边（答错能一路回溯到小学知识点）。</div>
+        <div class="desc">覆盖正好是我们的五科：数学 870、物理 269、化学 86、生物 66、地理 59。年级分布：物理 8–12、化学 9–11、生物 7–8、地理 7–8。</div>
+        <div class="kv"><span class="hi">7878 ★</span><span class="hi">今天还在更新</span><span>topics 3.2MB</span><span>questions 9.8MB</span><span>可离线 JSON</span><span>有先修图数据</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>知识卡 + 题库</b></div>
+        <div class="r"><span>成本</span><b class="cost c-m">M · 1–2 天</b></div>
+        <div class="r"><span>收益</span><b>一次填掉两大坑</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>铜匠实验室 54 门 3D 实验课 <code>tongjiang-lab</code><span class="badge b-nc">CC BY-NC 4.0</span><span class="badge" style="background:#F2EFE8;color:var(--muted)">已接入 v1.4.1</span></h3>
+        <div class="desc">已经进站，这里只做记录：物理 10 / 化学 25 / 生物 5 / 地理 14，是当前 3D 档的主力。</div>
+        <div class="kv"><span>单文件 ~1MB</span><span>断网可用</span><span>教材章节对齐</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>状态</span><b>已完成</b></div>
+        <div class="r"><span>待办</span><b>署名与免责</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>中国三维地势图 <code>FuzzyLogic112/china-terrain-3d</code><span class="badge b-mit">MIT</span></h3>
+        <div class="desc">基于<b>真实高程数据</b>的纯前端 3D 中国地形：分层设色、等高线、地形剖面、水位模拟，专为地理课堂做的，<b>离线可用、只有 1.3MB</b>。正好补我们地理最缺的“地形判读”那一条。</div>
+        <div class="kv"><span>2 ★（小众但精准）</span><span>2026-09 更新</span><span>Three.js</span><span>单页 index.html 20KB</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>地理 · 地形</b></div>
+        <div class="r"><span>成本</span><b class="cost c-s">S · 半天</b></div>
+        <div class="r"><span>动作</span><b>成一个 lab 条目</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>科研矢量图标库 <code>duerrsimon/bioicons</code><span class="badge b-mit">MIT</span></h3>
+        <div class="desc">生物 / 化学专用的 <b>SVG 插图库</b>：细胞器、实验器材、分子、器皿，全部矢量、可直接改色。我们现在的卡片图标全是 emoji，换成这套立刻从“练习作品”变成“教材配套”。</div>
+        <div class="kv"><span>1795 ★</span><span>2026-11 更新</span><span>上千枚 SVG</span><span>可商用</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>全站图标 / 配图</b></div>
+        <div class="r"><span>成本</span><b class="cost c-s">S · 半天</b></div>
+        <div class="r"><span>建议</span><b>先抽 40 枚</b></div>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="tag t-b">B · 引擎与素材</span>让我们能自己批量造题<span class="hint">许可干净，按需引入</span></h2>
+  <div class="list">
+
+    <div class="card">
+      <div>
+        <h3>3Dmol.js <code>3dmol/3Dmol.js</code> <span class="badge" style="background:var(--green-100);color:var(--green-text)">BSD-3</span></h3>
+        <div class="desc">输入一个分子名或 PDB 编号，浏览器里直接出<b>可旋转的 3D 分子</b>。做一页“任意分子查看器”，等于一次补上化学所有有机分子 + 生物所有大分子的演示，不用一题一题写。</div>
+        <div class="kv"><span>1038 ★</span><span>2026-11 更新</span><span>~1MB 运行时</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>化学 / 生物</b></div>
+        <div class="r"><span>成本</span><b class="cost c-m">M</b></div>
+        <div class="r"><span>杠杆</span><b>一页顶十页</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>smilesDrawer <code>reymond-group/smilesDrawer</code> <span class="badge b-mit">MIT</span></h3>
+        <div class="desc">把一段 SMILES 字符串画成<b>规范结构式</b>，几十 KB，纯前端。配合上面的 3D 查看器，结构式 ↔ 3D 模型可以互相切换。</div>
+        <div class="kv"><span>621 ★</span><span>2026-11 更新</span><span>极轻</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>有机化学</b></div>
+        <div class="r"><span>成本</span><b class="cost c-s">S</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>SunCalc <code>mourner/suncalc</code> <span class="badge" style="background:var(--green-100);color:var(--green-text)">BSD-2</span></h3>
+        <div class="desc">只要经纬度和日期，就能算出<b>太阳高度角、昼长、日出日落、晨昏线</b>。地理里“正午太阳高度 / 昼夜长短 / 太阳视运动”这几块，靠它一个 0.4MB 的库全解决，还能做成可拖时间轴的交互。</div>
+        <div class="kv"><span>3514 ★</span><span>0.4MB</span><span>零依赖</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>地理 · 地球运动</b></div>
+        <div class="r"><span>成本</span><b class="cost c-s">S</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>JSXGraph <code>jsxgraph/jsxgraph</code> <span class="badge b-nc" style="background:var(--orange-100);color:var(--orange-text)">LGPL-3.0</span></h3>
+        <div class="desc">交互几何 / 函数作图的老牌库，拖点、约束、轨迹、函数图像全都有。数学那 18 个章节模块里，凡是“拖动看变化”的都能用它重做。<b>LGPL 对纯前端引用有争议</b>，如果只是想轻量画函数，用下面那个 MIT 的更省心。</div>
+        <div class="kv"><span>1496 ★</span><span>2026-11 更新</span><span>130MB 仓库</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>数学 · 几何</b></div>
+        <div class="r"><span>成本</span><b class="cost c-l">L</b></div>
+        <div class="r"><span>注意</span><b>LGPL 风险</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>function-plot <code>mauriciopoppe/function-plot</code> <span class="badge b-mit">MIT</span></h3>
+        <div class="desc">一句话画函数图像，MIT、7MB 仓库、API 极简。做“输入解析式立刻出图”的通用页最合适，比 JSXGraph 轻得多。</div>
+        <div class="kv"><span>1068 ★</span><span>2026-10 更新</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>数学 · 函数</b></div>
+        <div class="r"><span>成本</span><b class="cost c-s">S</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>全球风场可视化 <code>cambecc/earth</code> <span class="badge b-mit">MIT</span></h3>
+        <div class="desc">就是那个著名的“地球风场”效果，真实气象数据驱动的全球流线。补地理“大气环流 / 洋流”极有视觉冲击。<b>但 2022 年停更</b>、需要外部气象数据接口，直接跑起来要改。</div>
+        <div class="kv"><span>6631 ★</span><span>已停更</span><span>需数据源</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>地理 · 环流</b></div>
+        <div class="r"><span>成本</span><b class="cost c-l">L</b></div>
+        <div class="r"><span>建议</span><b>只抄视觉</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>Cesium / OpenLayers <code>CesiumGS/cesium</code> <span class="badge b-mit">Apache-2.0</span></h3>
+        <div class="desc">专业级 3D 地球与地图引擎，能挂真实地形和影像。我们已有的 terrain.html 想升级到“能转的真地球”时用它，但体量大、上手重。</div>
+        <div class="kv"><span>15946 ★</span><span>1.2GB 仓库</span><span>按需构建</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>地理 · 地球</b></div>
+        <div class="r"><span>成本</span><b class="cost c-l">L</b></div>
+        <div class="r"><span>建议</span><b>暂缓</b></div>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="tag t-c">C · 想接但不能接</span>这些坑要先说清楚<span class="hint">引了会出事，或者根本没法用</span></h2>
+  <div class="list">
+
+    <div class="card">
+      <div>
+        <h3>PhET 交互仿真 <code>phetsims/*</code> <span class="badge b-no">GPL-3.0</span></h3>
+        <div class="desc">216 个仓库、覆盖理化生地、中文齐全，是这类资源里的天花板。<b>但 GPL-3.0 传染性极强</b>：自己托管就等于分发，理论上要求整站开源。可以当“设计参考”逐条看它怎么讲一个概念，不要直接搬代码或整页嵌。</div>
+        <div class="kv"><span>216 个仓库</span><span>质量最高</span><span>许可最毒</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>结论</span><b class="cost" style="color:var(--red-text)">只看不接</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>2026 年那批 AI 单文件 3D 课件 <span class="badge b-no">无 LICENSE</span></h3>
+        <div class="desc"><code>GordenSun/LearningCell</code>（338★ 细胞 3D）、<code>Boy438/plant-cell-studio</code>、<code>SeanWong17/Mammalia-tree</code>（中文演化树）形态和我们几乎一样，做得也漂亮。<b>但它们都没写许可证</b>——按著作权法默认“保留所有权利”，不能复制进我们的站点。<b>可以约作者要授权，或者看完用我们自己的方式重做一遍。</b></div>
+        <div class="kv"><span>形态最像</span><span>许可最脏</span><span>可联系作者</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>结论</span><b class="cost" style="color:var(--red-text)">借鉴重做</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div>
+        <h3>learn-biology 3D 细胞/病毒 <code>bexonia/learn-biology</code> <span class="badge b-mit">MIT</span></h3>
+        <div class="desc">动物 / 植物 / 真菌 / 细菌细胞 + 多种病毒，真实分子尺度，带导览和双语。许可干净，<b>但仓库 958MB</b>（大半是旁白音频），要接得先裁掉音频只取页面与模型，属于“能用但要动刀”。</div>
+        <div class="kv"><span>958MB</span><span>MIT</span><span>2026-11 更新</span></div>
+      </div>
+      <div class="side">
+        <div class="r"><span>补哪</span><b>生物 · 细胞</b></div>
+        <div class="r"><span>成本</span><b class="cost c-m">M–L</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="road">
+    <h3>如果按性价比排，我建议这么走</h3>
+    <div class="step"><div class="no">1</div><div class="tx"><b>先吃内容：接 cn-math-taxonomy 的知识点与题库</b><i>把 157 张空壳卡的正文用 description + 掌握标准自动填上，再开一个“随堂自测”页吃 14043 道题。这一步的收益比再找十套 3D 课件都大——我们缺的不是演示，是“学完之后能练”。</i></div></div>
+    <div class="step"><div class="no">2</div><div class="tx"><b>补地理视觉：china-terrain-3d 成一个 lab 条目</b><i>1.3MB、MIT、离线可用，接进来就能讲等高线与地形剖面，半天工作量。</i></div></div>
+    <div class="step"><div class="no">3</div><div class="tx"><b>统一图标：从 bioicons 抽 40 枚 SVG</b><i>替换全站 emoji 图标，理科味道立刻出来，工作量小、观感提升最直接。</i></div></div>
+    <div class="step"><div class="no">4</div><div class="tx"><b>做两个“通用页”代替逐个造题</b><i>3Dmol 的任意分子查看器 + function-plot 的任意函数绘图。一次开发，长期覆盖化学有机全部与数学函数全部。</i></div></div>
+    <div class="step"><div class="no">5</div><div class="tx"><b>许可红线写进 README</b><i>PhET（GPL）与无 LICENSE 项目一律只参考不搬运；铜匠与 cn-math-taxonomy（CC BY-NC）保留署名、全站保持免费非商业。</i></div></div>
+  </div>
+
+  <div class="note">数据来自 2026-11-13 的 GitHub API 实测（星数 / 最近提交 / 许可 / 体量）；cn-math-taxonomy 的题量为 <code>questions.json</code> 实际解析结果（README 标注 6723，仓库已增长至 14043）。星数会变，许可不会变——接之前复核 LICENSE 文件本身。</div>
+</div>
+</body>
+</html>

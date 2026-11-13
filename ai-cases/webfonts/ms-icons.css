@@ -1,0 +1,28 @@
+/* 离线图标字体：Material Symbols Outlined 子集（仅本项目用到的 69 个字形）
+   来源：fonts.gstatic.com · Apache License 2.0
+   用码点代替连字名，因此这里只要 font-family 生效，图标即可显示。 */
+@font-face{
+  font-family:'Material Symbols Outlined';
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+  src:url('ms-icons.woff2') format('woff2');
+}
+.material-symbols-outlined,
+.material-symbols-rounded,
+.material-symbols-sharp,
+.material-icons{
+  font-family:'Material Symbols Outlined';
+  font-weight:normal;
+  font-style:normal;
+  font-size:24px;
+  line-height:1;
+  letter-spacing:normal;
+  text-transform:none;
+  display:inline-block;
+  white-space:nowrap;
+  word-wrap:normal;
+  direction:ltr;
+  -webkit-font-smoothing:antialiased;
+  font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;
+}

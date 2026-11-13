@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>地形实验室 · 帧理 SVG 复现版</title>
+<meta name="description" content="地形实验室：参数化地形建模、soft-max 高程合成、等高线追踪与 241 点剖面，同一份数据出彩色讲解图与试卷黑白图。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<script src="js/canvas-theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+<script>window.addEventListener('error', function (e) {
+  var h = document.getElementById('hint') || document.body;
+  h.textContent = '脚本错误：' + e.message + ' @' + (e.lineno || '?');
+});</script>
+  <script src="js/shell.js"></script>
+</head>
+<body class="lab">
+<a class="skip" href="#main">跳到主要内容</a>
+
+<header class="topbar" role="banner" data-lab="地形实验室" data-en="Terrain Lab" data-glyph="帧" data-tone="terrain">
+  <div class="tools">
+    <select id="preset" title="教学模板"></select>
+    <button id="undo" class="btn" disabled>撤销</button>
+    <button id="redo" class="btn" disabled>重做</button>
+    <button id="export" class="btn">导出 JSON</button>
+    <label class="btn">导入<input id="import" type="file" accept=".json" hidden></label>
+  </div>
+</header>
+
+<main id="main" class="app">
+  <aside class="panel" aria-label="参数与控制面板">
+    <section class="block">
+      <h3>添加地形</h3>
+      <div class="add-grid" id="addGrid"></div>
+    </section>
+
+    <section class="block">
+      <h3>图幅设置</h3>
+      <div class="row"><label>范围</label><input id="size" type="number" min="1200" max="8000" step="200" value="2400"><span class="unit">m</span></div>
+      <div class="row"><label>等高距</label>
+        <select id="interval"><option value="50">50 m</option><option value="100">100 m</option><option value="200">200 m</option></select>
+      </div>
+      <div class="row"><label>水面高程</label><input id="water" type="range" min="70" max="170" step="1"><span class="val" id="waterV"></span></div>
+      <div class="row"><label>雪线</label><input id="snow" type="range" min="400" max="1400" step="10"><span class="val" id="snowV"></span></div>
+      <div class="row"><label>基面</label>
+        <select id="env"><option value="plain">平原（185 m）</option><option value="lake">起伏基面（带山丘与谷地）</option></select>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>元件 <span class="count" id="compCount"></span></h3>
+      <ul class="comp-list" id="compList"></ul>
+    </section>
+
+    <section class="block" id="props"></section>
+  </aside>
+
+  <section class="stage">
+    <div class="stage-head">
+      <div class="seg" id="viewSeg">
+        <button data-view="2d" class="on">平面图</button>
+        <button data-view="3d">立体图</button>
+      </div>
+      <div class="seg" id="styleSeg">
+        <button data-style="color" class="on">彩色讲解</button>
+        <button data-style="exam">试卷黑白</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="showLabels" checked>高程注记</label>
+      <label class="chk"><input type="checkbox" id="showSection" checked>剖面线</label>
+      <label class="chk"><input type="checkbox" id="showMarkers" checked>元件标记</label>
+      <div class="spacer"></div>
+      <div class="slice" id="sliceRow" hidden>
+        <label>切面 <input id="slice" type="range" min="0" max="1200" step="10" value="1200"><span id="sliceV">1200 m</span></label>
+        <label>夸张 <input id="vex" type="range" min="0.6" max="4" step="0.1" value="2"><span id="vexV">2.0×</span></label>
+        <label class="chk"><input type="checkbox" id="showContour3d" checked>等高线</label>
+      </div>
+      <span class="hint" id="hint">拖动元件移动 · 滚轮缩放 · 拖空白平移</span>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="map" aria-label="地形彩色讲解图"></canvas>
+      <canvas id="gl" aria-label="地形三维立体图" hidden></canvas>
+    </div>
+
+    <div class="section-wrap">
+      <canvas id="section" aria-label="地形剖面图"></canvas>
+    </div>
+  </section>
+</main>
+
+<script src="js/terrain/core.js"></script>
+<script src="js/terrain/raster.js"></script>
+<script src="js/terrain/render2d.js"></script>
+<script src="js/terrain/render3d.js"></script>
+<script src="js/terrain/presets.js"></script>
+<script src="js/terrain/app.js"></script>
+</body>
+</html>

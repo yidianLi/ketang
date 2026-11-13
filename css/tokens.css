@@ -1,0 +1,143 @@
+/* ============================================================
+   tokens.css — 设计令牌唯一来源（Design Tokens, single source）
+   所有页面（含带内联样式的资源库/知识专题/案例库）统一从这里取色。
+   app.css 不再自带 :root；引用 app.css 的页面必须先引本文件。
+
+   主题：默认浅色（奶油莫兰迪 / Cream Macaron），html[data-theme="dark"] 覆盖为深色。
+   受众定位：25-35 岁一线女教师。基调「温柔但专业」——
+     粉玫瑰主色 + 雾蓝辅助色 + 近白奶底，避免陶土纸黄底与褐墨字带来的古典/教辅感。
+   变量名一律保持稳定（渲染器 / 内联样式依赖），只换值不换名。
+   ============================================================ */
+:root{
+  /* 文字：暖炭灰，不用褐墨 */
+  --ink:#3b3335;          /* 主文字 */
+  --ink-2:#6c6165;        /* 次级文字 */
+  --ink-deep:#3b3335;     /* 深色面（仅为「面」，不再作文字） */
+  --muted:#9a8f93;        /* 弱化文字/说明 */
+
+  /* 背景与面：近白奶底 + 纯白卡片 */
+  --paper:#fbf9f7;        /* 页面底色 */
+  --paper-2:#fcfaf9;      /* 页面底色（资源库系） */
+  --paper-3:#f7f2f0;      /* 内嵌控件底 */
+  --panel:#ffffff;        /* 卡片/面板 */
+
+  /* 线：玫瑰灰细线 */
+  --line:#f1e7e6;         /* 常规边线 */
+  --line-2:#e6d6d8;       /* 强调边线（hover） */
+  --line-3:#f4ecea;       /* 浅边线（侧栏文字、浅分隔） */
+  --side-muted:#c9bcc0;   /* 侧栏弱化文字 */
+
+  /* 主色 */
+  --accent:#e8879b;       /* 柔玫粉：主操作 */
+  --accent-2:#ef9a8e;     /* 蜜桃：渐变副色 / hover */
+  --danger:#e05a5a;
+  --ok:#45b07c;
+  --warn:#f0a24b;
+  --violet:#a78bdb;
+  --info:#6e9dc4;
+
+  /* 阴影：粉调投影，不用褐调 */
+  --shadow:0 2px 4px rgba(214,138,158,.08), 0 10px 28px rgba(214,138,158,.10);
+  --shadow-sm:0 1px 3px rgba(214,138,158,.12);
+  --shadow-md:0 6px 18px rgba(214,138,158,.16);
+  --shadow-lg:0 12px 28px rgba(214,138,158,.18);
+
+  /* 圆角阶梯（统一从这里取，避免各页 6/8/9px 混用） */
+  --r-sm:10px;
+  --r-md:14px;
+  --r-lg:18px;
+  --r-pill:999px;
+
+  /* ---- 语义扩展（P2）：面色 / 深底反白 / 画布 ---- */
+  --deep:#4b3d43;              /* 深色面：侧栏、案例顶栏（深玫瑰灰） */
+  --on-deep:#fff8f6;           /* 深底上的主文字 */
+  --on-deep-muted:#d8c4c9;     /* 深底上的次级文字 */
+  --field:#fff;                /* 按钮 / 输入 / select 底 */
+  --field-2:#fbf6f6;           /* 读数块 / 浅嵌底 */
+  --hover:#fdf4f5;             /* 列表悬浮 */
+  --hover-2:#fcedf0;           /* 选中底 */
+  --hover-line:#f3d9de;        /* 选中描边 */
+  --seg-bg:#f6edee;            /* 分段控件槽 */
+  --seg-on:#fff;               /* 分段选中块 */
+  --canvas:#ffffff;            /* 主画布底 */
+  --canvas-2:#fffdfd;          /* canvas 元素底 */
+  --canvas-grid:#f5eaec;       /* 画布网格 */
+  --canvas-axis:#8a8085;       /* 坐标轴 / 细线 */
+  --canvas-label:#5a4c52;      /* 画布内文字标签 */
+  --veil:rgba(255,255,255,.72);/* 半透明工具条 */
+  --overlay:rgba(58,44,49,.34);/* 遮罩 / 弹层 */
+  --code-bg:#f8eff0;           /* 行内代码 */
+  --scroll:#ead9dd;            /* 滚动条滑块 */
+  --ok-bg:#e8f6ee;             /* 完成徽标底 */
+  --ok-fg:#2f7a54;             /* 完成徽标字 */
+  --warn-bg:#fdf0e2;           /* 进行中徽标底 */
+  --warn-fg:#9a6520;           /* 进行中徽标字 */
+  --tint:#fceff1;              /* 来源/标签浅底 */
+  --field-3:#fcf7f8;           /* 下拉框浅底 */
+  --danger-bg:#fce9ea;         /* 危险提示浅底 */
+  --info-bg:#eaf2fa;           /* 信息提示浅底 */
+  --info-fg:#3e6e96;           /* 信息提示字 */
+}
+
+/* ---------- 深色主题（同色相压暗，不做纯黑） ---------- */
+html[data-theme="dark"]{
+  --ink:#f6eef0;
+  --ink-2:#cfc0c5;
+  --ink-deep:#2b2226;
+  --muted:#a3929a;
+
+  --paper:#1a1618;
+  --paper-2:#1c1719;
+  --paper-3:#241d20;
+  --panel:#241e21;
+
+  --line:#3a2f34;
+  --line-2:#4e3f46;
+  --line-3:#332a2e;
+  --side-muted:#8c7b82;
+
+  --accent:#f09aac;
+  --accent-2:#f2b49b;
+  --danger:#ee7c7c;
+  --ok:#5fcb93;
+  --warn:#f0b05c;
+  --violet:#b49be8;
+  --info:#89b4d8;
+
+  --shadow:0 2px 4px rgba(0,0,0,.5), 0 10px 28px rgba(0,0,0,.42);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.45);
+  --shadow-md:0 6px 18px rgba(0,0,0,.55);
+  --shadow-lg:0 12px 28px rgba(0,0,0,.55);
+
+  --deep:#221b1e;
+  --on-deep:#f6eef0;
+  --on-deep-muted:#a3929a;
+  --field:#2a2226;
+  --field-2:#2d2529;
+  --hover:#332a2f;
+  --hover-2:#3c2f35;
+  --hover-line:#5b444c;
+  --seg-bg:#2a2226;
+  --seg-on:#3d3338;
+  --canvas:#211b1e;
+  --canvas-2:#1e181b;
+  --canvas-grid:#382e33;
+  --canvas-axis:#948590;
+  --canvas-label:#cfc0c5;
+  --veil:rgba(33,27,30,.74);
+  --overlay:rgba(0,0,0,.62);
+  --code-bg:#2b2226;
+  --scroll:#4a3b41;
+  --ok-bg:#1e3026;
+  --ok-fg:#8fd3a7;
+  --warn-bg:#33281a;
+  --warn-fg:#e5be86;
+  --tint:#31262a;
+  --field-3:#2a2226;
+  --danger-bg:#3b2224;
+  --info-bg:#1f2b36;
+  --info-fg:#9bc0df;
+}
+
+html{color-scheme:light}
+html[data-theme="dark"]{color-scheme:dark}

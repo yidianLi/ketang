@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>案例库 · svgzhenli 复刻版</title>
+<meta name="description" content="案例库：69 道可直接动手做的物理与数学题，每张卡片是一道题的题干，点开即可在浏览器里拖动参数自己验证结论。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/tokens.css">
+<script src="js/theme.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font-family: "PingFang SC", "Microsoft YaHei", sans-serif; min-height: 100vh; }
+  .pagehead { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; padding: 30px 22px 0; }
+  .pagehead h1 { font-size: 24px; letter-spacing: -.3px; color: var(--ink); margin: 0; }
+  .pagehead .meta { font-size: 12.5px; color: var(--muted); }
+  .pagehead .meta b { color: var(--accent); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 26px 22px 50px; }
+  .intro { background: var(--panel); border: 1px solid var(--line-3); border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; font-size: 13.5px; line-height: 1.8; color: var(--ink-2); }
+  .intro b { color: var(--accent); }
+  .intro .srcs { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .src { font-size: 11.5px; padding: 3px 10px; border-radius: 999px; background: var(--tint); border: 1px solid var(--line-3); color: var(--ink-2); }
+
+  /* ---------- 搜索 + 筛选 ---------- */
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+  .search { flex: 1 1 260px; min-width: 0; position: relative; }
+  .search input { width: 100%; border: 1px solid var(--line-2); background: var(--field); color: var(--ink);
+    padding: 9px 34px 9px 13px; border-radius: 999px; font-size: 13.5px; outline: none; transition: .16s; font-family: inherit; }
+  .search input::placeholder { color: var(--muted); }
+  .search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,135,155,.14); }
+  .search .clr { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: transparent;
+    color: var(--muted); font-size: 16px; line-height: 1; padding: 5px 8px; cursor: pointer; display: none; border-radius: 999px; }
+  .search .clr:hover { color: var(--ink); background: var(--hover); }
+  .search.has-val .clr { display: block; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filters button { border: 1px solid var(--line-2); background: var(--panel); color: var(--ink-2); padding: 7px 15px;
+    border-radius: 999px; font-size: 12.5px; cursor: pointer; transition: .15s; font-family: inherit; }
+  .filters button:hover { border-color: var(--accent); color: var(--accent); }
+  .filters button.on { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(232,135,155,.28); }
+  .filters button .n { opacity: .62; margin-left: 4px; font-size: 11px; }
+
+  /* ---------- 题卡 ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 18px; }
+  .card { background: var(--panel); border: 1px solid var(--line-3); border-radius: 16px; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; overflow: hidden; transition: transform .2s, box-shadow .2s, border-color .2s; }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--line-2); }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .shot { position: relative; aspect-ratio: 16 / 10; background: var(--paper-3); border-bottom: 1px solid var(--line-3); overflow: hidden; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
+    transition: transform .5s cubic-bezier(.2,.7,.3,1); }
+  .card:hover .shot img { transform: scale(1.04); }
+  .shot .no { position: absolute; left: 10px; top: 10px; font-size: 10.5px; font-weight: 600; letter-spacing: .07em;
+    padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.88); color: var(--ink-2);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .shot .src2 { position: absolute; right: 10px; top: 10px; font-size: 10px; padding: 3px 8px; border-radius: 999px;
+    background: rgba(255,255,255,.88); color: var(--muted); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .shot .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--paper-3), var(--tint)); }
+  .shot .ph span { font-size: 34px; font-weight: 700; letter-spacing: .04em; color: var(--side-muted); }
+
+  .body { padding: 13px 15px 14px; display: flex; flex-direction: column; flex: 1; }
+  .kicker { font-size: 11.5px; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .kicker .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--side-muted); flex: none; }
+  .kicker .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .q { font-size: 13.5px; line-height: 1.72; color: var(--ink); flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line-3); }
+  .bg1 { font-size: 10.5px; padding: 2.5px 8px; border-radius: 999px; background: var(--info-bg); color: var(--info-fg); }
+  .bg1.three { background: #f2ecf8; color: #7a4a9c; }
+  .bg1.svg { background: #fdf1e7; color: #b06a2c; }
+  .bg1.chart { background: #e9f2ee; color: #2c7a55; }
+  .bg1.mj { background: var(--danger-bg); color: var(--danger); }
+  .bg1.p5 { background: #edf5f2; color: #22577a; }
+  .off { font-size: 10.5px; padding: 2.5px 8px; border-radius: 999px; margin-left: auto; }
+  .off.ok { background: var(--ok-bg); color: var(--ok-fg); }
+  .off.part { background: var(--warn-bg); color: var(--warn-fg); }
+
+  .empty { display: none; text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13.5px; }
+  .empty b { color: var(--ink-2); }
+  .foot { margin-top: 34px; font-size: 12px; color: var(--muted); line-height: 1.8; text-align: center; }
+  .foot a { color: var(--accent); }
+
+  /* 暗色：截图整体压暗一档，避免刺白 */
+  html[data-theme="dark"] .shot img { filter: brightness(.8) saturate(.9); }
+  html[data-theme="dark"] .shot .no,
+  html[data-theme="dark"] .shot .src2 { background: rgba(38,32,25,.82); color: var(--ink-2); }
+  html[data-theme="dark"] .bg1.three { background: #2b2437; color: #b9a0e0; }
+  html[data-theme="dark"] .bg1.svg { background: #33261b; color: #d8a878; }
+  html[data-theme="dark"] .bg1.chart { background: #1f3029; color: #7fc0a0; }
+  html[data-theme="dark"] .bg1.p5 { background: #1d2b33; color: #8fc0d8; }
+
+  @media (max-width: 900px) {
+    .pagehead { padding: 22px 16px 0; }
+    .wrap { padding: 20px 16px 40px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  }
+  @media (max-width: 560px) {
+    .pagehead h1 { font-size: 20px; }
+    .grid { grid-template-columns: 1fr; }
+    .search { flex: 1 1 100%; }
+    .filters { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; scrollbar-width: none; }
+    .filters::-webkit-scrollbar { display: none; }
+    .filters button { flex: none; }
+  }
+</style>
+</head>
+<body>
+<div id="site-nav"></div>
+<script src="js/site-nav.js"></script>
+<div class="pagehead">
+  <h1>案例库</h1>
+  <div class="meta">共 <b>69</b> 道题 · 5 个开源来源 + 3 道原创 · 依赖已本地化</div>
+</div>
+<div class="wrap" id="main" role="main">
+  <div class="intro">
+    这一页不放分类标签，<b>每张卡片就是一道题的题干</b>：看完题目点进去，在浏览器里拖滑块、拉控制点、改参数，
+    自己把结论做出来。66 道来自开源仓库、3 道按同样形态原创补齐，全部收入复刻版工程（<code>ai-cases/</code>），
+    原依赖的 Tailwind / Three.js / p5.js / mathjs / Tone.js / Chart.js 已<b>下载到本地</b>，绝大多数可<b>离线直接打开</b>。
+    想按年级找题，走 <a href="subjects.html" style="color:var(--accent);font-weight:700">学科分级目录</a>：数学 / 物理 / 化学 / 生物 / 地理，每科都按初一～高三分段。
+    <div class="srcs">
+      <span class="src">① AIEdTools（MIT）· 25 题 · AI 生成教学动画</span>
+      <span class="src">② physics-sim（保留权利）· 17 题 · 中文物理演示门户</span>
+      <span class="src">③ PhysiXLab（MIT）· 4 题 · 零依赖物理仿真</span>
+      <span class="src">④ electro-lab · 2 题 · 电路求解器 / OLED</span>
+      <span class="src">⑤ mathlearn（MIT）· 18 模块 + 24 道拓展题入口</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search" id="searchWrap">
+      <input id="q" type="search" placeholder="搜题干、知识点或来源…" autocomplete="off" aria-label="搜索题目">
+      <button class="clr" id="clr" type="button" aria-label="清空搜索">✕</button>
+    </div>
+    <div class="filters" id="filters" role="tablist" aria-label="按学科筛选"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">没有匹配的题。<b>换个词试试</b>，或点「全部」回到 69 道题。</div>
+
+  <div class="foot">
+    收录于 svgzhenli 复刻版工程 · 各案例版权归原仓库作者（许可见来源标签）<br>
+    相关页面：<a href="resource.html">资源库</a> · <a href="knowledge.html">知识专题</a> · <a href="optics.html">光学实验室</a> · <a href="index.html">首页</a>
+  </div>
+</div>
+<script>
+/* 69 道题：n=标题 p=相对路径 c=学科 s=来源 q=题干 tech=技术栈 off=离线状态 */
+var CASES = [
+  /* ---------- AIEdTools · 物理（4） ---------- */
+  { n: '伽利略的理想实验', p: '伽利略的理想实验.html', c: '物理', s: 'AIEdTools', tech: ['Canvas'],
+    q: '右侧斜面越缓，小球滚得越远。把斜面放平到 0° 并令摩擦系数 μ = 0，小球最终会停在哪儿？叠加历史轨迹再判断。' },
+  { n: '探究凸透镜成像', p: '探究凸透镜成像.html', c: '物理', s: 'AIEdTools', tech: ['Canvas'],
+    q: '焦距 f = 10cm，把物距 u 从 3f 一路拖到 0.5f，像距 v 和像的性质怎样依次变化？逐组记录并与成像规律表对照。' },
+  { n: '平衡木与压敏电阻动态分析', p: '物理互动课堂-平衡木与压敏电阻动态分析.html', c: '物理', s: 'AIEdTools', tech: ['Canvas'],
+    q: '人向左走 1m，压敏电阻阻值减小 5Ω——电流表读数变化多少？拖动小人，用两次力矩平衡把这一步推出来。' },
+  { n: '磁场带电粒子临界问题', p: '磁场中的带电粒子临界问题 - 物理探究实验室.html', c: '物理', s: 'AIEdTools', tech: ['Three.js'],
+    q: 'S(0, a) 处向纸面内磁场射入正电粒子，轨道半径 R = a(2+√2)。哪些发射角让粒子永远到不了 x 轴？这个角度占多少？' },
+
+  /* ---------- AIEdTools · 立体几何（5） ---------- */
+  { n: '几何体解题', p: '几何体解题.html', c: '立体几何', s: 'AIEdTools', tech: ['Three.js', 'MathJax'],
+    q: 'D 为圆锥顶点，AE 为底面直径且 AE = AD，△ABC 为底面内接正三角形，PO = (√6/6)DO。证明 PA ⊥ 平面 PBC，并求二面角 B-PC-E 的余弦值。' },
+  { n: '四面体数学题', p: '四面体数学题.html', c: '立体几何', s: 'AIEdTools', tech: ['Three.js'],
+    q: '四面体 ABCD 中已知 AB ⊥ CD、AD ⊥ BC，求证 AC ⊥ BD。用 b·(d−c) = 0 的向量法把三组对棱串起来。' },
+  { n: '圆柱的奥秘', p: '趣味数学探索圆柱的奥秘.html', c: '立体几何', s: 'AIEdTools', tech: ['Three.js'],
+    q: '长 5cm、宽 2cm 的长方形绕长边转一周得到什么？绕宽边呢？比较两个圆柱的体积，再展开侧面看对不对得上。' },
+  { n: '圆锥体积推导与闯关', p: '圆锥体积推导与闯关联系.html', c: '立体几何', s: 'AIEdTools', tech: ['SVG'],
+    q: '等底等高的圆锥往圆柱里倒水，倒几次才装满？先猜一个数，再用三色水验证 V锥 = ⅓V柱，最后算底面积 170cm²、高 12cm 的零件体积。' },
+  { n: '证明几何题', p: '证明几何题.html', c: '立体几何', s: 'AIEdTools', tech: ['Three.js'], off: 'part', offTxt: '页头插图在线',
+    q: '四面体满足 AB ⊥ CD 且 AD ⊥ BC，中点连线 EF 是否一定垂直于 AH？拖动顶点改形状，看 EF·AH 什么时候才等于 0。' },
+
+  /* ---------- AIEdTools · 函数与代数（16） ---------- */
+  { n: '三角函数互动实验室', p: '三角函数互动实验室.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: '拖动单位圆上的点转过 θ，sinθ、cosθ、tanθ 怎样随象限变号？走到 90° 和 270° 时 tanθ 发生了什么？' },
+  { n: '任意三角函数演示', p: '任意三角函数演示.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: 'α = 210° 时，单位圆上的点 P(cosα, sinα) 落在第几象限、坐标符号如何？把 α 从 0° 拖到 360° 记录规律。' },
+  { n: '勾股定理', p: '勾股定理.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: '直角边 a = 3、b = 4 时斜边是多少？拖动顶点改 a、b，看两个小正方形的面积之和是否始终等于斜边正方形。' },
+  { n: '反比例函数动点探究', p: '反比例函数动点探究.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: 'y = 4/x 的图象上有 P(t, y₁)、Q(t+4, y₂)，t 在什么范围时 y₁ > y₂？拖动 P 点逐个验证四个选项。' },
+  { n: '圆的切线与相似三角形', p: '圆的切线与相似三角形的证明.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: 'AB 是 ⊙O 的直径，C 在圆上，过 C 的切线交 AB 延长线于 D。求证 △ACD ∽ △CBD——突破口是弦切角 ∠DCB = ∠CAB。' },
+  { n: '圆锥曲线', p: '圆锥曲线.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: '拖动 a、b 让离心率 e 从 0.2 变到 1.5：曲线怎样从椭圆变成抛物线、再变成双曲线？e = 1 那一刻发生了什么？' },
+  { n: '对数不等式证明', p: '对数不等式证明 .html', c: '函数与代数', s: 'AIEdTools', tech: ['图文'],
+    q: '求证 1/log₅19 + 2/log₃19 + 3/log₂19 < 2。先把三个对数换成同底，再估计每一项的量级。' },
+  { n: '对数函数动态讲解', p: '对数函数动态讲解.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: '2 要自乘多少次才得到 8？改变底数 a 与真数 x，看 y = logₐx 为什么恒过 (1, 0)、a 取 0.5 时图像怎么翻。' },
+  { n: '将军饮马问题', p: '将军饮马问题.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: '军营 A 与目的地 B 在河的同侧，P 在河岸上。P 取哪一点时 AP + PB 最短？拖动 P，再打开对称点 A′ 看辅助线。' },
+  { n: '微积分探索', p: '微积分探索.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: '把割线的两个交点不断靠近，割线会变成什么？拖动观察点读 f′(x)，再把矩形数 n 调大，看近似面积怎么逼近定积分。' },
+  /* 该页在无头浏览器里渲染进程直接崩溃（禁用 JS 也崩），拿不到截图，用编号占位 */
+  { n: '抛物线与焦点', p: '抛物线与焦点.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'], noshot: true,
+    q: '抛物线 y² = 8x 上任意一点 P，到焦点 F 的距离与到准线 x = −2 的距离什么关系？拖动 P 验证等距性。' },
+  { n: '指数函数', p: '指数.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: '细胞每天翻一倍，10 天后比线性增长（每天 +2）多多少？拖动天数滑块，再调底数 a 确认曲线永远穿过哪一点。' },
+  { n: '线段的垂直平分线', p: '探究线段的垂直平分线.html', c: '函数与代数', s: 'AIEdTools', tech: ['SVG'],
+    q: 'P 在 AB 的垂直平分线上，PA 与 PB 一定相等吗？上下拖动 P 记录三组数据，再和定理结论对一对。' },
+  { n: '解一元二次方程', p: '解一元二次方程 x^2 - 5x + 6 = 0 .html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas'],
+    q: '解 x² − 5x + 6 = 0：哪两个数相加得 5、相乘得 6？分解之后，抛物线与 x 轴交在哪两点？' },
+  { n: '√2 是无理数', p: '证明根√2是无理数 .html', c: '函数与代数', s: 'AIEdTools', tech: ['图文'],
+    q: '假设 √2 = a/b 已是最简分数，平方后推出 a 是偶数，再推出 b 也是偶数——矛盾出在哪一步？完整走一遍反证法。' },
+  { n: '高斯函数', p: '高斯函数.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas', 'Chart.js'],
+    q: 'f(x) = e^−(x−a)²/b 里，a 和 b 分别控制什么？拖动两个滑块，说明为什么最高点的 y 值恒为 1。' },
+
+  /* ---------- physics-sim · 门户 + 力学（7） ---------- */
+  { n: '物理仿真门户（中文）', p: 'physics-sim/index.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '力学、电磁、波动、光学、近代五大领域的入口页：21 个可交互模块，按主题挑一个进去做。' },
+  { n: '力的合成与分解', p: 'physics-sim/simulations/mechanics/force-composition.html', c: '物理', s: 'physics-sim', tech: ['p5.js', 'mathjs'],
+    q: 'F₁ = 40N ∠45°、F₂ = 40N ∠135°，合力多大、指向哪里？切换「共点力」与「首尾相接」两种画法，再用平行四边形法则核对。' },
+  { n: '动量守恒总览', p: 'physics-sim/simulations/mechanics/momentum-conservation.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '系统不受外力时，总动量为什么不变？从一维碰撞、爆炸、人船模型等 9 个场景里挑一个，验证 m₁v₁ + m₂v₂ 是常量。' },
+  { n: '一维碰撞', p: 'physics-sim/simulations/mechanics/momentum-conservation/1d-collision.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '1kg 小球以 5m/s 撞上静止的 1kg 小球，完全弹性碰撞后两者速度各是多少？再把恢复系数 e 调小，看动能损失多少。' },
+  { n: '二维碰撞', p: 'physics-sim/simulations/mechanics/momentum-conservation/2d-collision.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '两球斜碰时动量在 x、y 两个方向分别守恒，动能只在弹性碰撞时守恒。这个模块还在开发中，可先读理论推导。' },
+  { n: '爆炸反冲', p: 'physics-sim/simulations/mechanics/momentum-conservation/explosion.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '静止物体炸成 5 块，总动量还是 0 吗？改变碎片质量分布与爆炸强度，核对各碎片动量的矢量和。' },
+  { n: '人船模型', p: 'physics-sim/simulations/mechanics/momentum-conservation/human-boat.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '70kg 的人在 200kg 的船上以 2m/s 向右走，船怎么动？用 m₁v₁ + m₂v₂ = 0 算出船速，再看质心有没有移动。' },
+  /* ---------- physics-sim · 电磁（2） ---------- */
+  { n: '电场 3D 可视化', p: 'physics-sim/simulations/electromagnetism/electric-field-3d.html', c: '物理', s: 'physics-sim', tech: ['Three.js'], off: 'part', offTxt: 'Three r128 回退',
+    q: '点电荷周围的电场线为什么始于正电荷、止于负电荷？切换电荷数量与等势面显示，旋转观察电场线与等势面是否处处正交。' },
+  /* ---------- physics-sim · 波动（6） ---------- */
+  { n: '速度选择器', p: 'physics-sim/simulations/electromagnetism/velocity-selector.html', c: '物理', s: 'physics-sim', tech: ['p5.js', 'mathjs'],
+    q: 'E = 5×10³ V/m、B = 0.5T 交叉放置，只有速度多大的粒子能直线通过？改变粒子电性和速度，验证 v = E/B 与质量电荷无关。' },
+  { n: '多普勒效应', p: 'physics-sim/simulations/waves/doppler.html', c: '物理', s: 'physics-sim', tech: ['p5.js', 'mathjs'],
+    q: '声源以 30m/s 靠近静止的观察者，500Hz 的鸣笛听起来是多少 Hz？拖动速度，看波前怎样被压缩。' },
+  { n: '简谐振动', p: 'physics-sim/simulations/waves/harmonic.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '匀速圆周运动在直径上的投影就是简谐运动——为什么？调振幅与角速度，观察 x、v、a 三者的相位差与能量转换。' },
+  { n: '弹簧振子', p: 'physics-sim/simulations/waves/spring.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: 'k = 10N/m、m = 1kg 的弹簧振子周期多长？改变刚度与质量验证 T = 2π√(m/k)，再加阻尼看振幅怎么衰减。' },
+  { n: '横波传播', p: 'physics-sim/simulations/waves/transverse/transverse_wave.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '周期 1s、波长 1m 的横波，波速是多少？改变参数，说明质点振动方向为什么与传播方向垂直。' },
+  { n: '波的叠加', p: 'physics-sim/simulations/waves/wave-sum.html', c: '物理', s: 'physics-sim', tech: ['p5.js', 'mathjs'],
+    q: '两列同频同相的波叠加后振幅翻倍，反相呢？切到「拍现象」和「驻波」预设，看合位移怎么逐点相加。' },
+  { n: '二维水波', p: 'physics-sim/simulations/waves/wave2d.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: '两波源间距 100、波长 30 时，哪些位置干涉加强、哪些抵消？点一下画布，测量该点的路程差 r₂ − r₁。' },
+  /* ---------- physics-sim · 光学与近代（2） ---------- */
+  { n: '双缝干涉', p: 'physics-sim/simulations/optics-modern/double-slit.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
+    q: 'λ = 500nm、d = 200μm、L = 0.6m，相邻明纹间距是多少？用 Δx = λL/d 反算波长，再和设定值比误差。' },
+  { n: '相对论可视化', p: 'physics-sim/simulations/optics-modern/relativity/relativity.html', c: '物理', s: 'physics-sim', tech: ['Three.js'], off: 'part', offTxt: 'Three r128 回退',
+    q: 'v = 0.5c 时洛伦兹因子 γ 是多少？10s 的固有时在运动参考系里变成多久、10m 的尺子缩到多短？拖动速度验证。' },
+
+  /* ---------- PhysiXLab（4，英文界面） ---------- */
+  { n: '碰撞实验 Collision', p: 'physixlab/Collision/index.html', c: '物理', s: 'PhysiXLab', tech: ['Canvas'],
+    q: '给定两个滑块的质量与初速度，弹性碰撞后的速度各是多少？输入参数运行，核对动量与动能是否同时守恒。（英文界面）' },
+  { n: '音乐物理 MusicalPhysics', p: 'physixlab/MusicalPhysics/index.html', c: '物理', s: 'PhysiXLab', tech: ['Canvas'],
+    q: '440Hz 的 A4 波长 0.78m、周期 2.27ms——这两个数怎么算出来的？切换正弦/方波/锯齿波，听音色差在哪。（英文界面）' },
+  { n: '抛体运动 ProjectileMotion', p: 'physixlab/ProjectileMotion/index.html', c: '物理', s: 'PhysiXLab', tech: ['Canvas'],
+    q: '给定初速、发射角和重力，抛体落在多远？再加一个空气阻力系数，看轨迹为什么不再左右对称。（英文界面）' },
+  { n: '简谐振动 SHM', p: 'physixlab/SHM/index.html', c: '物理', s: 'PhysiXLab', tech: ['Canvas'],
+    q: '振幅 100m、频率 1Hz、阻尼 γ = 0.01，位移 x(t) = A·cos(ωt)·e^(−γt) 的包络线怎样一轮轮衰减？（英文界面）' },
+
+  /* ---------- electro-lab（2） ---------- */
+  { n: '电学实验室', p: 'electro-lab/ElectroLab-open.html', c: '电路与逻辑', s: 'electro-lab', tech: ['Canvas', 'Tone.js'],
+    q: '把电池、电阻、LED 从左侧拖到画布连成回路，实时读出各支路电流。故意短接一下，看求解器报什么。' },
+  { n: 'OLED 屏幕工作室', p: 'electro-lab/OLED_Studio.html', c: '电路与逻辑', s: 'electro-lab', tech: ['Canvas'],
+    q: '在 128×64 的 SSD1306 上逐像素画图，最后导出能直接烧录的 .ino 数组——先画一个能认出来的图形。' },
+
+  /* ---------- mathlearn（18，单页 #gX-Y 深链，KaTeX 已本地化） ---------- */
+  { n: '有理数运算', p: 'mathlearn/index.html#g1-1', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '早上零下 3℃，中午回升 8℃，现在多少度？拖动数轴上的 A、B 两点，验证 a − b = a + (−b)。' },
+  { n: '整式运算（幂）', p: 'mathlearn/index.html#g1-2', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: 'a³·a² 一共是几个 a 相乘？拖动 m、n 两个滑块数方块，验证同底数幂相乘、底数不动指数相加。' },
+  { n: '乘法公式', p: 'mathlearn/index.html#g1-3', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '边长 a = 8、b = 3：从大正方形里剪掉小正方形，剩下的 L 形拼成长方形后长宽各是多少？由此验证 a² − b² = (a+b)(a−b)。' },
+  { n: '一元一次方程', p: 'mathlearn/index.html#g1-4', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '2x + 3 = 9，两边同时减 3 再除以 2——每一步天平都还平衡吗？拖动砝码自己走一遍。' },
+  { n: '几何图形初步', p: 'mathlearn/index.html#g1-5', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '一副三角板能拼出哪些角？拖动控制点，验证互余和为 90°、互补和为 180°，以及中点把线段平分成两半。' },
+  { n: '平面直角坐标系', p: 'mathlearn/index.html#g1-6', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: 'P(3, 2) 关于 x 轴、y 轴、原点的对称点分别是什么？把 P 拖到四个象限，核对符号变化规律。' },
+  { n: '勾股定理', p: 'mathlearn/index.html#g2-1', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '梯子脚离墙 3m、顶端够到 4m 高，梯子有多长？拖 a、b 两个滑块，用弦图证明 a² + b² = c²。' },
+  { n: '一次函数 y=kx+b', p: 'mathlearn/index.html#g2-2', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '每天攒 5 块钱，存款随时间怎么变？拖动 k 和 b，说明斜率决定陡度、截距决定直线与 y 轴交在哪。' },
+  { n: '二次根式', p: 'mathlearn/index.html#g2-3', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '一块面积是 12 的正方形地砖，边长是多少？先验证 √a × √b = √(ab)，再把 √12 化简成 2√3。' },
+  { n: '因式分解', p: 'mathlearn/index.html#g2-4', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '把 x² + 5x + 6 拼成一块长方形，边长就是答案。拖动 p、q 的块数，找出相加得 5、相乘得 6 的那两个数。' },
+  { n: '平行四边形家族', p: 'mathlearn/index.html#g2-5', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '校门口的伸缩门为什么能自由拉伸却不变形？拖动顶点 D，看对边、对角、对角线哪几个量始终不变。' },
+  { n: '数据的分析', p: 'mathlearn/index.html#g2-6', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '给 6 杯奶茶打分、平均 8 分就一定好喝吗？拖高一根柱子，看平均数被拉走多少、中位数为什么纹丝不动。' },
+  { n: '一元二次方程', p: 'mathlearn/index.html#g3-1', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '小球抛出去之后什么时候落地？调 a、b、c 看抛物线与 x 轴的交点，判别式 Δ 决定有几个根。' },
+  { n: '二次函数', p: 'mathlearn/index.html#g3-2', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '篮球出手后划出的那道弧线是什么函数？拖动 h、k、a，看顶点、对称轴和开口方向各自怎么变。' },
+  { n: '反比例函数', p: 'mathlearn/index.html#g3-3', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '一段 60km 的路，车速翻倍时间就减半。曲线上任一点向两轴作垂线，围出的矩形面积为什么恒等于 |k|？' },
+  { n: '锐角三角函数', p: 'mathlearn/index.html#g3-4', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '滑梯陡不陡，量一个角就能算出来。θ 从 30° 变到 60°，sin、cos、tan 谁增谁减、为什么？' },
+  { n: '圆', p: 'mathlearn/index.html#g3-5', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '站在圆周上不同位置看同一段弧，张角居然一样大——∠APB = ½∠AOB。拖动 P 沿优弧滑动验证圆周角定理。' },
+  { n: '概率初步', p: 'mathlearn/index.html#g3-6', c: '数学', s: 'mathlearn', tech: ['Canvas', 'KaTeX'],
+    q: '掷 1000 次骰子，每一面真的各占 1/6 吗？分别掷 10、100、1000 次，看频率怎样稳定到概率。' },
+
+  /* ---- 抛物线三专题（本站原创）：性质 / 平移 / 动点压轴 ---- */
+  { n: '抛物线的性质', p: 'parabola-properties.html', c: '函数与代数', s: '本站原创', tech: ['Canvas'],
+    q: '拖动 a、b、c 三个滑块，开口、顶点、对称轴、最值、判别式会一起变。把 a 拖过 0 变成负数，开口怎么翻面、交点个数怎么跟着变？' },
+  { n: '抛物线的平移', p: 'parabola-shift.html', c: '函数与代数', s: '本站原创', tech: ['Canvas'],
+    q: 'y = ax² 向右移 2、向下移 3，式子为什么写成 a(x−2)²−3 而不是加 2？拖 h、k 看两条曲线整体搬家，形状一点没变。' },
+  { n: '抛物线上动点压轴', p: 'parabola-moving-point.html', c: '函数与代数', s: '本站原创', tech: ['Canvas'],
+    q: 'y = −x²+2x+3 上 P 在 BC 段弧上动，过 P 作 PQ ⊥ x 轴交 BC 于 Q。PQ 最长时 △PBC 面积多大？若面积等于 3，P 有几个？' }
+];
+
+/* ---------- 状态 ---------- */
+var CATS = ['全部', '物理', '数学', '立体几何', '函数与代数', '电路与逻辑'];
+var cur = '全部';
+var kw = '';
+
+var filtersEl = document.getElementById('filters');
+var gridEl = document.getElementById('grid');
+var emptyEl = document.getElementById('empty');
+var qEl = document.getElementById('q');
+var wrapEl = document.getElementById('searchWrap');
+
+/* 题干里可能出现 < & " 之类的字符，统一转义后再拼 HTML */
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* 给每条编号（与缩略图文件名 case-01.jpg … 一一对应） */
+CASES.forEach(function (x, i) { x.no = String(i + 1).padStart(2, '0'); });
+
+function isHit(x) {
+  if (cur !== '全部' && x.c !== cur) return false;
+  if (!kw) return true;
+  var t = (x.q + ' ' + x.n + ' ' + x.s + ' ' + x.c + ' ' + x.tech.join(' ')).toLowerCase();
+  return t.indexOf(kw.toLowerCase()) >= 0;
+}
+
+function renderFilters() {
+  filtersEl.innerHTML = '';
+  CATS.forEach(function (c) {
+    var n = c === '全部' ? CASES.length : CASES.filter(function (x) { return x.c === c; }).length;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', c === cur ? 'true' : 'false');
+    b.className = c === cur ? 'on' : '';
+    b.innerHTML = c + '<span class="n">' + n + '</span>';
+    b.onclick = function () { cur = c; render(); };
+    filtersEl.appendChild(b);
+  });
+}
+
+var TECH_CLS = { 'Three.js': 'three', 'SVG': 'svg', 'Chart.js': 'chart', 'MathJax': 'mj', 'p5.js': 'p5' };
+
+function renderGrid() {
+  gridEl.innerHTML = '';
+  var list = CASES.filter(isHit);
+  emptyEl.style.display = list.length ? 'none' : 'block';
+
+  list.forEach(function (x) {
+    var a = document.createElement('a');
+    a.className = 'card';
+    a.href = 'ai-cases/' + encodeURI(x.p);
+    a.setAttribute('aria-label', x.no + ' ' + x.n);
+
+    var tech = x.tech.map(function (t) {
+      return '<span class="bg1' + (TECH_CLS[t] ? ' ' + TECH_CLS[t] : '') + '">' + esc(t) + '</span>';
+    }).join('');
+    var off = x.off
+      ? '<span class="off part">' + esc(x.offTxt) + '</span>'
+      : '<span class="off ok">离线可用</span>';
+
+    /* 个别案例页在无头浏览器里渲染进程崩溃，没有截图，用编号占位 */
+    var shotHtml = x.noshot
+      ? '<div class="ph"><span>' + x.no + '</span></div>'
+      : '<img src="assets/shots/case-' + x.no + '.jpg" alt="' + esc(x.n) + ' 首屏截图" loading="lazy" decoding="async">';
+
+    a.innerHTML =
+      '<div class="shot">' + shotHtml +
+        '<span class="no">' + x.no + '</span>' +
+        '<span class="src2">' + esc(x.s) + '</span>' +
+      '</div>' +
+      '<div class="body">' +
+        '<div class="kicker"><span>' + esc(x.c) + '</span><span class="dot"></span><span class="t">' + esc(x.n) + '</span></div>' +
+        '<p class="q" title="' + esc(x.q) + '">' + esc(x.q) + '</p>' +
+        '<div class="meta">' + tech + off + '</div>' +
+      '</div>';
+    gridEl.appendChild(a);
+  });
+}
+
+function render() { renderFilters(); renderGrid(); }
+
+/* ---------- 搜索 ---------- */
+var timer = null;
+qEl.addEventListener('input', function () {
+  wrapEl.classList.toggle('has-val', !!this.value);
+  clearTimeout(timer);
+  var v = this.value.trim();
+  timer = setTimeout(function () { kw = v; renderGrid(); }, 120);
+});
+document.getElementById('clr').onclick = function () {
+  qEl.value = ''; kw = ''; wrapEl.classList.remove('has-val'); qEl.focus(); renderGrid();
+};
+/* 支持 ?q= 深链 */
+(function () {
+  var m = /[?&]q=([^&]*)/.exec(location.search);
+  if (m) { kw = decodeURIComponent(m[1]); qEl.value = kw; wrapEl.classList.add('has-val'); }
+})();
+
+render();
+</script>
+</body>
+</html>

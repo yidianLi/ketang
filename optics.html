@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>光学实验室 · 帧理 SVG 复现版</title>
+<meta name="description" content="光学实验室：薄透镜成像，两条特殊光线求像，实时显示像距、放大率与像的性质。">
+<meta name="theme-color" content="#fbf9f7">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="js/theme.js"></script>
+<script src="js/canvas-theme.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+<style>
+  /* 光学实验室专用补充样式（不污染全局 app.css） */
+  .row input.mini{flex:0 0 58px;min-width:0}
+  .row .unit{color:var(--muted);font-size:11px;flex:0 0 auto}
+  .opt-read{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+  .opt-read .cell{background:var(--paper-3);border:1px solid var(--line);border-radius:9px;padding:7px 10px}
+  .opt-read .cell span{display:block;color:var(--muted);font-size:10.5px;margin-bottom:2px}
+  .opt-read .cell b{color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums;font-weight:600}
+  .opt-read .cell.full{grid-column:1 / -1}
+  .opt-read .cell.full b{font-size:13px}
+  .rec-tools{display:flex;gap:8px;margin-bottom:8px}
+  .rec-tools .btn{flex:1;justify-content:center}
+  .rec-table{width:100%;border-collapse:collapse;font-size:11px}
+  .rec-table th{color:var(--muted);font-weight:600;text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
+  .rec-table td.p2{padding:5px 6px;border-bottom:1px solid var(--line-3);font-variant-numeric:tabular-nums;color:var(--ink-2)}
+  .rec-table td.c{text-align:center;color:var(--muted)}
+  .rec-empty{color:var(--muted);font-size:11px;padding:10px 6px}
+  #scene{width:100%;height:100%;display:block;border-radius:10px;background:var(--panel);box-shadow:var(--shadow);cursor:crosshair}
+</style>
+<script>window.addEventListener('error', function (e) {
+  var h = document.getElementById('hint');
+  if (h) { h.textContent = '脚本错误：' + e.message + ' @' + (e.lineno || '?'); h.className = 'hint bad'; }
+});</script>
+  <script src="js/shell.js"></script>
+</head>
+<body class="lab">
+<a class="skip" href="#main">跳到主要内容</a>
+
+<header class="topbar" role="banner" data-lab="光学实验室" data-en="Optics Lab" data-glyph="光" data-tone="optics">
+  <div class="tools">
+    <span class="hint" style="margin-right:6px">薄透镜成像 · 1/u + 1/v = 1/f</span>
+  </div>
+</header>
+
+<main id="main" class="app">
+  <aside class="panel" aria-label="参数与控制面板">
+    <section class="block">
+      <h3>显示</h3>
+      <label class="chk"><input type="checkbox" id="showFocus" checked>焦点 F / 2F</label>
+      <label class="chk"><input type="checkbox" id="showVirtual" checked>虚像延长线</label>
+      <label class="chk"><input type="checkbox" id="showArrows" checked>光线箭头</label>
+    </section>
+
+    <section class="block">
+      <h3>参数</h3>
+      <div class="row">
+        <label>焦距 f</label>
+        <input id="fRange" type="range" min="5" max="15" step="0.5" value="10">
+        <input id="fNum" type="number" class="mini" min="5" max="15" step="0.5" value="10">
+        <span class="unit">cm</span>
+      </div>
+      <div class="row">
+        <label>物距 u</label>
+        <input id="uRange" type="range" min="2" max="60" step="0.1" value="30">
+        <input id="uNum" type="number" class="mini" min="2" max="60" step="0.1" value="30">
+        <span class="unit">cm</span>
+      </div>
+      <div class="row">
+        <label>像距 v</label>
+        <input id="vNum" type="number" class="mini" value="15" readonly>
+        <span class="unit">cm</span>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>成像结果</h3>
+      <div class="opt-read">
+        <div class="cell"><span>像距 v</span><b id="rV">15.0 cm</b></div>
+        <div class="cell"><span>放大率 |m|</span><b id="rM">0.50×</b></div>
+        <div class="cell full"><span>像的性质</span><b id="rNature">倒立 缩小 实像</b></div>
+        <div class="cell full"><span>应用</span><b id="rApp">照相机</b></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>实验记录</h3>
+      <div class="rec-tools">
+        <button id="recBtn" class="btn">＋ 记录</button>
+        <button id="clearBtn" class="btn ghost">清空</button>
+      </div>
+      <table class="rec-table">
+        <thead><tr><th>序</th><th>u</th><th>v</th><th>性质</th><th>应用</th></tr></thead>
+        <tbody id="recBody">
+          <tr><td class="rec-empty" colspan="5">拖动物体或调滑块后点"记录"</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="block">
+      <h3>模型说明</h3>
+      <p class="tip">
+        薄透镜近似：光线经透镜后满足 1/u + 1/v = 1/f。<br>
+        两条特殊光线求像：① 平行主轴入射→折射过焦点；
+        ② 过光心→不偏折。<br>
+        实像（v&gt;0）倒立异侧，虚像（v&lt;0）正立同侧。<br>
+        口诀：一倍焦距分虚实，二倍焦距分大小。
+      </p>
+    </section>
+  </aside>
+
+  <section class="stage">
+    <div class="stage-head">
+      <span class="status" id="live">—</span>
+      <span class="spacer"></span>
+      <button id="scanBtn" class="btn">▶ 物距扫描</button>
+      <span class="hint" id="hint">拖动物体改物距 · 滚轮缩放无效</span>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="scene" aria-label="透镜成像光路画布"></canvas>
+    </div>
+  </section>
+</main>
+
+<script src="js/optics/core.js"></script>
+<script src="js/optics/app.js"></script>
+</body>
+</html>
