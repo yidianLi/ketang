@@ -34,8 +34,8 @@
          border: 2px solid transparent; transition: transform .12s, border-color .12s; position: relative; overflow: hidden; }
   .cat:hover { transform: translateY(-2px); border-color: var(--line-2); }
   .cat.active { background: var(--hover-2); color: var(--accent); font-weight: 600; border-color: var(--accent); box-shadow: var(--shadow-sm); }
-  .cat.active::after { content: 'TOOLS'; position: absolute; right: -6px; bottom: -10px; font-size: 34px;
-                       font-weight: 800; color: rgba(232,135,155,.14); letter-spacing: 2px; }
+  .cat.active::after { content: 'TOOLS'; position: absolute; right: 10px; bottom: 6px; font-size: 15px;
+                       font-weight: 800; color: rgba(232,135,155,.18); letter-spacing: 2px; }
   .total { text-align: center; color: var(--muted); font-size: 13px; margin: 4px 0 12px; }
   .total b { color: var(--accent); }
   .searchrow { display: flex; justify-content: center; margin-bottom: 8px; }
@@ -54,7 +54,12 @@
           display: block; }
   .tool:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
   .tool .thumb { height: 122px; display: flex; align-items: center; justify-content: center;
-                 font-size: 40px; position: relative; }
+                 font-size: 56px; position: relative; overflow: hidden; }
+  .tool:not(.locked) .thumb::before { content: ''; position: absolute; width: 150px; height: 150px; border-radius: 50%;
+                 background: rgba(255,255,255,.38); top: -52px; right: -40px; }
+  .tool:not(.locked) .thumb::after { content: ''; position: absolute; width: 92px; height: 92px; border-radius: 50%;
+                 background: rgba(255,255,255,.30); bottom: -36px; left: -22px; }
+  .tool .thumb > * { position: relative; z-index: 1; filter: drop-shadow(0 2px 4px rgba(60,40,30,.18)); }
   .tool .thumb .ftag { position: absolute; top: 9px; left: 9px; background: rgba(255,255,255,.92); color: #2f7a54; font-size: 10.5px;
                        padding: 2px 9px; border-radius: 999px; font-weight: 600; box-shadow: 0 1px 3px rgba(90,60,70,.12); }
   .tool .cap { padding: 10px 12px 12px; }

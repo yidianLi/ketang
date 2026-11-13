@@ -159,27 +159,30 @@ function renderSubj() {
     row.appendChild(b);
   });
 }
+/* 本站面向初高中：过滤小学段与源数据里的大学段（高4～高6），并规范化年级显示名 */
+var GRADE_KEEP = { '初1': '初一', '初2': '初二', '初3': '初三', '高1': '高一', '高2': '高二', '高3': '高三' };
+function gradeLabel(g) { return GRADE_KEEP[g] || g; }
+function mark(row, on) {
+  row.querySelectorAll('.pill').forEach(function (x) { x.classList.remove('on'); });
+  on.classList.add('on');
+}
 function renderGrades() {
   var row = document.getElementById('gradeRow');
   row.innerHTML = '';
   if (!window.KB_TOPICS) return;
   var gs = [];
-  window.KB_TOPICS.forEach(function (t) { if (gs.indexOf(t.g) < 0) gs.push(t.g); });
-  gs.sort(function (a, b) { return parseFloat(a.replace(/[小初高]/, '')) - parseFloat(b.replace(/[小初高]/, '')); });
+  window.KB_TOPICS.forEach(function (t) { if (GRADE_KEEP[t.g] && gs.indexOf(t.g) < 0) gs.push(t.g); });
+  gs.sort(function (a, b) { return Object.keys(GRADE_KEEP).indexOf(a) - Object.keys(GRADE_KEEP).indexOf(b); });
   var all = document.createElement('button');
   all.className = 'pill on'; all.textContent = '全部';
   all.onclick = function () { st.grade = null; mark(row, all); updatePool(); };
   row.appendChild(all);
   gs.forEach(function (g) {
     var b = document.createElement('button');
-    b.className = 'pill'; b.textContent = g;
+    b.className = 'pill'; b.textContent = gradeLabel(g);
     b.onclick = function () { st.grade = g; mark(row, b); updatePool(); };
     row.appendChild(b);
   });
-  function mark(row, on) {
-    row.querySelectorAll('.pill').forEach(function (x) { x.classList.remove('on'); });
-    on.classList.add('on');
-  }
 }
 (function renderSizes() {
   var row = document.getElementById('sizeRow');
@@ -198,12 +201,12 @@ function renderGrades() {
 function currentPool() {
   if (!st.subject || !window.KB_QUESTIONS) return [];
   var qs = window.KB_QUESTIONS;
-  if (st.grade) {
-    var ids = {};
-    (window.KB_TOPICS || []).forEach(function (t) { if (t.g === st.grade) ids[t.id] = 1; });
-    qs = qs.filter(function (q) { return ids[q.tid]; });
-  }
-  return qs.filter(function (q) { return q.ty === 'choice' || q.ty === 'numeric'; });
+  var ids = {};
+  (window.KB_TOPICS || []).forEach(function (t) {
+    if (!GRADE_KEEP[t.g]) return;               /* 小学/大学段不出题 */
+    if (!st.grade || t.g === st.grade) ids[t.id] = 1;
+  });
+  return qs.filter(function (q) { return ids[q.tid] && (q.ty === 'choice' || q.ty === 'numeric'); });
 }
 function updatePool() {
   var n = currentPool().length;
@@ -344,10 +347,9 @@ document.getElementById('back').onclick = function () {
 renderSubj();
 (function () {
   var m = /[?&]subject=([a-z]+)/.exec(location.search);
-  if (m && SUBJECTS.some(function (s) { return s.key === m[1]; })) {
-    st.subject = m[1];
-    ensureData(st.subject).then(function () { renderGrades(); renderSubj(); updatePool(); });
-  }
+  /* 默认预选物理，页面一打开就能直接开练；URL 参数优先 */
+  st.subject = (m && SUBJECTS.some(function (s) { return s.key === m[1]; })) ? m[1] : 'physics';
+  ensureData(st.subject).then(function () { renderGrades(); renderSubj(); updatePool(); });
 })();
 </script>
 </body>

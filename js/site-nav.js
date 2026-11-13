@@ -104,8 +104,8 @@
     return '<div class="sf-in">' +
              '<div class="sf-links">' + links + '</div>' +
              '<div class="sf-meta">' +
-               '<b>简普实验室</b> v1.2 · 零第三方依赖 · 无需联网<br>' +
-               '双击 index.html 即可离线运行 · 内核自检 1849 条断言' +
+               '<b>简普实验室</b> · 零第三方依赖 · 支持离线运行<br>' +
+               '教学演示用途 · 第三方资源署名见案例库页脚' +
              '</div>' +
            '</div>';
   }
