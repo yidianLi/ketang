@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+
+
+<head>
+    
+    
+    <meta charset="UTF-8">
+    
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <title>抛体运动模拟器</title>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="../../vendor/tailwind.js"></script>
+    
+    
+    <link rel="stylesheet" href="styles.css">
+
+
+</head>
+
+
+<body class="p-4">
+    
+    
+    <div class="container">
+        
+        
+        <a href="../index.html" class="inline-block mb-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105 active:scale-95">← 返回</a>
+        
+        
+        <h1>抛体运动模拟器</h1>
+
+        
+
+        
+
+        <div class="input-section">
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="initialVelocity">初速度（m/s）：</label>
+                
+                
+                <input type="number" id="initialVelocity" value="50" min="1" placeholder="输入初速度" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="launchAngle">抛射角（度）：</label>
+                
+                
+                <input type="number" id="launchAngle" value="45" min="0" max="90" placeholder="输入抛射角" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="gravity">重力加速度（m/s²）：</label>
+                
+                
+                <input type="number" id="gravity" value="9.8" min="0" placeholder="输入重力加速度" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="airResistance">空气阻力系数（可选）：</label>
+                
+                
+                <input type="number" id="airResistance" value="0" placeholder="输入空气阻力（可选）" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="targetDistance">目标距离（m）：</label>
+                
+                
+                <input type="number" id="targetDistance" value="100" min="0" max="500" placeholder="输入目标距离" class="text-right">
+            
+            
+            </div>
+        
+        
+        </div>
+
+        
+
+        
+
+        <div class="flex flex-col items-center gap-2">
+            
+            
+            <button id="set-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full max-w-[300px]">应用数值</button>
+            
+            
+            <button id="run-button" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full max-w-[300px]" disabled>开始模拟</button>
+        
+        
+        </div>
+
+        
+
+        
+
+        <div id="simulation-container" class="mt-8 p-4 rounded-lg bg-gray-800">
+            
+            
+            <canvas id="simulation-canvas"></canvas>
+        
+        
+        </div>
+        
+        
+        <button id="reset-button" class="mt-4 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">重置</button>
+
+        
+
+        
+
+        <div id="info-box">
+            
+            
+            <h2>操作说明</h2>
+            
+            
+            <ul>
+                
+                
+                <li>输入初速度、抛射角与重力加速度；可选填空气阻力系数。</li>
+                
+                
+                <li>点击「应用数值」确认输入。</li>
+                
+                
+                <li>画面会显示物体的运动轨迹。</li>
+                
+                
+                <li>调整参数，观察它们对射程、最大高度与飞行时间的影响。</li>
+            
+            
+            </ul>
+            
+            
+            <h2>物理概念</h2>
+            
+            
+            <ul>
+                
+                
+                <li><strong>抛体运动：</strong> 物体被抛出后仅在重力作用下所做的运动。</li>
+                
+                
+                <li><strong>初速度：</strong> 抛出瞬间的速度。</li>
+                
+                
+                <li><strong>抛射角：</strong> 抛出方向与水平方向的夹角。</li>
+                
+                
+                <li><strong>重力加速度：</strong> 使物体不断加速下落的力。</li>
+                
+                
+                <li><strong>空气阻力：</strong>  阻碍物体在空气中运动的力。</li>
+            
+            
+            </ul>
+        
+        
+        </div>
+    
+    
+    </div>
+
+    
+
+    
+
+    <script src="equation.js"></script>
+
+
+</body>
+
+
+</html>

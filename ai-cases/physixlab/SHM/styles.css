@@ -1,0 +1,273 @@
+body {
+    font-family: 'Press Start 2P', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #001e1f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    padding: 2rem;
+    background-color: #001e1f;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    border: 2px solid #4B5563;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #00bcc4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.input-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 0;
+    margin-bottom: 1rem;
+    width: 48%;
+}
+
+.input-group label {
+    margin-bottom: 0.5rem;
+    color: #D1D5DB;
+    font-size: 0.8rem;
+    display: block;
+    text-align: left;
+}
+
+.input-group input {
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #4B5563;
+    width: 100%;
+    background-color: #374151;
+    color: #F9FAFB;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #00bcc4;
+    box-shadow: 0 0 0 2px rgba(0, 188, 196, 0.3);
+}
+
+#run-button, #reset-button {
+    padding: 0.8rem 2rem;
+    border-radius: 0.375rem;
+    color: #F9FAFB;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    margin-top: 0.5rem;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#run-button {
+    background-color: #00575b;
+}
+
+#run-button:hover {
+    background-color: #004a4d;
+    transform: scale(1.05);
+}
+
+#run-button:active {
+    background-color: #003d40;
+    transform: scale(0.95);
+}
+
+#reset-button {
+    background-color: #4B5563;
+}
+
+#reset-button:hover {
+    background-color: #374151;
+    transform: scale(1.05);
+}
+
+#reset-button:active {
+    background-color: #1F2937;
+    transform: scale(0.95);
+}
+
+#simulation-container {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background-color: #003d40;
+}
+
+#simulation-canvas {
+    max-height: 400px;
+    border: 2px solid #4B5563;
+    border-radius: 0.375rem;
+    display: block;
+    margin: 0 auto;
+    background-color: #001e1f;
+    width: 100%;
+}
+
+/* Canvas and simulation container styles */
+.canvas-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+#pendulumCanvas {
+    background-color: #1F2937;
+    border: 2px solid #4B5563;
+    border-radius: 0.5rem;
+    max-width: 100%;
+    height: auto;
+}
+
+#graphCanvas {
+    background-color: #111827;
+    border: 2px solid #4B5563;
+    border-radius: 0.5rem;
+    max-width: 100%;
+    height: auto;
+}
+
+.physics-info {
+    color: #F9FAFB;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.parameter-display {
+    font-size: 0.9rem;
+    color: #00bcc4;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.formula-display {
+    font-size: 0.8rem;
+    color: #D1D5DB;
+    margin-bottom: 0.75rem;
+    font-family: 'Courier New', monospace;
+    background-color: #374151;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #4B5563;
+}
+
+.physics-details {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    color: #9CA3AF;
+}
+
+.physics-details span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+}
+
+.physics-details strong {
+    color: #D1D5DB;
+}
+
+#info-box {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    background-color: #374151;
+    color: #F9FAFB;
+    font-size: 0.9rem;
+    text-align: left;
+    border: 1px solid #4B5563;
+    line-height: 1.5;
+}
+
+#info-box h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #00bcc4;
+}
+
+#info-box ul {
+    list-style-position: inside;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+#info-box li {
+    margin-bottom: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .input-section {
+        flex-direction: column;
+    }
+    .input-group {
+        width: 100%;
+        margin-right: 0;
+    }
+    h1 {
+        font-size: 1.75rem;
+    }
+    .container {
+        padding: 1.5rem;
+    }
+    .canvas-container {
+        gap: 0.5rem;
+    }
+    
+    #pendulumCanvas,
+    #graphCanvas {
+        width: 100%;
+        max-width: 350px;
+    }
+    
+    .physics-details {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .physics-details span {
+        flex-direction: row;
+        justify-content: space-between;
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    #simulation-canvas {
+        width: 100%;
+        max-width: 100%;
+    }
+    .container {
+        width: 95%;
+    }
+}

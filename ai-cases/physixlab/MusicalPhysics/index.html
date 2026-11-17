@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+<html lang="en">
+
+
+
+
+
+
+
+
+<head>
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta charset="UTF-8">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    
+    
+    
+    
+    
+    <title>音乐物理模拟器</title>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="../../vendor/tailwind.js"></script>
+    
+    
+    <link rel="stylesheet" href="styles.css">
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+
+
+<body class="p-4">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="container">
+        
+        
+        
+        
+        
+        
+        
+        
+        <a href="../index.html" class="inline-block mb-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105 active:scale-95">← 返回</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        <h1>音乐物理模拟器</h1>
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        <div class="input-section">
+            
+            
+            
+            
+            
+            
+            
+            
+            <div class="input-group">
+                
+                
+                
+                
+                
+                
+                
+                
+                <label for="frequency">频率（Hz）：</label>
+                
+                
+                
+                
+                
+                
+                
+                
+                <input type="number" id="frequency" value="440" min="50" max="2000" step="1" placeholder="Enter frequency" class="text-right">
+            
+            
+            
+            
+            
+            
+            
+            
+            </div>
+            
+            
+            
+            
+            
+            
+            
+            
+            <div class="input-group">
+                
+                
+                
+                
+                
+                
+                
+                
+                <label for="amplitude">振幅：</label>
+                
+                
+                
+                
+                
+                
+                
+                
+                <input type="range" id="amplitude" value="50" min="10" max="100" step="1" class="range-input">
+            
+            
+            
+            
+            
+            
+            
+            
+            </div>
+            
+            
+            
+            
+            
+            
+            
+            
+            <div class="input-group">
+                
+                
+                
+                
+                
+                
+                
+                
+                <label for="waveType">波形类型：</label>
+                
+                
+                
+                
+                
+                
+                
+                
+                <select id="waveType" class="select-input">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <option value="sine">正弦波</option>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <option value="square">方波</option>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <option value="sawtooth">锯齿波</option>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <option value="triangle">三角波</option>
+                
+                
+                
+                
+                
+                
+                
+                
+                </select>
+            
+            
+            
+            
+            
+            
+            
+            
+            </div>
+            
+            
+            
+            
+            
+            
+            
+            
+            <div class="input-group">
+                
+                
+                
+                
+                
+                
+                
+                
+                <label>快速选音：</label>
+                
+                
+                
+                
+                
+                
+                
+                
+                <div class="piano-keys">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <button class="piano-key" data-note="C" data-freq="261.63">C</button>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <button class="piano-key" data-note="D" data-freq="293.66">D</button>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <button class="piano-key" data-note="E" data-freq="329.63">E</button>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <button class="piano-key" data-note="F" data-freq="349.23">F</button>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <button class="piano-key" data-note="G" data-freq="392.00">G</button>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <button class="piano-key" data-note="A" data-freq="440.00">A</button>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <button class="piano-key" data-note="B" data-freq="493.88">B</button>
+                
+                
+                
+                
+                
+                
+                
+                
+                </div>
+            
+            
+            
+            
+            
+            
+            
+            
+            </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        </div>
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        <div class="flex flex-col items-center gap-2">
+            
+            
+            
+            
+            
+            
+            
+            
+            <button id="set-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full max-w-[300px]">应用数值</button>
+            
+            
+            
+            
+            
+            
+            
+            
+            <button id="play-button" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full max-w-[300px]">播放声音</button>
+        
+        
+        
+        
+        
+        
+        
+        
+        </div>
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        <div id="simulation-container" class="mt-8 p-4 rounded-lg bg-gray-800">
+            
+            
+            
+            
+            
+            
+            
+            
+            <canvas id="waveCanvas"></canvas>
+            
+            
+            
+            
+            
+            
+            
+            
+            <div class="physics-info">
+                
+                
+                
+                
+                
+                
+                
+                
+                <div class="frequency-display" id="frequencyDisplay">440 Hz</div>
+                
+                
+                
+                
+                
+                
+                
+                
+                <div class="wave-equation" id="waveEquation">y = 50 × sin(2π × 440 × t)</div>
+                
+                
+                
+                
+                
+                
+                
+                
+                <div class="physics-details">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <span><strong>音名：</strong>         <span id="currentNote">A4</span></span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <span><strong>波长：</strong>         <span id="wavelength">0.78 m</span></span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <span><strong>周期：</strong>         <span id="period">2.27 ms</span></span>
+                
+                
+                
+                
+                
+                
+                
+                
+                </div>
+            
+            
+            
+            
+            
+            
+            
+            
+            </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        <button id="reset-button" class="mt-4 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">重置</button>
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        <div id="info-box">
+            
+            
+            
+            
+            
+            
+            
+            
+            <h2>操作说明</h2>
+            
+            
+            
+            
+            
+            
+            
+            
+            <ul>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li>调整频率即可改变音高。</li>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li>调整振幅可改变波形高度与音量。</li>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li>切换波形，听辨不同音色。</li>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li>点击钢琴键可以快速选音。</li>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li>画面实时显示当前波形。</li>
+            
+            
+            
+            
+            
+            
+            
+            
+            </ul>
+            
+            
+            
+            
+            
+            
+            
+            
+            <h2>物理概念</h2>
+            
+            
+            
+            
+            
+            
+            
+            
+            <ul>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li><strong>频率：</strong> 每秒完成的振动次数，单位为赫兹（Hz）。</li>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li><strong>振幅：</strong> 波偏离平衡位置的最大距离。</li>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li><strong>波长：</strong> 相邻两个波峰之间的距离。</li>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li><strong>周期：</strong> 完成一次完整振动所需的时间。</li>
+                
+                
+                
+                
+                
+                
+                
+                
+                <li><strong>波形类型：</strong> 不同的数学函数，产生不同的音色。</li>
+            
+            
+            
+            
+            
+            
+            
+            
+            </ul>
+        
+        
+        
+        
+        
+        
+        
+        
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    </div>
+
+    
+
+    
+
+    <script>
+        // Audio context for sound generation
+        let audioContext;
+        let oscillator;
+        let gainNode;
+        let isPlaying = false;
+
+        // Canvas and animation variables
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationId;
+        let time = 0;
+
+        // Get control elements
+        const frequencyInput = document.getElementById('frequency');
+        const amplitudeInput = document.getElementById('amplitude');
+        const waveTypeSelect = document.getElementById('waveType');
+        const setButton = document.getElementById('set-button');
+        const playButton = document.getElementById('play-button');
+        const resetButton = document.getElementById('reset-button');
+        const frequencyDisplay = document.getElementById('frequencyDisplay');
+        const currentNote = document.getElementById('currentNote');
+        const wavelength = document.getElementById('wavelength');
+        const period = document.getElementById('period');
+        const waveEquation = document.getElementById('waveEquation');
+
+        // Piano key elements
+        const pianoKeys = document.querySelectorAll('.piano-key');
+
+        // Initialize audio context
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Setup canvas
+        function setupCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+        }
+
+        // Note frequency mapping
+        const noteFrequencies = {
+            'C': 261.63, 'D': 293.66, 'E': 329.63, 'F': 349.23,
+            'G': 392.00, 'A': 440.00, 'B': 493.88
+        };
+
+        // Find closest note to frequency
+        function getNoteName(freq) {
+            let closestNote = 'A';
+            let minDiff = Math.abs(freq - 440);
+            
+            for (const [note, noteFreq] of Object.entries(noteFrequencies)) {
+                const diff = Math.abs(freq - noteFreq);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestNote = note;
+                }
+            }
+            return closestNote + '4';
+        }
+
+        // Update wave equation display
+        function updateWaveEquation() {
+            const freq = parseFloat(frequencyInput.value);
+            const amp = parseFloat(amplitudeInput.value);
+            const waveType = waveTypeSelect.value;
+            
+            let equation = '';
+            switch (waveType) {
+                case 'sine':
+                    equation = `y = ${amp} × sin(2π × ${freq} × t)`;
+                    break;
+                case 'square':
+                    equation = `y = ${amp} × sign(sin(2π × ${freq} × t))`;
+                    break;
+                case 'sawtooth':
+                    equation = `y = ${amp} × sawtooth(2π × ${freq} × t)`;
+                    break;
+                case 'triangle':
+                    equation = `y = ${amp} × triangle(2π × ${freq} × t)`;
+                    break;
+            }
+            waveEquation.textContent = equation;
+        }
+
+        // Update physics information
+        function updatePhysicsInfo() {
+            const freq = parseFloat(frequencyInput.value);
+            
+            // Calculate wavelength in air at 20°C (speed of sound ≈ 343 m/s)
+            const speedOfSound = 343;
+            const waveLength = speedOfSound / freq;
+            
+            // Calculate period
+            const waveperiod = 1 / freq;
+            
+            // Update displays
+            frequencyDisplay.textContent = `${freq} Hz`;
+            currentNote.textContent = getNoteName(freq);
+            wavelength.textContent = `${waveLength.toFixed(2)} m`;
+            period.textContent = `${(waveperiod * 1000).toFixed(2)} ms`;
+            
+            updateWaveEquation();
+        }
+
+        // Set values function
+        function setValues() {
+            updatePhysicsInfo();
+            // Visual feedback
+            setButton.style.backgroundColor = '#059669';
+            setTimeout(() => {
+                setButton.style.backgroundColor = '';
+            }, 200);
+        }
+
+        // Reset function
+        function resetSimulation() {
+            // Stop any playing sound
+            if (isPlaying) {
+                stopSound();
+            }
+            
+            // Reset to default values
+            frequencyInput.value = 440;
+            amplitudeInput.value = 50;
+            waveTypeSelect.value = 'sine';
+            
+            // Clear piano key selection
+            pianoKeys.forEach(k => k.classList.remove('active'));
+            
+            // Reset canvas animation
+            time = 0;
+            
+            // Update displays
+            updatePhysicsInfo();
+        }
+
+        // Generate wave function
+        function getWaveValue(x, waveType, frequency, amplitude, time) {
+            const omega = 2 * Math.PI * frequency;
+            const phase = omega * time - x * 0.02;
+            
+            switch (waveType) {
+                case 'sine':
+                    return amplitude * Math.sin(phase);
+                case 'square':
+                    return amplitude * Math.sign(Math.sin(phase));
+                case 'sawtooth':
+                    return amplitude * (2 * (phase / (2 * Math.PI) - Math.floor(phase / (2 * Math.PI) + 0.5)));
+                case 'triangle':
+                    const saw = 2 * (phase / (2 * Math.PI) - Math.floor(phase / (2 * Math.PI) + 0.5));
+                    return amplitude * (2 * Math.abs(saw) - 1);
+                default:
+                    return amplitude * Math.sin(phase);
+            }
+        }
+
+        // Draw wave
+        function drawWave() {
+            const rect = canvas.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw grid
+            ctx.strokeStyle = 'rgba(107, 114, 128, 0.3)';
+            ctx.lineWidth = 1;
+            
+            // Horizontal grid lines
+            for (let y = 0; y <= height; y += height / 6) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            // Vertical grid lines
+            for (let x = 0; x <= width; x += width / 8) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            
+            // Draw center line
+            ctx.strokeStyle = 'rgba(209, 213, 219, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
+            
+            // Draw wave
+            const frequency = parseFloat(frequencyInput.value) / 50; // Scale for visualization
+            const amplitude = parseFloat(amplitudeInput.value);
+            const waveType = waveTypeSelect.value;
+            
+            ctx.strokeStyle = '#00bcc4';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            for (let x = 0; x < width; x += 1) {
+                const y = height / 2 + getWaveValue(x, waveType, frequency, amplitude * 1.5, time * 0.03);
+                if (x === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // Draw wave parameters
+            ctx.fillStyle = '#F9FAFB';
+            ctx.font = '10px Press Start 2P';
+            ctx.fillText(`${frequencyInput.value} Hz`, 10, 20);
+            ctx.fillText(`${waveTypeSelect.value}`, 10, 35);
+        }
+
+        // Animation loop
+        function animate() {
+            time++;
+            drawWave();
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // Play sound
+        function playSound() {
+            initAudio();
+            
+            if (isPlaying) {
+                stopSound();
+                return;
+            }
+            
+            const frequency = parseFloat(frequencyInput.value);
+            const amplitude = parseFloat(amplitudeInput.value) / 100;
+            const waveType = waveTypeSelect.value;
+            
+            oscillator = audioContext.createOscillator();
+            gainNode = audioContext.createGain();
+            
+            oscillator.type = waveType;
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(amplitude * 0.3, audioContext.currentTime);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start();
+            
+            isPlaying = true;
+            playButton.textContent = 'Stop Sound';
+            playButton.classList.add('playing');
+        }
+
+        // Stop sound
+        function stopSound() {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator = null;
+            }
+            isPlaying = false;
+            playButton.textContent = '播放声音';
+            playButton.classList.remove('playing');
+        }
+
+        // Event listeners
+        frequencyInput.addEventListener('input', updatePhysicsInfo);
+        amplitudeInput.addEventListener('input', updatePhysicsInfo);
+        waveTypeSelect.addEventListener('change', updatePhysicsInfo);
+        setButton.addEventListener('click', setValues);
+        playButton.addEventListener('click', playSound);
+        resetButton.addEventListener('click', resetSimulation);
+
+        // Piano key event listeners
+        pianoKeys.forEach(key => {
+            key.addEventListener('click', () => {
+                const freq = parseFloat(key.dataset.freq);
+                frequencyInput.value = freq;
+                updatePhysicsInfo();
+                
+                // Visual feedback
+                pianoKeys.forEach(k => k.classList.remove('active'));
+                key.classList.add('active');
+                
+                // Play the note
+                if (isPlaying) {
+                    stopSound();
+                }
+                setTimeout(() => {
+                    playSound();
+                    setTimeout(stopSound, 1000); // Play for 1 second
+                }, 100);
+            });
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            setupCanvas();
+            updatePhysicsInfo();
+            animate();
+        });
+
+        window.addEventListener('resize', () => {
+            setupCanvas();
+        });
+    </script>
+
+
+</body>
+
+
+
+
+
+
+
+
+</html> 

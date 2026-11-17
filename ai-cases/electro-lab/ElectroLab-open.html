@@ -1,0 +1,910 @@
+<html lang="en"><head>
+
+<!-- 已移除 Google IconChecker：它依赖联网校验图标名，离线时会把所有图标替换成 fallback -->
+
+<meta charset="utf-8">
+
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+
+<title>ElectroLab Open</title>
+<script src="../vendor/tailwind.js"></script>
+<script src="../vendor/Tone.js"></script>
+
+
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; user-select: none; }
+    canvas { touch-action: none; }
+    .tool-btn { transition: all 0.2s; }
+    .tool-btn.active { background-color: #e0e7ff; border-color: #4f46e5; color: #4f46e5; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .category-header { cursor: pointer; user-select: none; }
+    .category-header:hover { background-color: #f8fafc; }
+    .custom-scroll::-webkit-scrollbar { width: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+    input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 8px 0; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: #4f46e5; cursor: pointer; margin-top: -5px; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px; }
+    @keyframes slideIn { from { transform: translateX(-50%) translateY(-100%); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+    .toast-enter { animation: slideIn 0.3s ease-out forwards; }
+</style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.left-0{left:0px}.left-1\/2{left:50%}.right-4{right:1rem}.top-0{top:0px}.top-4{top:1rem}.z-10{z-index:10}.z-20{z-index:20}.z-50{z-index:50}.mt-1{margin-top:0.25rem}.mb-1{margin-bottom:0.25rem}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-14{height:3.5rem}.h-2{height:0.5rem}.h-4{height:1rem}.h-full{height:100%}.h-screen{height:100vh}.max-h-\[70vh\]{max-height:70vh}.w-2{width:0.5rem}.w-72{width:18rem}.w-80{width:20rem}.w-auto{width:auto}.w-full{width:100%}.w-px{width:1px}.max-w-md{max-width:28rem}.flex-1{flex:1 1 0%}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-x-\[120\%\]{--tw-translate-x:120%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-crosshair{cursor:crosshair}.cursor-grab{cursor:grab}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.rounded{border-radius:0.25rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.rounded-b-xl{border-bottom-right-radius:0.75rem;border-bottom-left-radius:0.75rem}.rounded-t-xl{border-top-left-radius:0.75rem;border-top-right-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-indigo-200{--tw-border-opacity:1;border-color:rgb(199 210 254 / var(--tw-border-opacity, 1))}.border-red-200{--tw-border-opacity:1;border-color:rgb(254 202 202 / var(--tw-border-opacity, 1))}.border-slate-100{--tw-border-opacity:1;border-color:rgb(241 245 249 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.bg-green-500{--tw-bg-opacity:1;background-color:rgb(34 197 94 / var(--tw-bg-opacity, 1))}.bg-indigo-50{--tw-bg-opacity:1;background-color:rgb(238 242 255 / var(--tw-bg-opacity, 1))}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity, 1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242 / var(--tw-bg-opacity, 1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-slate-300{--tw-bg-opacity:1;background-color:rgb(203 213 225 / var(--tw-bg-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slate-50\/50{background-color:rgb(248 250 252 / 0.5)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/95{background-color:rgb(255 255 255 / 0.95)}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-\[9px\]{font-size:9px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.font-bold{font-weight:700}.font-normal{font-weight:400}.font-medium{font-weight:500}.uppercase{text-transform:uppercase}.leading-tight{line-height:1.25}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.opacity-20{opacity:0.2}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:border-indigo-400:hover{--tw-border-opacity:1;border-color:rgb(129 140 248 / var(--tw-border-opacity, 1))}.hover\:border-red-400:hover{--tw-border-opacity:1;border-color:rgb(248 113 113 / var(--tw-border-opacity, 1))}.hover\:border-indigo-500:hover{--tw-border-opacity:1;border-color:rgb(99 102 241 / var(--tw-border-opacity, 1))}.hover\:bg-indigo-100:hover{--tw-bg-opacity:1;background-color:rgb(224 231 255 / var(--tw-bg-opacity, 1))}.hover\:bg-red-100:hover{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-50:hover{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.hover\:text-slate-600:hover{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 640px){.sm\:block{display:block}}</style><link rel="stylesheet" href="../webfonts/ms-icons.css">
+</head>
+
+
+<body class="bg-slate-100 h-screen flex flex-col text-slate-800">
+
+
+<!-- Header -->
+
+
+<header class="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between shadow-sm z-20 h-14">
+
+
+<div class="flex items-center gap-3">
+
+
+<div class="bg-indigo-600 text-white p-1.5 rounded-lg shadow-md"><span class="material-symbols-outlined text-xl">&#xEB3D;</span></div>
+
+
+<h1 class="font-bold text-slate-900 text-lg hidden sm:block">电学实验室 <span class="text-xs font-normal text-white bg-green-500 px-1.5 py-0.5 rounded">打开</span></h1>
+
+
+</div>
+
+
+<div class="flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-600">
+
+
+<div class="flex items-center gap-2">
+
+
+<div class="w-2 h-2 rounded-full bg-green-500" id="sys-status-dot"></div>
+
+
+<span id="sys-status-text">运行稳定</span>
+
+
+</div>
+
+
+<div class="w-px h-4 bg-slate-300"></div>
+
+
+<span id="sim-time">7.95s</span>
+
+
+</div>
+
+
+<div class="flex items-center gap-2">
+
+
+<button class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors" onclick="clearBoard()">
+
+
+<span class="material-symbols-outlined text-sm">&#xE92B;</span> 清空
+        </button>
+
+
+<button class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-200 transition-colors" onclick="loadDemo()">
+
+
+<span class="material-symbols-outlined text-sm">&#xEB9B;</span> 示例电路
+        </button>
+
+
+<button class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 rounded border border-slate-300 transition-colors" onclick="openTemplates()">
+
+
+<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg> 保存模板
+        </button>
+
+
+</div>
+
+
+</header>
+
+
+<div class="flex-1 flex overflow-hidden relative">
+
+
+<!-- Sidebar -->
+
+
+<aside class="w-72 bg-white border-r border-slate-200 flex flex-col z-10 shadow-xl">
+
+
+<div class="p-2 grid grid-cols-3 gap-2 border-b border-slate-200 bg-slate-50">
+
+
+<button class="tool-btn active flex flex-col items-center justify-center p-2 rounded bg-white border border-slate-200 hover:border-indigo-400" id="tool-select" onclick="setTool('select')">
+
+
+<span class="material-symbols-outlined text-xl">&#xF82F;</span><span class="text-[9px] font-bold uppercase mt-1">选择</span>
+
+
+</button>
+
+
+<button class="tool-btn flex flex-col items-center justify-center p-2 rounded bg-white border border-slate-200 hover:border-indigo-400" id="tool-wire" onclick="setTool('wire')">
+
+
+<span class="material-symbols-outlined text-xl">&#xE922;</span><span class="text-[9px] font-bold uppercase mt-1">连线</span>
+
+
+</button>
+
+
+<button class="tool-btn flex flex-col items-center justify-center p-2 rounded bg-white border border-slate-200 hover:border-red-400" id="tool-delete" onclick="setTool('delete')">
+
+
+<span class="material-symbols-outlined text-xl text-red-500">&#xE872;</span><span class="text-[9px] font-bold uppercase mt-1 text-red-500">删除</span>
+
+
+</button>
+
+
+</div>
+
+
+<div class="flex-1 overflow-y-auto custom-scroll p-2 space-y-1" id="component-list">
+
+
+<!-- Components Injected via JS -->
+
+
+<details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>1. 电源</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xF8AF;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">电池 1.5V</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE1A3;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">电池 9V</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE8C0;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">可调直流源</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE176;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">交流源</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xEC0F;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">太阳能电池</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE1B8;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">信号发生器</span></div></div></details><details open="" class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>10. 显示器件</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE3D7;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">七段数码管</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xEF5B;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">LCD 1602 液晶</span></div></div></details><details open="" class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>11. 单片机</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE322;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">Arduino 开发板</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>12. 仪表</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE9E4;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">电压表</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xEAA2;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">示波器</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>13. 接点</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE171;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">接地</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE2C6;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">VCC 节点</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>2. 无源元件</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE15B;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">电阻</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE429;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">电位器</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE256;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">电容</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE3EA;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">电感</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xF076;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">热敏电阻</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE3AA;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">光敏电阻</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>3. 开关</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE9F5;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">单刀开关</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE836;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">按钮开关</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE0B6;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">继电器</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>4. 二极管</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE037;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">二极管</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE518;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">发光二极管</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE3B7;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">RGB 灯珠</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE9B0;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">整流桥</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>5. 晶体管</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE97A;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">NPN 三极管</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE8FB;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">N 沟道 MOS 管</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>6. 模拟集成电路</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE86B;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">运放 741</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE63C;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">7805 稳压器</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>7. 逻辑门</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xF108;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">与门</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE836;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">非门</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE334;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">555 定时器</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>8. 传感器</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE51E;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">超声波传感器</span></div></div></details><details class="group mb-1 border border-slate-100 rounded-lg bg-white"><summary class="category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg"><span>9. 执行器</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span></summary><div class="grid grid-cols-2 gap-2 p-2 bg-slate-50/50"><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE8B8;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">直流电机</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xF06C;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">舵机</span></div><div class="flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95" draggable="true"><span class="material-symbols-outlined text-2xl text-indigo-600 mb-1">&#xE050;</span><span class="text-[10px] text-center font-medium leading-tight text-slate-700">蜂鸣器</span></div></div></details></div>
+
+
+</aside>
+
+
+<!-- Canvas -->
+
+
+<main class="flex-1 relative bg-slate-100 overflow-hidden cursor-crosshair" id="drop-zone">
+
+
+<div class="absolute inset-0 pointer-events-none opacity-20" style="background-image: radial-gradient(#475569 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+
+<canvas class="absolute top-0 left-0 w-full h-full outline-none" id="simCanvas" width="1856" height="834"></canvas>
+
+
+<div class="absolute top-4 left-1/2 -translate-x-1/2 flex flex-col gap-2 items-center pointer-events-none z-50 w-auto max-w-md" id="alert-container"></div>
+
+
+<!-- Property Panel -->
+
+
+<div class="absolute top-4 right-4 w-80 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-200 transform transition-transform duration-300 translate-x-[120%]" id="properties-panel">
+
+
+<div class="flex items-center justify-between p-3 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
+
+
+<h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm"><span class="material-symbols-outlined text-indigo-600">&#xE429;</span> 属性</h3>
+
+
+<button class="text-slate-400 hover:text-slate-600" onclick="closeProps()"><span class="material-symbols-outlined text-lg">&#xE14C;</span></button>
+
+
+</div>
+
+
+<div class="p-4 space-y-4 max-h-[70vh] overflow-y-auto custom-scroll" id="prop-content"></div>
+
+
+<div class="p-3 border-t border-slate-100 bg-slate-50 text-xs font-mono text-slate-600 rounded-b-xl" id="prop-live-data">未选择元件…</div>
+
+
+</div>
+
+
+</main>
+
+
+</div>
+<script>
+// ==========================================
+// 1. CONFIGURATION & ASSETS
+// ==========================================
+const GRID = 20;
+const COLORS = { wireRed: '#ef4444', wireBlack: '#1e293b', wireSignal: '#eab308', wireOff: '#94a3b8', node: '#3b82f6', highlight: '#4f46e5' };
+const ICON_CHARS = {'account_tree':'\uE97A','ads_click':'\uE762','all_inclusive':'\uEB3D','arrow_selector_tool':'\uF82F','battery_charging_full':'\uE1A3','battery_full':'\uE1A4','battery_horiz_050':'\uF8AF','brightness_5':'\uE3AA','call_split':'\uE0B6','change_history':'\uE86B','check':'\uE5CA','check_box_outline_blank':'\uE835','check_circle':'\uE86C','close':'\uE14C','cloud':'\uE2BD','content_copy':'\uE14D','content_paste':'\uE14F','delete':'\uE872','delete_forever':'\uE92B','delete_sweep':'\uE16C','display_settings':'\uEB97','download':'\uE171','drag_indicator':'\uE945','eject':'\uE8FB','expand_more':'\uE5CF','favorite':'\uE87D','filter_7':'\uE3D7','grain':'\uE3EA','graphic_eq':'\uE1B8','grid_on':'\uE3EC','grid_view':'\uE9B0','horizontal_rule':'\uF108','html':'\uEB7E','light_mode':'\uE518','lock':'\uE88D','mail':'\uE0BE','memory':'\uE322','monitor':'\uEF5B','monitor_heart':'\uEAA2','near_me':'\uE569','notifications':'\uE7F4','palette':'\uE3B7','play_arrow':'\uE037','power':'\uE63C','radio_button_unchecked':'\uE836','rainy':'\uF176','rectangle':'\uEB54','remove':'\uE15B','rocket_launch':'\uEB9B','sensors':'\uE51E','sentiment_dissatisfied':'\uE811','sentiment_satisfied':'\uE0ED','settings':'\uE8B8','settings_input_component':'\uE8C0','smart_toy':'\uF06C','solar_power':'\uEC0F','space_bar':'\uE256','speed':'\uE9E4','thermostat':'\uF076','timeline':'\uE922','title':'\uE264','toggle_off':'\uE9F5','tune':'\uE429','upload':'\uE2C6','volume_up':'\uE050','watch':'\uE334','waves':'\uE176','wb_sunny':'\uE430','wifi':'\uE63E'};
+const PROP_LABELS = { v:'电压', voltage:'电压', resistance:'阻值', cap:'容值', inductance:'电感量', temp:'温度', light:'光照', closed:'闭合', pressed:'按下', coilV:'线圈电压', freq:'频率', wave:'波形', irradiance:'光照强度', color:'颜色', ratedV:'额定电压', wiper:'滑臂位置' };
+
+// --- COMPONENT DEFINITIONS ---
+const COMPONENT_TYPES = {
+    // 1. Power Sources
+    'dc_bat_aa': { cat: '1. 电源', name: '电池 1.5V', icon: 'battery_horiz_050', w:2, h:2, pins:[{x:0,y:1,t:'neg',l:'-'},{x:2,y:1,t:'pos',l:'+'}], props:{v:{val:1.5,fixed:true}} },
+    'dc_bat_9v': { cat: '1. 电源', name: '电池 9V', icon: 'battery_charging_full', w:2, h:2, pins:[{x:0,y:1,t:'neg',l:'-'},{x:2,y:1,t:'pos',l:'+'}], props:{v:{val:9,fixed:true}} },
+    'dc_source': { cat: '1. 电源', name: '可调直流源', icon: 'settings_input_component', w:3, h:3, pins:[{x:0,y:1.5,t:'neg',l:'-'},{x:3,y:1.5,t:'pos',l:'+'}], props:{voltage:{val:5,min:0,max:50}} },
+    'ac_source': { cat: '1. 电源', name: '交流源', icon: 'waves', w:3, h:3, pins:[{x:0,y:1.5,l:'~'},{x:3,y:1.5,l:'~'}], props:{voltage:{val:120,min:1,max:240}, freq:{val:1,min:0.1,max:10}} },
+    'solar_cell': { cat: '1. 电源', name: '太阳能电池', icon: 'solar_power', w:3, h:3, pins:[{x:0,y:2.5,t:'neg'},{x:3,y:2.5,t:'pos'}], props:{irradiance:{val:100,min:0,max:100,u:'%'}} },
+    'func_gen': { cat: '1. 电源', name: '信号发生器', icon: 'graphic_eq', w:4, h:3, pins:[{x:0,y:2,t:'neg',l:'GND'},{x:4,y:1,t:'sig',l:'SIG'}], props:{freq:{val:1,min:0.1,max:20}, wave:{val:'sine',opts:['sine','square']}} },
+
+    // 2. Passive
+    'resistor': { cat: '2. 无源元件', name: '电阻', icon: 'remove', w:3, h:1, pins:[{x:0,y:0.5},{x:3,y:0.5}], props:{resistance:{val:220,min:10,max:10000,u:'Ω'}} },
+    'pot': { cat: '2. 无源元件', name: '电位器', icon: 'tune', w:3, h:3, pins:[{x:0,y:2.5},{x:1.5,y:0,l:'W'},{x:3,y:2.5}], props:{resistance:{val:1000}, wiper:{val:50,min:0,max:100}} },
+    'cap': { cat: '2. 无源元件', name: '电容', icon: 'space_bar', w:2, h:2, pins:[{x:0,y:1,l:'-'},{x:2,y:1,l:'+'}], props:{cap:{val:100,u:'µF'}} },
+    'inductor': { cat: '2. 无源元件', name: '电感', icon: 'grain', w:3, h:1, pins:[{x:0,y:0.5},{x:3,y:0.5}], props:{inductance:{val:1,u:'mH'}} },
+    'thermistor': { cat: '2. 无源元件', name: '热敏电阻', icon: 'thermostat', w:3, h:1, pins:[{x:0,y:0.5},{x:3,y:0.5}], props:{temp:{val:25,min:-20,max:100}} },
+    'ldr': { cat: '2. 无源元件', name: '光敏电阻', icon: 'brightness_5', w:3, h:2, pins:[{x:0,y:1},{x:3,y:1}], props:{light:{val:50,min:0,max:100}} },
+
+    // 3. Switches
+    'sw_spst': { cat: '3. 开关', name: '单刀开关', icon: 'toggle_off', w:3, h:2, pins:[{x:0,y:1},{x:3,y:1}], props:{closed:{val:false,type:'bool'}} },
+    'sw_push': { cat: '3. 开关', name: '按钮开关', icon: 'radio_button_unchecked', w:3, h:2, pins:[{x:0,y:1},{x:3,y:1}], props:{pressed:{val:false,type:'mom'}} },
+    'relay': { cat: '3. 开关', name: '继电器', icon: 'call_split', w:4, h:4, pins:[{x:0,y:1,l:'C1'},{x:0,y:3,l:'C2'},{x:4,y:2,l:'COM'},{x:4,y:0,l:'NC'},{x:4,y:4,l:'NO'}], props:{coilV:{val:5}} },
+
+    // 4. Diodes
+    'diode': { cat: '4. 二极管', name: '二极管', icon: 'play_arrow', w:2, h:1, pins:[{x:0,y:0.5,l:'A'},{x:2,y:0.5,l:'K'}], props:{} },
+    'led': { cat: '4. 二极管', name: '发光二极管', icon: 'light_mode', w:2, h:2, pins:[{x:0,y:1,l:'A'},{x:2,y:1,l:'K'}], props:{color:{val:'#ef4444',type:'color'}, ratedV:{val:2.5}} },
+    'led_rgb': { cat: '4. 二极管', name: 'RGB 灯珠', icon: 'palette', w:2, h:4, pins:[{x:0,y:1,l:'R'},{x:0,y:2,l:'G'},{x:0,y:3,l:'B'},{x:2,y:2,l:'K'}], props:{} },
+    'rectifier': { cat: '4. 二极管', name: '整流桥', icon: 'grid_view', w:4, h:4, pins:[{x:0,y:2,l:'~'},{x:4,y:2,l:'~'},{x:2,y:0,l:'+',t:'pos'},{x:2,y:4,l:'-',t:'neg'}], props:{} },
+
+    // 5. Transistors
+    'npn': { cat: '5. 晶体管', name: 'NPN 三极管', icon: 'account_tree', w:3, h:3, pins:[{x:0,y:1.5,l:'B'},{x:1.5,y:0,l:'C'},{x:1.5,y:3,l:'E'}], props:{beta:{val:100}} },
+    'mosfet_n': { cat: '5. 晶体管', name: 'N 沟道 MOS 管', icon: 'eject', w:3, h:3, pins:[{x:0,y:1.5,l:'G'},{x:1.5,y:0,l:'D'},{x:1.5,y:3,l:'S'}], props:{vth:{val:3}} },
+
+    // 6. Analog ICs
+    'opamp': { cat: '6. 模拟集成电路', name: '运放 741', icon: 'change_history', w:5, h:4, pins:[{x:0,y:1,l:'-'},{x:0,y:3,l:'+'},{x:5,y:2,l:'OUT'},{x:2.5,y:0,l:'V+'},{x:2.5,y:4,l:'V-'}], props:{} },
+    'regulator': { cat: '6. 模拟集成电路', name: '7805 稳压器', icon: 'power', w:3, h:2, pins:[{x:0,y:1,l:'IN'},{x:1.5,y:2,l:'GND'},{x:3,y:1,l:'OUT'}], props:{vout:{val:5,fixed:true}} },
+
+    // 7. Logic
+    'logic_and': { cat: '7. 逻辑门', name: '与门', icon: 'gate_and', w:4, h:3, pins:[{x:0,y:0.5,l:'A'},{x:0,y:2.5,l:'B'},{x:4,y:1.5,l:'Q'}], props:{} },
+    'logic_not': { cat: '7. 逻辑门', name: '非门', icon: 'gate_not', w:3, h:2, pins:[{x:0,y:1,l:'A'},{x:3,y:1,l:'Q'}], props:{} },
+    'timer_555': { cat: '7. 逻辑门', name: '555 定时器', icon: 'watch', w:4, h:4, pins:[{x:0,y:0,l:'GND'},{x:0,y:1,l:'TRG'},{x:0,y:2,l:'OUT'},{x:0,y:3,l:'RST'},{x:4,y:0,l:'VCC'},{x:4,y:1,l:'DIS'},{x:4,y:2,l:'THR'},{x:4,y:3,l:'CV'}], props:{} },
+
+    // 8. Sensors
+    'ultrasonic': { cat: '8. 传感器', name: '超声波传感器', icon: 'sensors', w:4, h:2, pins:[{x:0,y:0.5,l:'VCC'},{x:0,y:1.5,l:'TRG'},{x:4,y:1.5,l:'ECH'},{x:4,y:0.5,l:'GND'}], props:{dist:{val:10,min:2,max:200}} },
+
+    // 9. Actuators
+    'motor_dc': { cat: '9. 执行器', name: '直流电机', icon: 'settings', w:3, h:3, pins:[{x:0,y:1.5},{x:3,y:1.5}], props:{rpm:{val:0,readOnly:true}} },
+    'servo': { cat: '9. 执行器', name: '舵机', icon: 'smart_toy', w:3, h:3, pins:[{x:0,y:1.5,l:'-'},{x:1.5,y:0,l:'S'},{x:3,y:1.5,l:'+'}], props:{angle:{val:90,readOnly:true}} },
+    'buzzer': { cat: '9. 执行器', name: '蜂鸣器', icon: 'volume_up', w:2, h:2, pins:[{x:0,y:1,l:'-'},{x:2,y:1,l:'+'}], props:{freq:{val:440}} },
+
+    // 10. Displays
+    '7seg': { cat: '10. 显示器件', name: '七段数码管', icon: 'filter_7', w:4, h:5, pins:[{x:0,y:0,l:'a'},{x:0,y:1,l:'b'},{x:0,y:2,l:'c'},{x:0,y:3,l:'d'},{x:4,y:0,l:'e'},{x:4,y:1,l:'f'},{x:4,y:2,l:'g'},{x:4,y:4,l:'COM'}], props:{val:{val:0,readOnly:true}} },
+    
+    'lcd': { 
+        cat: '10. 显示器件', name: 'LCD 1602 液晶', icon: 'monitor', w:10, h:5, 
+        pins:[
+            {x:0,y:1,l:'VCC',t:'pos'},
+            {x:0,y:2,l:'GND',t:'neg'},
+            {x:0,y:3,l:'SDA',t:'sig'},
+            {x:0,y:4,l:'SCL',t:'sig'}
+        ], 
+        props:{text:{val:"Hello World",type:'text'}} 
+    },
+
+    // 11. Microcontrollers
+    'arduino': { cat: '11. 单片机', name: 'Arduino 开发板', icon: 'memory', w:5, h:7, pins:[{x:0,y:1,l:'5V'},{x:0,y:2,l:'GND'},{x:5,y:1,l:'D13'},{x:5,y:2,l:'D12'},{x:5,y:3,l:'D11~'},{x:5,y:4,l:'A0'}], props:{d13:{val:false,type:'bool_out'}} },
+
+    // 12. Meters
+    'voltmeter': { cat: '12. 仪表', name: '电压表', icon: 'speed', w:3, h:3, pins:[{x:0,y:2.5,l:'-'},{x:3,y:2.5,l:'+'}], props:{read:{val:0,readOnly:true}} },
+    'scope': { cat: '12. 仪表', name: '示波器', icon: 'monitor_heart', w:5, h:4, pins:[{x:0,y:3,l:'GND'},{x:0,y:1,l:'CH1'}], props:{v_div:{val:1},t_div:{val:0.1}} },
+    
+    // 13. Connectors
+    'gnd': { cat: '13. 接点', name: '接地', icon: 'download', w:2, h:2, pins:[{x:1,y:0,l:'G'}], props:{} },
+    'vcc': { cat: '13. 接点', name: 'VCC 节点', icon: 'upload', w:2, h:2, pins:[{x:1,y:2,l:'V'}], props:{volts:{val:5}} }
+};
+
+// State
+let components = [], wires = [], time = 0;
+let currentTool = 'select', isDragging = false, dragComp = null, dragOffset = {x:0,y:0}, wireStart = null, mousePos = {x:0,y:0}, selectedId = null;
+let diagnostics = { short: false, noGnd: true };
+
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+
+// ==========================================
+// 2. INITIALIZATION
+// ==========================================
+window.onload = () => {
+    setupSidebar();
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    canvas.addEventListener('mousedown', onMouseDown);
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mouseup', onMouseUp);
+    document.getElementById('drop-zone').addEventListener('dragover', e=>e.preventDefault());
+    document.getElementById('drop-zone').addEventListener('drop', onDrop);
+    requestAnimationFrame(loop);
+    loadDemo();
+};
+
+/* 非门在字体里没有现成字形（navigate_next 不在子集内），直接画「三角 + 反相气泡」 */
+/* 与门：左侧直边 + 右侧半圆，教科书里的标准形状 */
+function drawAndGate(ctx, cx, cy, size) {
+    const h = size, w = size * 1.05, r = h / 2;
+    ctx.save();
+    ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - w / 2, cy - r);
+    ctx.lineTo(cx, cy - r);
+    ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2);
+    ctx.lineTo(cx - w / 2, cy + r);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+}
+function drawNotGate(ctx, cx, cy, size) {
+    const h = size, w = size * 0.9;
+    ctx.save();
+    ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - w / 2, cy - h / 2);
+    ctx.lineTo(cx - w / 2, cy + h / 2);
+    ctx.lineTo(cx + w / 2 - 6, cy);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx + w / 2 - 2, cy, 3.6, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+}
+/* 侧栏图标：普通器件走字体码点，非门走同款矢量，避免出现英文单词 */
+function iconMarkup(name, cls) {
+    if (name === 'gate_and') {
+        return '<svg viewBox="0 0 24 24" class="' + cls + '" fill="none" stroke="currentColor" stroke-width="2" '
+             + 'stroke-linejoin="round" style="width:1.45rem;height:1.45rem"><path d="M5 5h6a7 7 0 0 1 0 14H5z"/></svg>';
+    }
+    if (name === 'gate_not') {
+        return '<svg viewBox="0 0 24 24" class="' + cls + '" fill="none" stroke="currentColor" stroke-width="2" '
+             + 'stroke-linejoin="round" style="width:1.45rem;height:1.45rem"><path d="M5 4.5v15L16 12z"/>'
+             + '<circle cx="18.4" cy="12" r="2.1"/></svg>';
+    }
+    return '<span class="material-symbols-outlined ' + cls + '">' + (ICON_CHARS[name] || name) + '</span>';
+}
+
+function setupSidebar() {
+    const list = document.getElementById('component-list');
+    list.innerHTML = ''; // 清掉快照静态节点，只保留下面生成的（带拖拽/点击监听）
+    const cats = {};
+    Object.entries(COMPONENT_TYPES).forEach(([type, def]) => {
+        if (!cats[def.cat]) cats[def.cat] = [];
+        cats[def.cat].push({type, ...def});
+    });
+    Object.keys(cats).sort().forEach((cat, ci) => {
+        const details = document.createElement('details');
+        details.open = ci === 0 || cat.startsWith('10') || cat.startsWith('11'); // 默认展开第一个分类 
+        details.className = 'group mb-1 border border-slate-100 rounded-lg bg-white';
+        const sum = document.createElement('summary');
+        sum.className = 'category-header p-2 text-xs font-bold text-slate-600 uppercase flex justify-between items-center rounded-lg';
+        sum.innerHTML = `<span>${cat}</span><span class="material-symbols-outlined text-sm">&#xE5CF;</span>`;
+        const grid = document.createElement('div');
+        grid.className = 'grid grid-cols-2 gap-2 p-2 bg-slate-50/50';
+        cats[cat].forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'flex flex-col items-center p-2 bg-white border border-slate-200 rounded hover:border-indigo-500 cursor-grab shadow-sm transition-all active:scale-95';
+            div.draggable = true;
+            div.dataset.type = item.type;
+            div.title = '拖动到画布，或点击直接添加';
+            div.onclick = () => { const r = canvas.getBoundingClientRect(); addComponent(item.type, r.width/2 + (Math.random()*80-40), r.height/2 + (Math.random()*80-40)); draw(); };
+            div.ondragstart = e => e.dataTransfer.setData('type', item.type);
+            div.innerHTML = `${iconMarkup(item.icon, "text-2xl text-indigo-600 mb-1")}<span class="text-[10px] text-center font-medium leading-tight text-slate-700">${item.name}</span>`;
+            grid.appendChild(div);
+        });
+        details.appendChild(sum); details.appendChild(grid); list.appendChild(details);
+    });
+}
+
+// ==========================================
+// 3. SIMULATION ENGINE
+// ==========================================
+function loop() {
+    time += 0.016;
+    simulate();
+    draw();
+    updateUI();
+    requestAnimationFrame(loop);
+}
+
+function simulate() {
+    diagnostics.noGnd = true; diagnostics.short = false;
+
+    // 1. Build Graph (Nodes)
+    const uf = new Map();
+    const getKey = (cid, pid) => `${cid}:${pid}`;
+    const find = k => { if(!uf.has(k)) uf.set(k, k); if(uf.get(k)!==k) uf.set(k, find(uf.get(k))); return uf.get(k); };
+    const union = (a,b) => uf.set(find(a), find(b));
+
+    wires.forEach(w => union(getKey(w.s.id, w.s.p), getKey(w.e.id, w.e.p)));
+    
+    // Internal connections (Switches)
+    components.forEach(c => {
+        if (['sw_spst','sw_push'].includes(c.type) && (c.props.closed?.val || c.props.pressed?.val)) union(getKey(c.id,0), getKey(c.id,1));
+        if (c.type === 'relay' && c.state.on) union(getKey(c.id,2), getKey(c.id,4)); // COM-NO
+        if (c.type === 'relay' && !c.state.on) union(getKey(c.id,2), getKey(c.id,3)); // COM-NC
+    });
+
+    const groups = new Map();
+    components.forEach(c => c.pins.forEach((p,i) => {
+        const root = find(getKey(c.id, i));
+        if(!groups.has(root)) groups.set(root, {id:root, pins:[], v:0, fixed:false});
+        groups.get(root).pins.push({c, i});
+    }));
+
+    // 2. Apply Sources & Grounds
+    components.forEach(c => {
+        // Grounds
+        if (c.type === 'gnd') {
+            const n = groups.get(find(getKey(c.id,0)));
+            if(n) { n.v = 0; n.fixed = true; diagnostics.noGnd = false; }
+        }
+        if (['dc_source','dc_bat_aa','dc_bat_9v','solar_cell','arduino','regulator'].includes(c.type)) {
+            if (c.type === 'arduino' || c.type === 'regulator') {
+                 const gndPin = c.type==='regulator'?1:1; // Ard pin 1 is GND
+                 const n = groups.get(find(getKey(c.id, gndPin)));
+                 if(n && diagnostics.noGnd) { n.v = 0; n.fixed = true; diagnostics.noGnd = false; }
+            }
+        }
+    });
+
+    // Auto-Fix: If no ground, fix first negative terminal of a battery to 0
+    if (diagnostics.noGnd) {
+        const bat = components.find(c => c.type.includes('bat') || c.type==='dc_source');
+        if(bat) {
+            const n = groups.get(find(getKey(bat.id, 0)));
+            if(n) { n.v = 0; n.fixed = true; }
+        }
+    }
+
+    // 3. Relaxation Solver
+    for(let iter=0; iter<10; iter++) {
+        groups.forEach(node => {
+            if(node.fixed) return;
+            let num = 0, den = 0;
+            node.pins.forEach(p => {
+                const c = p.c, pi = p.i;
+                
+                if (['dc_bat_aa','dc_bat_9v','dc_source','solar_cell'].includes(c.type)) {
+                     const otherPin = pi===0?1:0;
+                     const otherNode = groups.get(find(getKey(c.id, otherPin)));
+                     if(otherNode) {
+                         const v = c.type==='solar_cell' ? (c.props.irradiance.val/100)*5 : (c.props.voltage?.val || c.props.v.val);
+                         const target = otherNode.v + (pi===1 ? v : -v);
+                         num += target * 100; den += 100;
+                     }
+                }
+                if (c.type === 'ac_source' || c.type === 'func_gen') {
+                    const otherPin = pi===0?1:0;
+                    const otherNode = groups.get(find(getKey(c.id, otherPin)));
+                    if(otherNode) {
+                        const f = c.props.freq.val;
+                        const vPeak = c.type==='func_gen'?5:(c.props.voltage.val);
+                        const wave = c.props.wave?.val || 'sine';
+                        let val = 0;
+                        if(wave==='sine') val = Math.sin(time * f * 6.28) * vPeak;
+                        else val = (Math.sin(time*f*6.28)>0?1:-1)*vPeak;
+                        const target = otherNode.v + (pi===1 ? val : -val);
+                        num += target * 100; den += 100;
+                    }
+                }
+                if (c.type === 'vcc') { num += c.props.volts.val * 100; den += 100; }
+                if (['resistor','lamp','pot','motor_dc','buzzer','thermistor','ldr'].includes(c.type)) {
+                    if (c.type === 'pot') {
+                        const tot = c.props.resistance.val;
+                        const r1 = tot * (c.props.wiper.val/100) + 1;
+                        const r2 = tot * (1 - c.props.wiper.val/100) + 1;
+                        if(pi===1) { 
+                           const n0 = groups.get(find(getKey(c.id,0)));
+                           const n2 = groups.get(find(getKey(c.id,2)));
+                           if(n0) { num += n0.v/r1; den += 1/r1; }
+                           if(n2) { num += n2.v/r2; den += 1/r2; }
+                        } else {
+                           const nw = groups.get(find(getKey(c.id,1)));
+                           const R = pi===0?r1:r2;
+                           if(nw) { num += nw.v/R; den += 1/R; }
+                        }
+                    } else {
+                        const otherPin = pi===0?1:0;
+                        const otherNode = groups.get(find(getKey(c.id, otherPin)));
+                        if(otherNode) {
+                            let R = 1000;
+                            if(c.props.resistance) R = c.props.resistance.val;
+                            if(c.type==='thermistor') R = 10000 / (1 + c.props.temp.val/25); 
+                            if(c.type==='ldr') R = 10000 / (1 + c.props.light.val/10);
+                            if(c.type==='motor_dc') R = 20;
+                            const G = 1/R;
+                            num += otherNode.v * G; den += G;
+                        }
+                    }
+                }
+                if (c.type === 'arduino' && pi === 2 && c.props.d13.val) { num += 5 * 50; den += 50; }
+            });
+            if(den > 0) node.v += (num/den - node.v) * 0.5;
+        });
+    }
+
+    // 4. Update State
+    components.forEach(c => {
+        const v = p => { const g = groups.get(find(getKey(c.id, p))); return g ? g.v : 0; };
+        if(c.pins.length >= 2) c.state.vDiff = v(1) - v(0); 
+        
+        if(c.type === 'led') c.state.on = (v(0) - v(1)) > 1.5;
+        if(c.type === 'lamp') c.state.on = Math.abs(c.state.vDiff) > 1;
+        if(c.type === 'motor_dc') c.props.rpm.val = c.state.vDiff * 200;
+        if(c.type === 'voltmeter') c.props.read.val = v(1) - v(0);
+        if(c.type === 'scope') {
+            if(!c.state.hist) c.state.hist = [];
+            c.state.hist.push(v(1)-v(0));
+            if(c.state.hist.length > 100) c.state.hist.shift();
+        }
+        if(c.type === 'relay') {
+            const coilV = Math.abs(v(1) - v(0));
+            c.state.on = coilV > (c.props.coilV.val * 0.7);
+        }
+        if(c.type === '7seg') {
+            c.state.segments = [];
+            for(let i=0; i<7; i++) if(v(i) - v(7) > 1.5) c.state.segments.push(i);
+        }
+    });
+}
+
+// ==========================================
+// 4. RENDER ENGINE
+// ==========================================
+function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    
+    // Wires
+    wires.forEach(w => {
+        const c1=components.find(c=>c.id===w.s.id), c2=components.find(c=>c.id===w.e.id);
+        if(!c1||!c2) return;
+        const p1=pos(c1,w.s.p), p2=pos(c2,w.e.p);
+        ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y);
+        ctx.lineWidth=4; ctx.strokeStyle=w.color; ctx.lineCap='round'; ctx.stroke();
+        ctx.lineWidth=1; ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.stroke();
+    });
+    
+    if(currentTool==='wire' && wireStart) {
+        const c=components.find(c=>c.id===wireStart.id);
+        const p=pos(c,wireStart.pin);
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(mousePos.x,mousePos.y);
+        ctx.strokeStyle=wireStart.color; ctx.lineWidth=3; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    components.forEach(c => {
+        ctx.save(); ctx.translate(c.x,c.y);
+        if(selectedId===c.id) { ctx.shadowColor=COLORS.highlight; ctx.shadowBlur=15; }
+        
+        if(c.type === 'led') {
+            ctx.beginPath(); ctx.arc(c.w/2,c.h/2,8,0,Math.PI*2);
+            ctx.fillStyle = c.state.on ? c.props.color.val : '#e2e8f0';
+            if(c.state.on) { ctx.shadowColor=c.props.color.val; ctx.shadowBlur=15; }
+            ctx.fill(); ctx.shadowBlur=0; ctx.stroke();
+        } 
+        else if(c.type === 'scope') {
+            ctx.fillStyle='#111'; ctx.fillRect(8,8,c.w-16,c.h-20);
+            if(c.state.hist) {
+                ctx.strokeStyle='#4ade80'; ctx.beginPath();
+                c.state.hist.forEach((v,i) => {
+                    const x = 8 + (i/100)*(c.w-16);
+                    const y = (c.h/2) - (v * 5); 
+                    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                });
+                ctx.stroke();
+            }
+        }
+        else if(c.type === '7seg') {
+            ctx.fillStyle='#111'; ctx.fillRect(5,5,c.w-10,c.h-10);
+            const segs = [ 
+                [15,10,30,4], [45,15,4,25], [45,45,4,25], [15,70,30,4], [10,45,4,25], [10,15,4,25], [15,40,30,4]
+            ];
+            segs.forEach((s,i) => {
+                ctx.fillStyle = (c.state.segments && c.state.segments.includes(i)) ? '#ef4444' : '#331111';
+                ctx.fillRect(s[0],s[1],s[2],s[3]);
+            });
+        }
+        else if(c.type === 'lcd') {
+            // Draw LCD Body
+            ctx.fillStyle = '#1e293b'; // PCB color
+            ctx.fillRect(0, 0, c.w, c.h);
+            ctx.strokeStyle = '#475569'; ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, c.w, c.h);
+
+            // Screen
+            ctx.fillStyle = '#4ade80'; // Classic Green backlight
+            ctx.fillRect(25, 10, c.w - 35, c.h - 20); 
+
+            // Bezel around screen
+            ctx.strokeStyle = '#000';
+            ctx.strokeRect(25, 10, c.w - 35, c.h - 20);
+
+            // Text
+            ctx.fillStyle = '#113311'; // Dark pixel color
+            ctx.font = 'bold 16px monospace';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            const txt = c.props.text ? c.props.text.val : "LCD 1602 液晶";
+            ctx.fillText(txt.substring(0, 16), 30, c.h/2); 
+        }
+        else {
+            // Generic Icon
+            ctx.fillStyle='#fff'; ctx.fillRect(4,4,c.w-8,c.h-8);
+            ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1; ctx.strokeRect(4,4,c.w-8,c.h-8);
+            const def = Object.values(COMPONENT_TYPES).find(t => t.name === c.name) || COMPONENT_TYPES[c.type];
+            ctx.fillStyle='#64748b'; ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.font='24px "Material Symbols Outlined"';
+            if (def.icon === 'gate_not') { drawNotGate(ctx, c.w/2, c.h/2 - 5, 22); }
+            else if (def.icon === 'gate_and') { drawAndGate(ctx, c.w/2, c.h/2 - 5, 24); }
+            else { ctx.fillText(ICON_CHARS[def.icon] || def.icon, c.w/2, c.h/2 - 5); }
+            ctx.font='9px sans-serif';
+            ctx.fillText(c.type.split('_').pop().toUpperCase(), c.w/2, c.h/2 + 12);
+            
+            if(c.type.includes('bat') || c.type.includes('source')) {
+                ctx.fillStyle='#ef4444'; ctx.fillText((c.props.voltage?.val||c.props.v?.val)+'V', c.w/2, 10);
+            }
+        }
+
+        // Pins
+        c.pins.forEach(p => {
+            const px=p.x*GRID, py=p.y*GRID;
+            ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2);
+            ctx.fillStyle = p.t==='pos'?COLORS.wireRed : p.t==='neg'?COLORS.wireBlack : COLORS.node;
+            ctx.fill();
+            if(p.l) {
+                ctx.font='8px Fira Code'; ctx.fillStyle='#475569'; ctx.textAlign='center';
+                let lx = px, ly = py;
+                if(p.x <= 0.5) { lx += 10; ctx.textAlign = 'left'; } 
+                else if(p.x >= (c.w/GRID)-0.5) { lx -= 10; ctx.textAlign = 'right'; }
+                else if(p.y <= 0.5) { ly += 10; ctx.textBaseline = 'top'; }
+                else { ly -= 10; ctx.textBaseline = 'bottom'; }
+                ctx.fillText(p.l, lx, ly);
+            }
+        });
+
+        ctx.restore();
+    });
+}
+
+function pos(c, pinIdx) { return {x:c.x + c.pins[pinIdx].x*GRID, y:c.y + c.pins[pinIdx].y*GRID}; }
+
+// ==========================================
+// 5. INTERACTION & UI
+// ==========================================
+function loadDemo() {
+    components = []; wires = [];
+    
+    // 1. LCD & Arduino
+    const ard = addComponent('arduino', 100, 100); ard.props.d13.val = true;
+    const lcd = addComponent('lcd', 340, 100);
+    
+    // 5V/GND
+    addWire(ard.id,0, lcd.id,0, COLORS.wireRed); // 5V
+    addWire(ard.id,1, lcd.id,1, COLORS.wireBlack); // GND
+    
+    // 2. Scope & AC
+    const gen = addComponent('func_gen', 100, 350);
+    const scope = addComponent('scope', 300, 350);
+    addWire(gen.id,1, scope.id,1, COLORS.wireSignal);
+    addWire(gen.id,0, scope.id,0, COLORS.wireBlack);
+    
+    draw();
+}
+
+function onMouseDown(e) {
+    const {x,y} = getMouse(e);
+    if(currentTool==='wire') {
+        const p = getPin(x,y);
+        if(p) {
+            if(!wireStart) wireStart = {...p, color: p.type==='pos'?COLORS.wireRed : p.type==='neg'?COLORS.wireBlack : COLORS.wireSignal};
+            else { if(wireStart.id!==p.id) addWire(wireStart.id, wireStart.pin, p.id, p.pin, wireStart.color); wireStart=null; }
+        } else wireStart=null;
+    } 
+    else if(currentTool==='select') {
+        const c = getComp(x,y);
+        if(c) {
+            selectedId = c.id; isDragging=true; dragComp=c; dragOffset={x:x-c.x,y:y-c.y}; updateProps();
+            if(c.props.closed) { c.props.closed.val = !c.props.closed.val; playClick(); }
+            if(c.props.pressed) { c.props.pressed.val = true; playClick(); }
+            if(c.type==='arduino') { c.props.d13.val = !c.props.d13.val; }
+        } else { selectedId=null; updateProps(); }
+    }
+    else if(currentTool==='delete') { const c=getComp(x,y); if(c) remove(c.id); }
+}
+function onMouseMove(e) {
+    const {x,y} = getMouse(e); mousePos={x,y};
+    if(isDragging && dragComp) { dragComp.x = Math.round((x-dragOffset.x)/GRID)*GRID; dragComp.y = Math.round((y-dragOffset.y)/GRID)*GRID; }
+}
+function onMouseUp() {
+    if(dragComp && dragComp.props.pressed) dragComp.props.pressed.val = false;
+    isDragging=false; dragComp=null;
+}
+function onDrop(e) {
+    e.preventDefault(); const t=e.dataTransfer.getData('type');
+    if(t) { const r=canvas.getBoundingClientRect(); addComponent(t, e.clientX-r.left, e.clientY-r.top); draw(); }
+}
+
+function addComponent(t,x,y) {
+    const def=COMPONENT_TYPES[t];
+    x=Math.round(x/GRID)*GRID; y=Math.round(y/GRID)*GRID;
+    const c={id:Math.random().toString(36).substr(2), type:t, name:def.name, x, y, w:def.w*GRID, h:def.h*GRID, props:JSON.parse(JSON.stringify(def.props)), state:{on:false, vDiff:0}, pins:def.pins.map(p=>({...p}))};
+    components.push(c); return c;
+}
+function addWire(sId,sP,eId,eP,col) { wires.push({s:{id:sId,p:sP}, e:{id:eId,p:eP}, color:col||COLORS.wireOff}); }
+function remove(id) { components=components.filter(c=>c.id!==id); wires=wires.filter(w=>w.s.id!==id && w.e.id!==id); selectedId=null; updateProps(); }
+function clearBoard() { components=[]; wires=[]; selectedId=null; updateProps(); draw(); }
+function setTool(t) { currentTool=t; document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active')); document.getElementById(`tool-${t}`).classList.add('active'); }
+function updateProps() {
+    const p = document.getElementById('properties-panel'), c = document.getElementById('prop-content');
+    if(!selectedId) { p.style.transform='translateX(120%)'; return; }
+    const comp = components.find(z=>z.id===selectedId);
+    p.style.transform='translateX(0)'; c.innerHTML=`<h2 class="font-bold mb-2">${comp.name}</h2>`;
+    Object.entries(comp.props).forEach(([k,v]) => {
+        if(v.readOnly || v.fixed) return;
+        const row = document.createElement('div');
+        row.innerHTML = `<div class="text-xs font-bold text-slate-500 uppercase flex justify-between"><span>${PROP_LABELS[k]||k}</span> <span>${v.val} ${v.u||''}</span></div>`;
+        
+        if(v.type==='color') {
+            const inp=document.createElement('input'); inp.type='color'; inp.value=v.val; inp.className='w-full h-8';
+            inp.oninput=e=>v.val=e.target.value; row.appendChild(inp);
+        } 
+        else if(v.type === 'text') {
+            const inp = document.createElement('input'); inp.type = 'text'; inp.value = v.val;
+            inp.className = 'w-full p-1 border rounded text-xs';
+            inp.oninput = e => v.val = e.target.value;
+            row.appendChild(inp);
+        }
+        else if(v.opts) {
+            const sel=document.createElement('select'); sel.className='w-full p-1 border rounded';
+            v.opts.forEach(o=>{ const op=document.createElement('option'); op.innerText=o; sel.appendChild(op); });
+            sel.value=v.val; sel.onchange=e=>v.val=e.target.value; row.appendChild(sel);
+        } else {
+            const inp=document.createElement('input'); inp.type='range'; inp.min=v.min; inp.max=v.max; inp.step=(v.max-v.min)/100; inp.value=v.val;
+            inp.oninput=e=>{ v.val=parseFloat(e.target.value); updateProps(); }; row.appendChild(inp);
+        }
+        c.appendChild(row);
+    });
+}
+function updateUI() {
+    const st = document.getElementById('sys-status-text');
+    const sd = document.getElementById('sys-status-dot');
+    const tm = document.getElementById('sim-time');
+    tm.innerText = time.toFixed(2) + 's';
+    if(diagnostics.noGnd) { st.innerText='未接地'; sd.className='w-2 h-2 rounded-full bg-amber-500'; }
+    else { st.innerText='运行稳定'; sd.className='w-2 h-2 rounded-full bg-green-500'; }
+    if(selectedId) {
+        const comp = components.find(c=>c.id===selectedId);
+        document.getElementById('prop-live-data').innerText = `实时电压 ${comp.state.vDiff?.toFixed(2)}V`;
+    }
+}
+
+function getMouse(e) { const r=canvas.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+function getComp(x,y) { for(let i=components.length-1; i>=0; i--) { const c=components[i]; if(x>=c.x && x<=c.x+c.w && y>=c.y && y<=c.y+c.h) return c; } return null; }
+function getPin(x,y) { for(const c of components) for(let i=0; i<c.pins.length; i++) { const px=c.x+c.pins[i].x*GRID, py=c.y+c.pins[i].y*GRID; if(Math.hypot(x-px,y-py)<12) return {id:c.id, pin:i, type:c.pins[i].t}; } return null; }
+function resizeCanvas() { canvas.width=canvas.parentElement.clientWidth; canvas.height=canvas.parentElement.clientHeight; draw(); }
+function playClick() { try{ new Tone.MembraneSynth().toDestination().triggerAttackRelease("C2","32n"); }catch(e){} }
+/* ==========================================
+   模板柜：把电路存进本机浏览器，不产生文件
+   ========================================== */
+const TPL_KEY = 'electrolab.templates.v1';
+const TPL_MAX = 30;
+
+function tplToast(msg, ok) {
+    const box = document.getElementById('alert-container'); if (!box) return;
+    const el = document.createElement('div');
+    el.className = 'pointer-events-auto px-3 py-2 rounded-lg shadow-lg text-xs font-bold text-white ' + (ok ? 'bg-slate-800' : 'bg-slate-600');
+    el.textContent = (ok ? '✓ ' : '! ') + msg;
+    box.appendChild(el);
+    setTimeout(() => el.remove(), 2200);
+}
+function tplRead() {
+    try { const raw = localStorage.getItem(TPL_KEY); const o = raw ? JSON.parse(raw) : []; return Array.isArray(o) ? o : []; }
+    catch (e) { return []; }
+}
+function tplWrite(list) {
+    try { localStorage.setItem(TPL_KEY, JSON.stringify(list)); return true; }
+    catch (e) { tplToast('写入失败：浏览器存储不可用或已满', false); return false; }
+}
+function tplSnapshot() {
+    return {
+        components: components.map(c => ({ id: c.id, type: c.type, x: c.x, y: c.y, props: JSON.parse(JSON.stringify(c.props)) })),
+        wires: wires.map(w => ({ s: { id: w.s.id, p: w.s.p }, e: { id: w.e.id, p: w.e.p }, color: w.color }))
+    };
+}
+function openTemplates() {
+    document.getElementById('tpl-modal').classList.remove('hidden');
+    document.getElementById('tpl-name').value = '我的电路 ' + (tplRead().length + 1);
+    renderTplList();
+}
+function closeTemplates() { document.getElementById('tpl-modal').classList.add('hidden'); }
+function saveTemplate() {
+    const inp = document.getElementById('tpl-name');
+    const name = (inp.value || '').trim() || ('我的电路 ' + (tplRead().length + 1));
+    if (!components.length) { tplToast('画布上还没有元件', false); return; }
+    const list = tplRead();
+    list.unshift({ id: Date.now().toString(36), name: name.slice(0, 24), ts: Date.now(), data: tplSnapshot() });
+    if (tplWrite(list.slice(0, TPL_MAX))) { tplToast('已保存「' + name.slice(0, 24) + '」', true); renderTplList(); }
+}
+function loadTemplate(id) {
+    const t = tplRead().find(x => x.id === id); if (!t) return;
+    const idMap = {};
+    const restored = [];
+    (t.data.components || []).forEach(c => {
+        const def = COMPONENT_TYPES[c.type]; if (!def) return;
+        const nid = Math.random().toString(36).substr(2);
+        idMap[c.id] = nid;
+        restored.push({
+            id: nid, type: c.type, name: def.name, x: c.x, y: c.y,
+            w: def.w * GRID, h: def.h * GRID,
+            props: Object.assign(JSON.parse(JSON.stringify(def.props)), c.props || {}),
+            state: { on: false, vDiff: 0 },
+            pins: def.pins.map(p => ({ ...p }))
+        });
+    });
+    const rw = [];
+    (t.data.wires || []).forEach(w => {
+        if (!idMap[w.s.id] || !idMap[w.e.id]) return;
+        rw.push({ s: { id: idMap[w.s.id], p: w.s.p }, e: { id: idMap[w.e.id], p: w.e.p }, color: w.color });
+    });
+    components = restored; wires = rw; selectedId = null;
+    updateProps(); draw(); closeTemplates();
+    tplToast('已载入「' + t.name + '」', true);
+}
+function delTemplate(id) {
+    const list = tplRead().filter(x => x.id !== id);
+    if (tplWrite(list)) { renderTplList(); tplToast('已删除', true); }
+}
+function renderTplList() {
+    const box = document.getElementById('tpl-list'); if (!box) return;
+    const list = tplRead();
+    box.innerHTML = '';
+    if (!list.length) {
+        const p = document.createElement('div');
+        p.className = 'text-xs text-slate-400 text-center py-6';
+        p.textContent = '还没有保存过模板';
+        box.appendChild(p); return;
+    }
+    list.forEach(t => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded';
+        const info = document.createElement('div');
+        info.className = 'flex-1 min-w-0';
+        const nm = document.createElement('div');
+        nm.className = 'text-xs font-bold text-slate-700 truncate';
+        nm.textContent = t.name;
+        const mt = document.createElement('div');
+        mt.className = 'text-[10px] text-slate-500';
+        const d = new Date(t.ts);
+        mt.textContent = (t.data.components || []).length + ' 个元件 · ' + d.getMonth() + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        info.appendChild(nm); info.appendChild(mt);
+        const bLoad = document.createElement('button');
+        bLoad.className = 'px-2 py-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded';
+        bLoad.textContent = '载入';
+        bLoad.onclick = () => loadTemplate(t.id);
+        const bDel = document.createElement('button');
+        bDel.className = 'px-2 py-1 text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded';
+        bDel.textContent = '删除';
+        bDel.onclick = () => delTemplate(t.id);
+        row.appendChild(info); row.appendChild(bLoad); row.appendChild(bDel);
+        box.appendChild(row);
+    });
+}
+
+</script>
+
+
+<!-- 模板柜：电路存本机浏览器，不生成文件 -->
+<div id="tpl-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/50 p-4">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+      <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><span class="text-indigo-600"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></span> 模板柜</h3>
+      <button class="text-slate-400 hover:text-slate-600" onclick="closeTemplates()" aria-label="关闭"><span class="material-symbols-outlined text-lg">&#xE14C;</span></button>
+    </div>
+    <div class="p-4 space-y-3">
+      <div class="flex gap-2">
+        <input id="tpl-name" class="flex-1 p-2 border border-slate-200 rounded text-sm" placeholder="给这个电路起个名字">
+        <button class="px-3 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded" onclick="saveTemplate()">保存当前电路</button>
+      </div>
+      <p class="text-[11px] text-slate-500 leading-relaxed">保存在这台设备的浏览器里（localStorage），不生成文件、不上传。换电脑或清理浏览器数据会丢失。</p>
+      <div id="tpl-list" class="space-y-2 max-h-64 overflow-y-auto custom-scroll"></div>
+    </div>
+  </div>
+</div>
+</body></html>

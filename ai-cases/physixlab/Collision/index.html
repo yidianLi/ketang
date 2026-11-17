@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+
+
+<head>
+    
+    
+    <meta charset="UTF-8">
+    
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <title>木块碰撞模拟器</title>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="../../vendor/tailwind.js"></script>
+    
+    
+    <link rel="stylesheet" href="styles.css">
+
+
+</head>
+
+
+<body class="p-4">
+    
+    
+    <div class="container">
+        
+        
+        <a href="../index.html" class="inline-block mb-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105 active:scale-95">← 返回</a>
+        
+        
+        <h1>木块碰撞模拟器</h1>
+
+        
+
+        
+
+        <div class="input-section">
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="mass1">木块 1 质量（kg）：</label>
+                
+                
+                <input type="number" id="mass1" value="10" min="1" placeholder="输入木块 1 的质量" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="velocity1">木块 1 初速度（m/s）：</label>
+                
+                
+                <input type="number" id="velocity1" value="5" placeholder="输入木块 1 的初速度" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="mass2">木块 2 质量（kg）：</label>
+                
+                
+                <input type="number" id="mass2" value="5" min="1" placeholder="输入木块 2 的质量" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="velocity2">木块 2 初速度（m/s）：</label>
+                
+                
+                <input type="number" id="velocity2" value="-5" placeholder="输入木块 2 的初速度" class="text-right">
+            
+            
+            </div>
+        
+        
+        </div>
+
+        
+
+        
+
+        <div class="flex flex-col items-center gap-2">
+            
+            
+            <button id="set-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full max-w-[300px]">应用数值</button>
+            
+            
+            <button id="run-button" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full max-w-[300px]">开始模拟</button>
+        
+        
+        </div>
+
+        
+
+        
+
+        <div id="simulation-container" class="mt-8 p-4 rounded-lg bg-gray-800">
+            
+            
+            <canvas id="simulation-canvas"></canvas>
+        
+        
+        </div>
+        
+        
+        <button id="reset-button" class="mt-4 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">重置</button>
+
+        
+
+        
+
+        <div id="info-box">
+            
+            
+            <h2>操作说明</h2>
+            
+            
+            <ul>
+                
+                
+                <li>分别输入两个木块的质量与初速度。</li>
+                
+                
+                <li>点击开始后，画面会显示木块的运动与碰撞过程。</li>
+                
+                
+                <li>碰撞按完全弹性碰撞计算，不计能量损失。</li>
+                
+                
+                <li>碰撞后两木块按动量守恒与动能守恒获得新的速度。</li>
+                
+                
+                <li>速度为负表示向左运动。</li>
+            
+            
+            </ul>
+            
+            
+            <h2>物理概念</h2>
+            
+            
+            <ul>
+                
+                
+                <li><strong>动量：</strong> 质量与速度的乘积。在封闭系统中动量守恒。</li>
+                 
+                 
+                 <li><strong>动能：</strong> 物体因运动而具有的能量。弹性碰撞中动能守恒。</li>
+                 
+                 
+                 <li><strong>弹性碰撞：</strong> 动量与动能都守恒的碰撞。</li>
+            
+            
+            </ul>
+        
+        
+        </div>
+    
+    
+    </div>
+
+    
+
+    
+
+    <script src="equation.js"></script>
+
+
+</body>
+
+
+</html>

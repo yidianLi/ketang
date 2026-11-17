@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+
+
+<head>
+    
+    
+    <meta charset="UTF-8">
+    
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <title>简谐振动模拟器 · PhysiXLab</title>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="../../vendor/tailwind.js"></script>
+    
+    
+    <link rel="stylesheet" href="styles.css">
+
+
+</head>
+
+
+<body class="p-4">
+    
+    
+    <div class="container">
+        
+        
+        <a href="../index.html" class="inline-block mb-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105 active:scale-95">← 返回</a>
+        
+        
+        <h1>简谐振动模拟器</h1>
+        
+        
+        
+        
+        
+        <div class="input-section">
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="amplitude">振幅（m）：</label>
+                
+                
+                <input type="number" id="amplitude" value="100" min="10" max="200" step="10" placeholder="Enter amplitude" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="frequency">频率（Hz）：</label>
+                
+                
+                <input type="number" id="frequency" value="1" min="0.1" max="5" step="0.1" placeholder="Enter frequency" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="damping">阻尼系数：</label>
+                
+                
+                <input type="number" id="damping" value="0.01" min="0" max="0.1" step="0.005" placeholder="Enter damping" class="text-right">
+            
+            
+            </div>
+            
+            
+            <div class="input-group">
+                
+                
+                <label for="mass">质量（kg）：</label>
+                
+                
+                <input type="number" id="mass" value="1" min="0.1" max="10" step="0.1" placeholder="Enter mass" class="text-right">
+            
+            
+            </div>
+        
+        
+        </div>
+
+        
+
+        
+
+        <div class="flex flex-col items-center gap-2">
+            
+            
+            <button id="set-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full max-w-[300px]">应用数值</button>
+            
+            
+            <button id="run-button" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full max-w-[300px]" disabled>开始模拟</button>
+        
+        
+        </div>
+
+        
+
+        
+
+        <div id="simulation-container" class="mt-8 p-4 rounded-lg bg-gray-800">
+            
+            
+            <div class="canvas-container">
+                
+                
+                <canvas id="pendulumCanvas" width="400" height="300"></canvas>
+                
+                
+                <canvas id="graphCanvas" width="400" height="200"></canvas>
+            
+            
+            </div>
+            
+            
+            <div class="physics-info">
+                
+                
+                <div class="parameter-display" id="parameterDisplay">振幅 A = 100 m，频率 f = 1 Hz，阻尼 γ = 0.01</div>
+                
+                
+                <div class="formula-display" id="formulaDisplay">x(t) = A × cos(ωt) × e^(-γt)</div>
+                
+                
+                <div class="physics-details">
+                    
+                    
+                    <span><strong>周期：</strong>   <span id="period">1.00 s</span></span>
+                    
+                    
+                    <span><strong>角频率：</strong>   <span id="angularFreq">6.28 rad/s</span></span>
+                    
+                    
+                    <span><strong>当前时间：</strong>   <span id="currentTime">0.00 s</span></span>
+                
+                
+                </div>
+            
+            
+            </div>
+        
+        
+        </div>
+        
+        
+        <button id="reset-button" class="mt-4 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">重置</button>
+
+        
+
+        
+
+        <div id="info-box">
+            
+            
+            <h2>原理与物理</h2>
+            
+            
+            <ul>
+                
+                
+                <li><strong>简谐振动：</strong> 回复力大小与位移成正比、方向相反的运动。</li>
+                
+                
+                <li><strong>位移：</strong> x(t) = A × cos(ωt) × e^(-γt)</li>
+                
+                
+                <li><strong>角频率：</strong> ω = 2πf</li>
+                
+                
+                <li><strong>周期：</strong> T = 2π/ω = 1/f</li>
+                
+                
+                <li><strong>阻尼：</strong> 使振幅随时间衰减的能量损耗程度。</li>
+            
+            
+            </ul>
+            
+            
+            <h2>操作说明</h2>
+            
+            
+            <ul>
+                
+                
+                <li>调整振幅即可设置最大位移。</li>
+                
+                
+                <li>调整频率可改变振动的快慢。</li>
+                
+                
+                <li>增大阻尼可以观察能量损耗的效果。</li>
+                
+                
+                <li>左侧单摆显示实际运动，曲线显示位移随时间的变化。</li>
+                
+                
+                <li>理想简谐振动中，质量影响受力但不改变周期。</li>
+            
+            
+            </ul>
+        
+        
+        </div>
+    
+    
+    </div>
+
+    
+
+    
+
+    <script>
+        // Simulation variables
+        let animationId;
+        let isRunning = false;
+        let t = 0;
+        let graphData = [];
+        const graphWindow = 10; // seconds to display on graph
+
+        // Get control elements
+        const amplitudeInput = document.getElementById('amplitude');
+        const frequencyInput = document.getElementById('frequency');
+        const dampingInput = document.getElementById('damping');
+        const massInput = document.getElementById('mass');
+        const setButton = document.getElementById('set-button');
+        const runButton = document.getElementById('run-button');
+        const resetButton = document.getElementById('reset-button');
+        const parameterDisplay = document.getElementById('parameterDisplay');
+        const formulaDisplay = document.getElementById('formulaDisplay');
+        const periodDisplay = document.getElementById('period');
+        const angularFreqDisplay = document.getElementById('angularFreq');
+        const currentTimeDisplay = document.getElementById('currentTime');
+
+        // Canvas elements
+        const pendulumCanvas = document.getElementById('pendulumCanvas');
+        const pCtx = pendulumCanvas.getContext('2d');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const gCtx = graphCanvas.getContext('2d');
+
+        // Current parameters
+        let A, f, damping, mass;
+
+        // Initialize
+        function initializeSimulation() {
+            // Setup canvas dimensions
+            setupCanvas();
+            updatePhysicsInfo();
+            drawStaticPendulum();
+            drawStaticGraph();
+        }
+
+        function setupCanvas() {
+            // Scale canvases for better display
+            const scale = window.devicePixelRatio || 1;
+            
+            [pendulumCanvas, graphCanvas].forEach(canvas => {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * scale;
+                canvas.height = rect.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(scale, scale);
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+            });
+        }
+
+        function updatePhysicsInfo() {
+            A = parseFloat(amplitudeInput.value);
+            f = parseFloat(frequencyInput.value);
+            damping = parseFloat(dampingInput.value);
+            mass = parseFloat(massInput.value);
+
+            const omega = 2 * Math.PI * f;
+            const period = 1 / f;
+
+            parameterDisplay.textContent = `A = ${A}m, f = ${f}Hz, γ = ${damping}`;
+            formulaDisplay.textContent = `x(t) = ${A} × cos(${omega.toFixed(2)}t) × e^(-${damping}t)`;
+            periodDisplay.textContent = `${period.toFixed(2)} s`;
+            angularFreqDisplay.textContent = `${omega.toFixed(2)} rad/s`;
+        }
+
+        function setValues() {
+            updatePhysicsInfo();
+            runButton.disabled = false;
+            runButton.textContent = '开始模拟';
+            drawStaticPendulum();
+            drawStaticGraph();
+        }
+
+        function drawStaticPendulum() {
+            pCtx.clearRect(0, 0, pendulumCanvas.width, pendulumCanvas.height);
+            
+            const centerX = pendulumCanvas.width / 2;
+            const pivotY = 50;
+            const pendulumY = 200;
+
+            // Draw coordinate axis
+            pCtx.beginPath();
+            pCtx.moveTo(centerX, 0);
+            pCtx.lineTo(centerX, pendulumCanvas.height);
+            pCtx.strokeStyle = '#6B7280';
+            pCtx.lineWidth = 1;
+            pCtx.stroke();
+
+            // Draw pendulum at equilibrium
+            pCtx.beginPath();
+            pCtx.moveTo(centerX, pivotY);
+            pCtx.lineTo(centerX, pendulumY);
+            pCtx.strokeStyle = '#00bcc4';
+            pCtx.lineWidth = 3;
+            pCtx.stroke();
+
+            // Draw pendulum bob
+            pCtx.beginPath();
+            pCtx.arc(centerX, pendulumY, 15, 0, Math.PI * 2);
+            pCtx.fillStyle = '#00bcc4';
+            pCtx.fill();
+
+            // Draw pivot
+            pCtx.beginPath();
+            pCtx.arc(centerX, pivotY, 5, 0, Math.PI * 2);
+            pCtx.fillStyle = '#F9FAFB';
+            pCtx.fill();
+        }
+
+        function drawStaticGraph() {
+            gCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+            
+            const midY = graphCanvas.height / 2;
+
+            // Draw axes
+            gCtx.beginPath();
+            gCtx.moveTo(0, midY);
+            gCtx.lineTo(graphCanvas.width, midY);
+            gCtx.moveTo(0, 0);
+            gCtx.lineTo(0, graphCanvas.height);
+            gCtx.strokeStyle = '#6B7280';
+            gCtx.lineWidth = 1;
+            gCtx.stroke();
+
+            // Draw grid lines
+            gCtx.strokeStyle = '#374151';
+            gCtx.lineWidth = 0.5;
+            for (let i = 1; i < 4; i++) {
+                const y = (graphCanvas.height / 4) * i;
+                gCtx.beginPath();
+                gCtx.moveTo(0, y);
+                gCtx.lineTo(graphCanvas.width, y);
+                gCtx.stroke();
+            }
+        }
+
+        function startSimulation() {
+            if (isRunning) {
+                stopSimulation();
+                return;
+            }
+
+            isRunning = true;
+            runButton.textContent = 'Stop Simulation';
+            t = 0;
+            graphData = [];
+            animate();
+        }
+
+        function animate() {
+            if (!isRunning) return;
+
+            // Calculate displacement using SHM formula
+            const omega = 2 * Math.PI * f;
+            const x = A * Math.cos(omega * t) * Math.exp(-damping * t);
+            
+            // Update time display
+            currentTimeDisplay.textContent = `${t.toFixed(2)} s`;
+
+            // Draw pendulum
+            drawPendulum(x);
+
+            // Save graph data point
+            graphData.push({ time: t, displacement: x });
+            graphData = graphData.filter(point => t - point.time <= graphWindow);
+
+            // Draw graph
+            drawGraph();
+
+            t += 0.05;
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function drawPendulum(x) {
+            pCtx.clearRect(0, 0, pendulumCanvas.width, pendulumCanvas.height);
+            
+            const centerX = pendulumCanvas.width / 2;
+            const pivotY = 50;
+            const pendulumY = 200;
+            const pendulumX = centerX + x;
+
+            // Draw coordinate axis
+            pCtx.beginPath();
+            pCtx.moveTo(centerX, 0);
+            pCtx.lineTo(centerX, pendulumCanvas.height);
+            pCtx.strokeStyle = '#6B7280';
+            pCtx.lineWidth = 1;
+            pCtx.stroke();
+
+            // Draw pendulum rod
+            pCtx.beginPath();
+            pCtx.moveTo(centerX, pivotY);
+            pCtx.lineTo(pendulumX, pendulumY);
+            pCtx.strokeStyle = '#00bcc4';
+            pCtx.lineWidth = 3;
+            pCtx.stroke();
+
+            // Draw pendulum bob
+            pCtx.beginPath();
+            pCtx.arc(pendulumX, pendulumY, 15, 0, Math.PI * 2);
+            pCtx.fillStyle = '#00bcc4';
+            pCtx.fill();
+
+            // Draw pivot
+            pCtx.beginPath();
+            pCtx.arc(centerX, pivotY, 5, 0, Math.PI * 2);
+            pCtx.fillStyle = '#F9FAFB';
+            pCtx.fill();
+        }
+
+        function drawGraph() {
+            gCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+            
+            const midY = graphCanvas.height / 2;
+
+            // Draw axes
+            gCtx.beginPath();
+            gCtx.moveTo(0, midY);
+            gCtx.lineTo(graphCanvas.width, midY);
+            gCtx.moveTo(0, 0);
+            gCtx.lineTo(0, graphCanvas.height);
+            gCtx.strokeStyle = '#6B7280';
+            gCtx.lineWidth = 1;
+            gCtx.stroke();
+
+            // Draw grid lines
+            gCtx.strokeStyle = '#374151';
+            gCtx.lineWidth = 0.5;
+            for (let i = 1; i < 4; i++) {
+                const y = (graphCanvas.height / 4) * i;
+                gCtx.beginPath();
+                gCtx.moveTo(0, y);
+                gCtx.lineTo(graphCanvas.width, y);
+                gCtx.stroke();
+            }
+
+            // Plot the displacement vs. time
+            if (graphData.length > 1) {
+                const xScale = graphCanvas.width / graphWindow;
+                const yScale = A !== 0 ? (graphCanvas.height / 2) / A : 1;
+
+                gCtx.beginPath();
+                graphData.forEach((point, index) => {
+                    const xPos = (point.time - (t - graphWindow)) * xScale;
+                    const yPos = midY - point.displacement * yScale;
+                    if (index === 0) {
+                        gCtx.moveTo(xPos, yPos);
+                    } else {
+                        gCtx.lineTo(xPos, yPos);
+                    }
+                });
+                gCtx.strokeStyle = '#00bcc4';
+                gCtx.lineWidth = 2;
+                gCtx.stroke();
+            }
+        }
+
+        function stopSimulation() {
+            isRunning = false;
+            cancelAnimationFrame(animationId);
+            runButton.textContent = '开始模拟';
+        }
+
+        function resetSimulation() {
+            stopSimulation();
+            t = 0;
+            graphData = [];
+            currentTimeDisplay.textContent = '0.00 s';
+            runButton.disabled = true;
+            drawStaticPendulum();
+            drawStaticGraph();
+        }
+
+        // Event listeners
+        amplitudeInput.addEventListener('input', updatePhysicsInfo);
+        frequencyInput.addEventListener('input', updatePhysicsInfo);
+        dampingInput.addEventListener('input', updatePhysicsInfo);
+        massInput.addEventListener('input', updatePhysicsInfo);
+        setButton.addEventListener('click', setValues);
+        runButton.addEventListener('click', startSimulation);
+        resetButton.addEventListener('click', resetSimulation);
+
+        // Initialize on load
+        window.addEventListener('load', initializeSimulation);
+        window.addEventListener('resize', setupCanvas);
+    </script>
+
+
+</body>
+
+
+</html> 
