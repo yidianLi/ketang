@@ -2,7 +2,7 @@
 node_modules/
 dist/
 .workbuddy/
-shots/
+/shots/
 *.zip
 
 # 系统文件
