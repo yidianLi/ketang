@@ -59,7 +59,7 @@ function u32(v) { return [v & 0xFF, (v >>> 8) & 0xFF, (v >>> 16) & 0xFF, (v >>> 
 
 /* ---------- 收集文件（allowlist） ---------- */
 const INCLUDE_ROOT = ['index.html', 'classroom.html', 'resource.html',
-  'quiz.html', 'ai-cases.html', 'terrain.html', 'circuit.html', 'mechanics.html', 'molecule.html',
+  'quiz.html', 'terrain.html', 'circuit.html', 'mechanics.html', 'molecule.html',
   'formula.html', 'optics.html', '404.html', 'favicon.svg'];
 const SKIP_DIR = /(^|[\\/])(\.git|node_modules|dist|desktop|scripts|\.workbuddy)([\\/]|$)/i;
 const KEEP_AI = /(LICENSE|asset-cache|vendor|webfonts)/i;
@@ -114,7 +114,7 @@ function usageText() {
     '- 6 个互动实验室：地形 / 电路 / 力学 / 分子 / 数理公式 / 光学',
     '- 课堂工具箱 classroom.html：14 件课堂实操工具（含喊麦读单词 / 喊麦读词语）',
     '- 资源库 resource.html（26 个直连资源，含 5 个学科门户入口）· 随堂自测 quiz.html（五科 724 题，按年级分段）',
-    '- 案例库 ai-cases.html：69 个开源互动案例（依赖已本地化）',
+    '- 互动案例 69 道：在资源库每个学科页切换「资源 / 案例」查看（依赖已本地化）',
     '',
     '【三条命令（可选，需要 Node.js >= 18）】',
     '- npm test        回归自检（7 套 / 1800+ 断言）',

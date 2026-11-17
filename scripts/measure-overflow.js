@@ -9,7 +9,7 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const PORT = 9477;
 const W = +(process.argv[2] || 390);
-const PAGE = process.argv[3] || 'ai-cases.html';
+const PAGE = process.argv[3] || 'resource.html';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const getJson = url => new Promise((res, rej) => {

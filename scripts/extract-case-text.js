@@ -1,5 +1,5 @@
 /**
- * 抽取 ai-cases.html 里 CASES 数组指向的每个案例页面文本，
+ * 抽取 js/cases-data.js 里 CASES 数组指向的每个案例页面文本，
  * 作为撰写「题目式题干」的素材。输出 scripts/.case-text.md
  *
  * 用法：node scripts/extract-case-text.js
@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const SRC = path.join(ROOT, 'ai-cases.html');
+const SRC = path.join(ROOT, 'js/cases-data.js');
 const CASES_DIR = path.join(ROOT, 'ai-cases');
 
 const html = fs.readFileSync(SRC, 'utf8');

@@ -1,7 +1,7 @@
 'use strict';
-/* 检查 ai-cases.html JS 数据里所有链接目标在磁盘上是否存在 */
+/* 检查 js/cases-data.js 里所有案例链接目标在磁盘上是否存在 */
 const fs = require('fs');
-const html = fs.readFileSync('ai-cases.html', 'utf8');
+const html = fs.readFileSync('js/cases-data.js', 'utf8');
 const refs = {};
 function collect(re) {
   let m;

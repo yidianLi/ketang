@@ -53,7 +53,7 @@ const FOCUS_JS = `(() => {
 })()`;
 
 /* ---------- 读取案例清单 ---------- */
-const page = fs.readFileSync(path.join(ROOT, 'ai-cases.html'), 'utf8');
+const page = fs.readFileSync(path.join(ROOT, 'js/cases-data.js'), 'utf8');
 const CASES = eval(page.match(/var CASES = (\[[\s\S]*?\n\]);/)[1]);
 
 /* ---------- CDP 客户端 ---------- */

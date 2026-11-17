@@ -7,7 +7,7 @@
  * 用法：node scripts/check-pages.js
  * 退出码：0 = 无断链；1 = 存在断链（便于提交前检查）
  *
- * 说明：由 JS 动态拼接的路径（如 ai-cases.html 的 'ai-cases/' + p）
+ * 说明：由 JS 动态拼接的路径（如资源库案例卡的 'ai-cases/' + p）
  *       无法静态解析，本脚本只校验字面量引用。
  */
 'use strict';

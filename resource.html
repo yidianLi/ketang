@@ -43,6 +43,21 @@
   .search button { border: none; background: var(--accent); color: #fff; padding: 0 26px; font-size: 14px; cursor: pointer; }
   .subhint { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 16px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+  /* 资源 / 案例 视图切换 */
+  .viewseg { display: inline-flex; background: var(--panel); border-radius: 999px; padding: 3px;
+             box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+  .viewseg button { border: 0; background: transparent; padding: 6px 20px; border-radius: 999px;
+                    font-size: 13.5px; color: var(--ink-2); cursor: pointer; font-family: inherit; }
+  .viewseg button.on { background: var(--accent); color: #fff; font-weight: 600; }
+  .viewseg .cnt { font-size: 11px; opacity: .85; margin-left: 4px; }
+  /* 案例卡：题干可能较长，限三行 */
+  .tool .d.caseq { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+                   line-height: 1.55; min-height: 4.6em; }
+  .tool .cap .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tool .cap .meta span { font-size: 11px; padding: 2px 8px; border-radius: 999px;
+                          background: var(--panel); color: var(--ink-2); border: 1px solid var(--line); }
+  .empty-cases { text-align: center; color: var(--muted); padding: 40px 0 20px; font-size: 14px; }
+  .empty-cases a { color: var(--accent); font-weight: 600; }
   .tool { background: var(--panel); border-radius: 14px; overflow: hidden; text-decoration: none; color: inherit;
           box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .12s; position: relative;
           display: block; }
@@ -86,11 +101,14 @@
 <a class="skip" href="#main">跳到主要内容</a>
 <div id="site-nav"></div>
 <script src="js/site-nav.js"></script>
+<script src="js/cases-data.js"></script>
 <div class="lib">
   <main id="main" class="main">
     <nav class="cats" id="cats"></nav>
 
-    <div class="total">当前直连可玩资源 <b id="total">0</b> 个 · 69 道开源互动案例见 <a href="ai-cases.html" style="color:var(--accent);font-weight:600">案例库</a> · 按年级找题见 <a href="quiz.html" style="color:var(--accent);font-weight:600">随堂自测</a></div>
+    <div class="viewseg" id="viewseg"></div>
+
+    <div class="total">当前直连可玩资源 <b id="total">0</b> 个 · 每个学科页可切换「资源 / 案例」（共 69 道互动案例）· 按年级找题见 <a href="quiz.html" style="color:var(--accent);font-weight:600">随堂自测</a></div>
 
     <div class="searchrow">
       <div class="search">
@@ -109,7 +127,7 @@
 <script>
 /* ---------- 数据：学科门户 + 6 个可玩实验室 + 课堂工具直连卡 ----------
    去重说明：学科入口只保留「随堂自测」页（quiz.html），
-   开源 AI 案例只保留「案例库」页（ai-cases.html），本页不再重复挂卡。 */
+   开源互动案例统一收进本页各学科分类的「案例」视图（数据在 js/cases-data.js）。 */
 var CATS = ['物理', '化学', '生物', '数学', '地理', '工具'];
 
 var TOOLS = [
@@ -151,6 +169,38 @@ var TOOLS = [
 /* ---------- 渲染 ---------- */
 var active = '物理';   /* 默认落在「物理」页（物理 3 间实验室置顶） */
 var kw = '';
+var view = 'res';      /* 当前视图：res=资源 / case=案例（仅学科分类下可切） */
+
+/* 案例原始分类 → 学科页分类 */
+var CASE_SUBJECT = { '物理': '物理', '电路与逻辑': '物理', '数学': '数学', '函数与代数': '数学', '立体几何': '数学' };
+/* 无独立案例的学科：案例视图引导到门户 */
+var PORTAL_OF = { '化学': '化学 · 可视化互动学习', '生物': '生物 · 可视化互动学习', '地理': '地理 · 可视化互动学习' };
+var SUBJ_META = { '物理': { ic: '🧲', bg: 'linear-gradient(135deg,#d5e6f0,#b4cde0)' },
+                  '数学': { ic: '📐', bg: 'linear-gradient(135deg,#d5e7e8,#b4d6da)' },
+                  '化学': { ic: '⚗️', bg: 'linear-gradient(135deg,#e5d2e7,#d5b4da)' },
+                  '生物': { ic: '🔬', bg: 'linear-gradient(135deg,#d7e8d5,#b9dab4)' },
+                  '地理': { ic: '🗺️', bg: 'linear-gradient(135deg,#e0e8d5,#c9dab4)' } };
+
+function casesOf(subject) {
+  return (window.CASES || []).filter(function (x) { return CASE_SUBJECT[x.c] === subject; });
+}
+
+function renderViewSeg() {
+  var host = document.getElementById('viewseg');
+  var isSubject = active !== '工具';
+  host.style.display = isSubject ? '' : 'none';
+  if (!isSubject) return;
+  host.innerHTML = '';
+  [['res', '资源', TOOLS.filter(function (x) { return x.c === active; }).length],
+   ['case', '案例', casesOf(active).length]].forEach(function (v) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = v[0] === view ? 'on' : '';
+    b.innerHTML = v[1] + '<span class="cnt">' + v[2] + '</span>';
+    b.onclick = function () { view = v[0]; render(); };
+    host.appendChild(b);
+  });
+}
 
 function renderCats() {
   var el = document.getElementById('cats');
@@ -160,15 +210,56 @@ function renderCats() {
     a.className = 'cat' + (c === active ? ' active' : '');
     a.textContent = c;
     a.href = 'javascript:';
-    a.onclick = function () { active = c; render(); };
+    a.onclick = function () { active = c; view = 'res'; render(); };
     el.appendChild(a);
   });
 }
 
+function renderCaseGrid(grid) {
+  var list = kw ? (window.CASES || []).filter(function (x) {
+        return x.n.indexOf(kw) >= 0 || x.q.indexOf(kw) >= 0; })
+      : casesOf(active);
+  document.getElementById('empty').style.display = list.length ? 'none' : '';
+  list.forEach(function (x) {
+    var m = SUBJ_META[CASE_SUBJECT[x.c]] || SUBJ_META['物理'];
+    var a = document.createElement('a');
+    a.className = 'tool';
+    a.href = 'ai-cases/' + encodeURI(x.p);
+    a.innerHTML =
+      '<div class="thumb" style="background:' + m.bg + '">' + m.ic +
+      '<span class="ftag">免费试玩</span></div>' +
+      '<div class="cap"><div class="t">' + x.n + '</div>' +
+      '<div class="d caseq">' + x.q + '</div>' +
+      '<div class="meta"><span>' + x.s + '</span>' +
+      (x.tech || []).map(function (t) { return '<span>' + t + '</span>'; }).join('') +
+      (x.off ? '<span>' + (x.offTxt || '部分在线') + '</span>' : '') +
+      '</div></div>';
+    grid.appendChild(a);
+  });
+}
+
+function renderEmptyCases(grid) {
+  var portal = PORTAL_OF[active];
+  var d = document.createElement('div');
+  d.className = 'empty-cases';
+  d.innerHTML = portal
+    ? '「' + active + '」的章节互动案例收在学科门户里：<a href="' +
+      TOOLS.filter(function (x) { return x.t === portal; })[0].play + '">打开' + portal + ' →</a>'
+    : '该学科暂无独立案例，先看「资源」视图。';
+  grid.appendChild(d);
+  document.getElementById('empty').style.display = 'none';
+}
+
 function render() {
   renderCats();
+  renderViewSeg();
   var grid = document.getElementById('grid');
   grid.innerHTML = '';
+  if (view === 'case' && active !== '工具') {
+    if (casesOf(active).length || kw) renderCaseGrid(grid);
+    else renderEmptyCases(grid);
+    return;
+  }
   var list = TOOLS.filter(function (x) {
     return (!kw || x.t.indexOf(kw) >= 0 || x.d.indexOf(kw) >= 0) && (!kw || true);
   });
@@ -179,7 +270,7 @@ function render() {
     var a = document.createElement(x.play ? 'a' : 'div');
     a.className = 'tool' + (x.play ? '' : ' locked');
     if (x.play) a.href = x.play;
-    else a.onclick = function () { alert('该工具即将上线：' + x.t + '\n\n同学科内容已映射到可交互实验室与案例库（带绿色「免费试玩」标签的卡片）。'); };
+    else a.onclick = function () { alert('该工具即将上线：' + x.t + '\n\n同学科内容已映射到可交互实验室与学科门户（带绿色「免费试玩」标签的卡片）。'); };
     a.innerHTML =
       '<div class="thumb" style="background:' + x.bg + '">' + x.ic +
       (x.play ? '<span class="ftag">免费试玩</span>' : '') + '</div>' +
@@ -193,13 +284,20 @@ document.getElementById('go').onclick = function () { kw = document.getElementBy
 document.getElementById('q').addEventListener('keydown', function (e) {
   if (e.key === 'Enter') { kw = this.value.trim(); render(); }
 });
-/* 支持 ?q=关键词 直达搜索（跨全部分类） */
+/* 支持 ?q=关键词 直达搜索（跨全部分类）；?cat=物理 直达学科页与视图 */
 (function () {
   var m = /[?&]q=([^&]*)/.exec(location.search);
   if (m) {
     kw = decodeURIComponent(m[1]);
     document.getElementById('q').value = kw;
   }
+  var c = /[?&]cat=([^&]*)/.exec(location.search);
+  if (c) {
+    var cat = decodeURIComponent(c[1]);
+    if (CATS.indexOf(cat) >= 0) active = cat;
+  }
+  var v = /[?&]view=([^&]*)/.exec(location.search);
+  if (v && decodeURIComponent(v[1]) === 'case') view = 'case';
 })();
 render();
 </script>

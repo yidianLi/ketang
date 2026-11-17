@@ -12,6 +12,7 @@
   'use strict';
 
   var S = window.SUBJECT;
+  var HUB_CAT = { physics: '物理', math: '数学', chemistry: '化学', biology: '生物', geography: '地理' };
   var HOST = document.getElementById('hub');
   if (!S || !HOST) return;
 
@@ -45,8 +46,8 @@
         '<p class="subtitle">' + S.subtitle + '</p>' +
       '</div>' +
       '<div class="head-tools">' +
-        '<a class="head-link" href="../../ai-cases.html">案例库</a>' +
-        '<a class="head-link" href="../../index.html">回到首页</a>' +
+        '<a class="head-link" href="../../resource.html?cat=' + HUB_CAT[S.key] + '&view=case">学科案例</a>' +
+        '<a class="head-link" href="../../resource.html">回到资源库</a>' +
       '</div>' +
     '</div>' +
     '<div class="subject-bar"><div class="subject-seg" id="subjSeg" role="navigation" aria-label="切换学科"></div></div>' +

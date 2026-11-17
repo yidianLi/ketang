@@ -2,7 +2,7 @@
  * 用 CDP 精确控制视口截整页，避免 headless 的 --window-size 最小宽度限制。
  *
  * 用法：node scripts/shot-page.js <页面> <宽> <高> <输出> [--theme=dark] [--mobile] [--full]
- * 例：  node scripts/shot-page.js ai-cases.html 390 900 /tmp/m.png --mobile --full
+ * 例：  node scripts/shot-page.js resource.html 390 900 /tmp/m.png --mobile --full
  */
 const { spawn } = require('child_process');
 const http = require('http');
