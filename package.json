@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node scripts/test-all.js",
     "serve": "node scripts/serve.js",
-    "check": "node scripts/check-pages.js",
+    "check": "node scripts/check-pages.js && node scripts/check-case-links.js",
     "zip": "node scripts/build-zip.js --verify",
     "check:hubs": "node scripts/check-hubs.js",
     "scan:embeds": "node scripts/scan-embeds.js"
