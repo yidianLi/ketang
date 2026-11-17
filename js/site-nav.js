@@ -1,7 +1,7 @@
 /* ============================================================
    site-nav.js — 站点导航与页脚（零依赖，file:// 可用）
    ------------------------------------------------------------
-   为什么自包含：部分页面（资源库/知识专题/案例库）各自引了 app.css，
+   为什么自包含：部分页面（资源库/案例库）各自引了 app.css，
    而设计说明类页面用的是自己的局部变量；把样式一起注入，才能保证
    同一套导航在任何页面上长得一样、深浅两色都对。
 
@@ -10,24 +10,20 @@
      <script src="js/site-nav.js"></script>
    无占位时自动插入到 body 首个元素之前；页脚同理用 id="site-foot"。
 
-   顺带：导航里的品牌链接永远指回 index.html，4 个内部入口按当前
-   文件名自动高亮；知识专题与案例库不在主导航里，分别从随堂自测、
-   学科目录/资源库进入，避免同一批内容出现三个平级入口。
+   顺带：导航里的品牌链接永远指回 resource.html（站点入口即资源库），
+   3 个内部入口按当前文件名自动高亮；案例库从资源库进入，
+   首页为跳转壳页，均不占导航位。
    ============================================================ */
 (function () {
   'use strict';
 
   var LINKS = [
-    ['index.html', '首页'],
-    ['subjects.html', '学科目录'],
     ['resource.html', '资源库'],
     ['quiz.html', '随堂自测'],
     ['classroom.html', '课堂工具']
   ];
 
   var FOOT_LINKS = [
-    ['index.html', '首页'],
-    ['subjects.html', '学科目录'],
     ['resource.html', '资源库'],
     ['quiz.html', '随堂自测'],
     ['classroom.html', '课堂工具']
@@ -86,7 +82,7 @@
       var aria = l[0] === cur ? ' aria-current="page"' : '';
       return '<a href="' + l[0] + '"' + on + aria + '>' + l[1] + '</a>';
     }).join('');
-    return '<a class="sb-brand" href="index.html" aria-label="简普实验室 · 返回首页">' +
+    return '<a class="sb-brand" href="resource.html" aria-label="简普实验室 · 返回资源库">' +
              '<span class="sb-logo" aria-hidden="true">简</span>' +
              '<span class="sb-name">简普实验室<em>JIANPU LAB</em></span>' +
            '</a>' +

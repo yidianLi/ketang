@@ -90,7 +90,7 @@
   <main id="main" class="main">
     <nav class="cats" id="cats"></nav>
 
-    <div class="total">当前直连可玩资源 <b id="total">0</b> 个 · 69 道开源互动案例见 <a href="ai-cases.html" style="color:var(--accent);font-weight:600">案例库</a> · 按年级找题见 <a href="subjects.html" style="color:var(--accent);font-weight:600">学科目录</a></div>
+    <div class="total">当前直连可玩资源 <b id="total">0</b> 个 · 69 道开源互动案例见 <a href="ai-cases.html" style="color:var(--accent);font-weight:600">案例库</a> · 按年级找题见 <a href="quiz.html" style="color:var(--accent);font-weight:600">随堂自测</a></div>
 
     <div class="searchrow">
       <div class="search">
@@ -108,7 +108,7 @@
 
 <script>
 /* ---------- 数据：6 个可玩实验室 + 课堂工具直连卡 ----------
-   去重说明：学科入口只保留「学科目录」页（subjects.html），
+   去重说明：学科入口只保留「随堂自测」页（quiz.html），
    开源 AI 案例只保留「案例库」页（ai-cases.html），本页不再重复挂卡。 */
 var CATS = ['物理', '化学', '生物', '数学', '地理', '工具'];
 
@@ -142,7 +142,7 @@ var TOOLS = [
 ];
 
 /* ---------- 渲染 ---------- */
-var active = '工具';   /* 默认落在「工具」页 */
+var active = '物理';   /* 默认落在「物理」页（物理 3 间实验室置顶） */
 var kw = '';
 
 function renderCats() {

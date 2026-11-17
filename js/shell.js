@@ -26,12 +26,12 @@
   function buildBrand(h) {
     var a = document.createElement('a');
     a.className = 'brand';
-    a.href = 'index.html';
-    a.setAttribute('aria-label', '返回首页');
+    a.href = 'resource.html';
+    a.setAttribute('aria-label', '返回资源库');
 
     var logo = document.createElement('span');
     logo.className = 'logo';
-    logo.textContent = h.getAttribute('data-glyph') || '帧';
+    logo.textContent = h.getAttribute('data-glyph') || '简';
     var tone = TONES[h.getAttribute('data-tone')];
     if (tone) logo.style.background = tone;
 

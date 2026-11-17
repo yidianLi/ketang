@@ -58,8 +58,8 @@ function u16(v) { return [v & 0xFF, (v >>> 8) & 0xFF]; }
 function u32(v) { return [v & 0xFF, (v >>> 8) & 0xFF, (v >>> 16) & 0xFF, (v >>> 24) & 0xFF]; }
 
 /* ---------- 收集文件（allowlist） ---------- */
-const INCLUDE_ROOT = ['index.html', 'classroom.html', 'resource.html', 'knowledge.html',
-  'subjects.html', 'quiz.html', 'ai-cases.html', 'terrain.html', 'circuit.html', 'mechanics.html', 'molecule.html',
+const INCLUDE_ROOT = ['index.html', 'classroom.html', 'resource.html',
+  'quiz.html', 'ai-cases.html', 'terrain.html', 'circuit.html', 'mechanics.html', 'molecule.html',
   'formula.html', 'optics.html', '404.html', 'favicon.svg'];
 const SKIP_DIR = /(^|[\\/])(\.git|node_modules|dist|desktop|scripts|\.workbuddy)([\\/]|$)/i;
 const KEEP_AI = /(LICENSE|asset-cache|vendor|webfonts)/i;
@@ -107,14 +107,13 @@ function usageText() {
     '',
     '【怎么用】',
     '1. 解压本压缩包到任意文件夹（建议路径不要包含特殊字符）。',
-    '2. 双击 index.html 即可在浏览器中离线使用，无需安装任何环境。',
+    '2. 双击 index.html 即可在浏览器中离线使用（自动进入资源库），无需安装任何环境。',
     '3. 推荐使用 Chrome / Edge 浏览器。',
     '',
     '【包含什么】',
     '- 6 个互动实验室：地形 / 电路 / 力学 / 分子 / 数理公式 / 光学',
     '- 课堂工具箱 classroom.html：14 件课堂实操工具（含喊麦读单词 / 喊麦读词语）',
-    '- 学科分级目录 subjects.html：五科 147 条互动演示，按年级分段',
-    '- 资源库 resource.html（19 个直连可玩资源）· 随堂自测 quiz.html · 知识专题 knowledge.html',
+    '- 资源库 resource.html（21 个直连可玩资源，站点入口页）· 随堂自测 quiz.html（五科 724 题，按年级分段）',
     '- 案例库 ai-cases.html：69 个开源互动案例（依赖已本地化）',
     '',
     '【三条命令（可选，需要 Node.js >= 18）】',
@@ -254,11 +253,11 @@ function verify(zip) {
   const browser = candidates.find(p => fs.existsSync(p));
   if (!browser) { console.log('SKIP：未找到 Chrome/Edge，跳过冒烟'); }
   else {
-    const indexHtml = path.join(tmp, 'index.html');
+    const indexHtml = path.join(tmp, 'resource.html');
     const r = spawnSync(browser, ['--headless=new', '--disable-gpu', '--virtual-time-budget=3000',
       '--dump-dom', 'file:///' + indexHtml.replace(/\\/g, '/')], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
     const dom = r.stdout || '';
-    if (dom.includes('地形实验室') && dom.includes('课堂工具箱')) console.log('✓ index.html 冒烟通过（首页内容完整）');
+    if (dom.includes('地形实验室') && dom.includes('课堂随机点名')) console.log('✓ resource.html 冒烟通过（资源库内容完整）');
     else { console.error('✗ 冒烟失败：页面内容缺失'); process.exit(1); }
   }
   fs.rmSync(tmp, { recursive: true, force: true });
