@@ -107,12 +107,19 @@
 </div>
 
 <script>
-/* ---------- 数据：6 个可玩实验室 + 课堂工具直连卡 ----------
+/* ---------- 数据：学科门户 + 6 个可玩实验室 + 课堂工具直连卡 ----------
    去重说明：学科入口只保留「随堂自测」页（quiz.html），
    开源 AI 案例只保留「案例库」页（ai-cases.html），本页不再重复挂卡。 */
 var CATS = ['物理', '化学', '生物', '数学', '地理', '工具'];
 
 var TOOLS = [
+  /* 学科门户：各科可视化互动学习入口（门户内按年级/章节收纳全部案例，含 AI 生成参考案例） */
+  { t: '物理 · 可视化互动学习', d: '初二～高三 · 41 个演示：伽利略 / 凸透镜 / 平衡木 / 3D 实验课', c: '物理', ic: '🧲', bg: 'linear-gradient(135deg,#d5e6f0,#b4cde0)', play: 'ai-cases/physicslearn/index.html' },
+  { t: '数学 · 可视化互动学习', d: '初一～高三 · 18 模块 + 拓展题：四面体 / 圆柱 / 圆锥', c: '数学', ic: '📐', bg: 'linear-gradient(135deg,#d5e7e8,#b4d6da)', play: 'ai-cases/mathlearn/index.html' },
+  { t: '化学 · 可视化互动学习', d: '初三～高二 · 分子与晶体 · 3D 结构断网可转', c: '化学', ic: '⚗️', bg: 'linear-gradient(135deg,#e5d2e7,#d5b4da)', play: 'ai-cases/chemistrylearn/index.html' },
+  { t: '生物 · 可视化互动学习', d: '初一～初二 · 细胞与遗传可视化', c: '生物', ic: '🔬', bg: 'linear-gradient(135deg,#d7e8d5,#b9dab4)', play: 'ai-cases/biologylearn/index.html' },
+  { t: '地理 · 可视化互动学习', d: '初一 · 等高线与气候判读可视化', c: '地理', ic: '🗺️', bg: 'linear-gradient(135deg,#e0e8d5,#c9dab4)', play: 'ai-cases/geographylearn/index.html' },
+
   /* 免费试玩：6 间可交互实验室 */
   { t: '地形实验室', d: '等高线 · 剖面 · 3D 立体图', c: '地理', ic: '🏔️', bg: 'linear-gradient(135deg,#dee8d5,#c1dab4)', play: 'terrain.html' },
   { t: '电路实验室', d: 'MNA 求解器 · 实时电流读数', c: '物理', ic: '🔌', bg: 'linear-gradient(135deg,#d5dfe8,#b4c7da)', play: 'circuit.html' },
