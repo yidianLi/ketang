@@ -64,9 +64,8 @@ window.CASES = [
   { n: '高斯函数', p: '高斯函数.html', c: '函数与代数', s: 'AIEdTools', tech: ['Canvas', 'Chart.js'],
     q: 'f(x) = e^−(x−a)²/b 里，a 和 b 分别控制什么？拖动两个滑块，说明为什么最高点的 y 值恒为 1。' },
 
-  /* ---------- physics-sim · 门户 + 力学（7） ---------- */
-  { n: '物理仿真门户（中文）', p: 'physics-sim/index.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
-    q: '力学、电磁、波动、光学、近代五大领域的入口页：21 个可交互模块，按主题挑一个进去做。' },
+  /* ---------- physics-sim · 力学（6） ---------- */
+  /* 门户落地页不再作为案例卡（打开应直接看到教学效果，而非 About 页） */
   { n: '力的合成与分解', p: 'physics-sim/simulations/mechanics/force-composition.html', c: '物理', s: 'physics-sim', tech: ['p5.js', 'mathjs'],
     q: 'F₁ = 40N ∠45°、F₂ = 40N ∠135°，合力多大、指向哪里？切换「共点力」与「首尾相接」两种画法，再用平行四边形法则核对。' },
   { n: '动量守恒总览', p: 'physics-sim/simulations/mechanics/momentum-conservation.html', c: '物理', s: 'physics-sim', tech: ['p5.js'],
