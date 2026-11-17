@@ -17,7 +17,7 @@ function createWindow() {
     height: 900,
     minWidth: 900,
     autoHideMenuBar: true,
-    title: '简普实验室',
+    title: '小江实验室',
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false

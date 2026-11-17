@@ -1,8 +1,8 @@
 {
-  "name": "jianpu",
-  "version": "1.9.0",
+  "name": "xiaojiang",
+  "version": "1.9.1",
   "private": true,
-  "description": "简普：零依赖纯前端教学可视化工具集（6 实验室 + 5 个学科分级目录 + 资源库 + 知识专题 + 案例库）",
+  "description": "小江：零依赖纯前端教学可视化工具集（6 实验室 + 5 学科门户 + 资源库/随堂自测/课堂工具）",
   "scripts": {
     "test": "node scripts/test-all.js",
     "serve": "node scripts/serve.js",

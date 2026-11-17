@@ -82,9 +82,9 @@
       var aria = l[0] === cur ? ' aria-current="page"' : '';
       return '<a href="' + l[0] + '"' + on + aria + '>' + l[1] + '</a>';
     }).join('');
-    return '<a class="sb-brand" href="resource.html" aria-label="简普实验室 · 返回资源库">' +
+    return '<a class="sb-brand" href="resource.html" aria-label="小江实验室 · 返回资源库">' +
              '<span class="sb-logo" aria-hidden="true">简</span>' +
-             '<span class="sb-name">简普实验室<em>JIANPU LAB</em></span>' +
+             '<span class="sb-name">小江实验室<em>XIAOJIANG LAB</em></span>' +
            '</a>' +
            '<nav aria-label="站点导航">' + items + '</nav>' +
            '<div class="sb-tools"></div>';
@@ -97,8 +97,9 @@
     return '<div class="sf-in">' +
              '<div class="sf-links">' + links + '</div>' +
              '<div class="sf-meta">' +
-               '<b>简普实验室</b> · 零第三方依赖 · 支持离线运行<br>' +
-               '教学演示用途 · 第三方资源署名见案例库页脚' +
+               '<b>小江实验室</b> · 零第三方依赖 · 支持离线运行<br>' +
+               '教学演示用途 · 第三方资源署名见各案例页内标注<br>' +
+               '联系方式：826005234' +
              '</div>' +
            '</div>';
   }

@@ -6,8 +6,8 @@
  *   node scripts/build-zip.js            只打包
  *   node scripts/build-zip.js --verify   打包 + 解压自检（CRC + 断链 + headless 冒烟）
  * 产物：
- *   dist/zhenli-offline-v<version>.zip
- *   dist/zhenli-offline-v<version>.zip.sha256
+ *   dist/xiaojiang-offline-v<version>.zip
+ *   dist/xiaojiang-offline-v<version>.zip.sha256
  *
  * 说明：PNG/woff2 等已压缩格式按 store(0) 存放，其余 deflate(8)；
  *       UTF-8 文件名（flag 0x0800）；固定 DOS 时间戳保证可重复构建。
@@ -24,7 +24,7 @@ const VERIFY = process.argv.includes('--verify');
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 const VERSION = pkg.version || '1.0.0';
 const OUT_DIR = path.join(ROOT, 'dist');
-const OUT = path.join(OUT_DIR, `zhenli-offline-v${VERSION}.zip`);
+const OUT = path.join(OUT_DIR, `xiaojiang-offline-v${VERSION}.zip`);
 
 /* ---------- ZIP 基础 ---------- */
 const CRC_TABLE = (() => {
@@ -102,7 +102,7 @@ function collectFiles() {
 /* ---------- 生成附带的说明文件 ---------- */
 function usageText() {
   return [
-    '简普 · 离线包 v' + VERSION,
+    '小江 · 离线包 v' + VERSION,
     '================================================',
     '',
     '【怎么用】',

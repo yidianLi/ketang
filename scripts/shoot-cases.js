@@ -148,7 +148,7 @@ async function waitPort(retries = 60) {
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
-  const profile = path.join(require('os').tmpdir(), 'jianpu-shoot-' + Date.now());
+  const profile = path.join(require('os').tmpdir(), 'xiaojiang-shoot-' + Date.now());
   const chrome = spawn(CHROME, [
     '--headless=new',
     `--remote-debugging-port=${PORT}`,

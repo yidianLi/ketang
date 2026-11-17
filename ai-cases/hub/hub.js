@@ -36,7 +36,7 @@
 
   /* ---------- 顶部 ---------- */
   document.body.setAttribute('data-subject', S.key);
-  document.title = S.title + ' · 简普实验室';
+  document.title = S.title + ' · 小江实验室';
 
   var head = el('header', 'app-header');
   head.innerHTML =
