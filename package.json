@@ -1,6 +1,6 @@
 {
   "name": "xiaojiang",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "private": true,
   "description": "小江：零依赖纯前端教学可视化工具集（6 实验室 + 5 学科门户 + 资源库/随堂自测/课堂工具）",
   "scripts": {

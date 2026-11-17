@@ -48,6 +48,7 @@
       '<div class="head-tools">' +
         '<a class="head-link" href="../../resource.html?cat=' + HUB_CAT[S.key] + '&view=case">学科案例</a>' +
         '<a class="head-link" href="../../resource.html">回到资源库</a>' +
+        '<span class="head-link" style="cursor:default">微信 826005234</span>' +
       '</div>' +
     '</div>' +
     '<div class="subject-bar"><div class="subject-seg" id="subjSeg" role="navigation" aria-label="切换学科"></div></div>' +
